@@ -1,0 +1,652 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta property="og:type" content="website">
+<meta property="og:title" content="叉叉哥的BLOG">
+<meta property="og:url" content="https://xxgblog.com/page/4/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="叉叉哥的BLOG">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main">
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/09/19/mina-netty-twisted-7/" title="MINA、Netty、Twisted一起学（七）：发布/订阅（Publish/Subscribe）" itemprop="url">
+  
+    <h1 itemprop="name">MINA、Netty、Twisted一起学（七）：发布/订阅（Publish/Subscribe）</h1>
+    
+     
+           <p itemprop="description">消息传递有很多种方式，请求/响应（Request/Reply）是最常用的。在前面的博文的例子中，很多都是采用请求/响应的方式，当服务器接收到消息后，会立即write回写一条消息到客户端。HTTP协议也是基于请求/响应的方式。
+但是请求/响应并不能满足所有的消息传递的需求，有些需求</p>
+        
+    
+    <time datetime="2014-09-19T05:35:00.000Z" itemprop="datePublished">2014-09-19</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/09/10/mina-netty-twisted-6/" title="MINA、Netty、Twisted一起学（六）：session" itemprop="url">
+  
+    <h1 itemprop="name">MINA、Netty、Twisted一起学（六）：session</h1>
+    
+     
+           <p itemprop="description">开发过Web应用的同学应该都会使用session。由于HTTP协议本身是无状态的，所以一个客户端多次访问这个web应用的多个页面，服务器无法判断多次访问的客户端是否是同一个客户端。有了session就可以设置一些和客户端相关的属性，用于保持这种连接状态。例如用户登录系统后，设置s</p>
+        
+    
+    <time datetime="2014-09-10T05:51:00.000Z" itemprop="datePublished">2014-09-10</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/08/27/mina-netty-twisted-5/" title="MINA、Netty、Twisted一起学（五）：整合protobuf" itemprop="url">
+  
+    <h1 itemprop="name">MINA、Netty、Twisted一起学（五）：整合protobuf</h1>
+    
+     
+           <p itemprop="description">protobuf是谷歌的Protocol Buffers的简称，用于结构化数据和字节码之间互相转换（序列化、反序列化），一般应用于网络传输，可支持多种编程语言。
+protobuf如何使用这里不再介绍，本文主要介绍在MINA、Netty、Twisted中如何使用protobuf，不</p>
+        
+    
+    <time datetime="2014-08-27T01:25:00.000Z" itemprop="datePublished">2014-08-27</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/08/25/mina-netty-twisted-4/" title="MINA、Netty、Twisted一起学（四）：定制自己的协议" itemprop="url">
+  
+    <h1 itemprop="name">MINA、Netty、Twisted一起学（四）：定制自己的协议</h1>
+    
+     
+           <p itemprop="description">在前面的博文中，介绍一些消息分割的方案，以及MINA、Netty、Twisted针对这些方案提供的相关API。例如MINA的TextLineCodecFactory、PrefixedStringCodecFactory，Netty的LineBasedFrameDecoder、Le</p>
+        
+    
+    <time datetime="2014-08-25T05:03:00.000Z" itemprop="datePublished">2014-08-25</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/08/22/mina-netty-twisted-3/" title="MINA、Netty、Twisted一起学（三）：TCP消息固定大小的前缀(Header)" itemprop="url">
+  
+    <h1 itemprop="name">MINA、Netty、Twisted一起学（三）：TCP消息固定大小的前缀(Header)</h1>
+    
+     
+           <p itemprop="description">在上一篇博文中，有介绍到用换行符分割消息的方法。但是这种方法有个小问题，如果消息中本身就包含换行符，那将会将这条消息分割成两条，结果就不对了。
+本文介绍另外一种消息分割方式，即上一篇博文中讲的第2条：use a fixed length header that indicates</p>
+        
+    
+    <time datetime="2014-08-22T02:41:00.000Z" itemprop="datePublished">2014-08-22</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/08/21/mina-netty-twisted-2/" title="MINA、Netty、Twisted一起学（二）：TCP消息边界问题及按行分割消息" itemprop="url">
+  
+    <h1 itemprop="name">MINA、Netty、Twisted一起学（二）：TCP消息边界问题及按行分割消息</h1>
+    
+     
+           <p itemprop="description">在TCP连接开始到结束连接，之间可能会多次传输数据，也就是服务器和客户端之间可能会在连接过程中互相传输多条消息。理想状况是一方每发送一条消息，另一方就立即接收到一条，也就是一次write对应一次read。但是，现实不总是按照剧本来走。
+MINA官方文档节选：
+
+TCP guara</p>
+        
+    
+    <time datetime="2014-08-21T05:51:00.000Z" itemprop="datePublished">2014-08-21</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/08/15/mina-netty-twisted-1/" title="MINA、Netty、Twisted一起学（一）：实现简单的TCP服务器" itemprop="url">
+  
+    <h1 itemprop="name">MINA、Netty、Twisted一起学（一）：实现简单的TCP服务器</h1>
+    
+     
+           <p itemprop="description">MINA、Netty、Twisted为什么放在一起学习？首先，不妨先分别看一下它们官方网站对其的介绍：
+MINA：
+
+Apache MINA is a network application framework which helps users develop high per</p>
+        
+    
+    <time datetime="2014-08-15T02:53:00.000Z" itemprop="datePublished">2014-08-15</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/08/11/tomcat-comet-web-chat/" title="使用Tomcat实现基于iframe streaming的Comet Web聊天室" itemprop="url">
+  
+    <h1 itemprop="name">使用Tomcat实现基于iframe streaming的Comet Web聊天室</h1>
+    
+     
+           <p itemprop="description">首先，无图无真相，先上图：这是一个基于Comet实现的聊天室Demo，功能类似于QQ群聊。聊天过程中如果有新想消息，那么就需要服务器推送消息到浏览器，所以这里可以使用Comet技术。
+Comet一般有两种实现方式：长轮询（long-polling）、流（streaming）。而本</p>
+        
+    
+    <time datetime="2014-08-11T01:48:00.000Z" itemprop="datePublished">2014-08-11</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/07/16/java-protobuf-extend/" title="protobuf extensions(extend)的消息定义及Java使用方法" itemprop="url">
+  
+    <h1 itemprop="name">protobuf extensions(extend)的消息定义及Java使用方法</h1>
+    
+     
+           <p itemprop="description">在定义protobuf消息时，有时候需要用到extensions来对原有的消息类型进行扩展，有利于消息定义的重复使用。
+1、下面写一个最简单的例子，定义一个message BaseData，并对其进行扩展：
+Example.proto：
+12345678910// 定义一个mes</p>
+        
+    
+    <time datetime="2014-07-16T03:22:12.000Z" itemprop="datePublished">2014-07-16</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2014/07/03/java-protobuf/" title="Java使用Protocol Buffers入门四步骤" itemprop="url">
+  
+    <h1 itemprop="name">Java使用Protocol Buffers入门四步骤</h1>
+    
+     
+           <p itemprop="description">Protocol Buffers（简称protobuf）是谷歌的一项技术，用于将结构化的数据序列化、反序列化，经常用于网络传输。
+这货实际上类似于XML生成和解析，但protobuf的效率高于XML，不过protobuf生成的是字节码，可读性比XML差。类似的还有json、Jav</p>
+        
+    
+    <time datetime="2014-07-03T04:56:00.000Z" itemprop="datePublished">2014-07-03</time>
+  </a>
+</section>
+
+
+
+
+
+
+
+  <nav id="page-nav" class="clearfix unexpand">
+    <a class="extend prev" rel="prev" href="/page/3/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next<span></span></a>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>12</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>42</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Security/" title="Spring Security">Spring Security<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blackcoffee2016.github.io/" target="_blank" title="杨灿的博客">杨灿的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.itcodai.com/" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://youngforzy.top/" target="_blank" title="曾勇的博客">曾勇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>

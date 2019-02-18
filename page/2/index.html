@@ -1,0 +1,645 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta property="og:type" content="website">
+<meta property="og:title" content="叉叉哥的BLOG">
+<meta property="og:url" content="https://xxgblog.com/page/2/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="叉叉哥的BLOG">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main">
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/09/22/http-server-maven-repository/" title="Maven仓库搭建（一）：一台HTTP服务器即可（Tomcat、Apache或Nginx）" itemprop="url">
+  
+    <h1 itemprop="name">Maven仓库搭建（一）：一台HTTP服务器即可（Tomcat、Apache或Nginx）</h1>
+    
+     
+           <p itemprop="description">作为一个Java老程序员，多多少少都会有一些自己写的各种常用代码，如果每写一个项目都把这些代码拷贝一份到新项目比较麻烦的，打成jar包引入到项目会方便很多。如果想让这些jar包能通过Maven引入进项目，那就需要搭建Maven仓库。
+说到Maven仓库搭建，很多人第一想到的一般都</p>
+        
+    
+    <time datetime="2016-09-22T12:14:16.000Z" itemprop="datePublished">2016-09-22</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/06/01/maven-spring-profile/" title="Maven profile整合Spring profile" itemprop="url">
+  
+    <h1 itemprop="name">Maven profile整合Spring profile</h1>
+    
+     
+           <p itemprop="description">在Maven的pom.xml和Spring框架中，都有profile这个概念。profile是用于区分各种环境的，例如开发环境、测试环境、正式环境等。Maven的profile经常用于在打包时根据指定环境打入不同的配置文件配置，如数据库配置。Spring的Profile可以用于在</p>
+        
+    
+    <time datetime="2016-06-01T09:14:09.000Z" itemprop="datePublished">2016-06-01</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/05/06/mybatis-generator-mysql-pagination/" title="MyBatis Generator实现MySQL分页插件" itemprop="url">
+  
+    <h1 itemprop="name">MyBatis Generator实现MySQL分页插件</h1>
+    
+     
+           <p itemprop="description">MyBatis Generator是一个非常方便的代码生成工具，它能够根据表结构生成CRUD代码，可以满足大部分需求。但是唯一让人不爽的是，生成的代码中的数据库查询没有分页功能。本文介绍如何让MyBatis Generator生成的代码具有分页功能。
+MyBatis Genera</p>
+        
+    
+    <time datetime="2016-05-06T10:44:09.000Z" itemprop="datePublished">2016-05-06</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/05/05/maven-profile-antrun/" title="Maven profile结合Maven AntRun Plugin实现不同环境配置文件分离打包" itemprop="url">
+  
+    <h1 itemprop="name">Maven profile结合Maven AntRun Plugin实现不同环境配置文件分离打包</h1>
+    
+     
+           <p itemprop="description">在Java项目中通常会有各种配置文件，例如有xml、properties。在不同的环境下配置文件的内容可能会不一样，例如正式环境、测试环境、开发环境连的不是同一个数据库，访问的接口不一样，或者日志的级别不同。如果每次部署不同环境时都要改配置文件的各种配置是非常麻烦的。在这种情况下</p>
+        
+    
+    <time datetime="2016-05-05T09:14:09.000Z" itemprop="datePublished">2016-05-05</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/04/02/traverse-list-thread-safe/" title="如何线程安全地遍历List：Vector、CopyOnWriteArrayList" itemprop="url">
+  
+    <h1 itemprop="name">如何线程安全地遍历List：Vector、CopyOnWriteArrayList</h1>
+    
+     
+           <p itemprop="description">遍历List的多种方式在讲如何线程安全地遍历List之前，先看看通常我们遍历一个List会采用哪些方式。
+方式一：123for(int i = 0; i &amp;lt; list.size(); i++) &amp;#123;	System.out.println(list.get(i));&amp;</p>
+        
+    
+    <time datetime="2016-04-02T12:14:16.000Z" itemprop="datePublished">2016-04-02</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/12/22/nodejs-async-mysql/" title="Async.js解决Node.js操作MySQL的回调大坑" itemprop="url">
+  
+    <h1 itemprop="name">Async.js解决Node.js操作MySQL的回调大坑</h1>
+    
+     
+           <p itemprop="description">由于JavaScript语言异步特性，在使用Node.js执行很多操作时都会使用到回调函数，其中就包括访问数据库。如果代码中的业务逻辑稍微复杂一点，回调一层层嵌套，那么代码很容易进入Callback Hell，无论对写代码的人还是阅读代码的人，都是精神上的折磨。
+例如对MySQL</p>
+        
+    
+    <time datetime="2015-12-22T02:19:16.000Z" itemprop="datePublished">2015-12-22</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/11/25/java-websocket-tail/" title="Java WebSocket + tail命令实现Web实时日志" itemprop="url">
+  
+    <h1 itemprop="name">Java WebSocket + tail命令实现Web实时日志</h1>
+    
+     
+           <p itemprop="description">在Linux操作系统中，经常需要查看日志文件的实时输出内容，通常会使用tail -f或者tailf命令。查看实时日志可能会需要首先SSH连上Linux主机，步骤很麻烦不说，如果是生产环境的服务器，可能还会控制各种权限。此时可以考虑基于Web显示实时日志。
+由于传统的HTTP协议是</p>
+        
+    
+    <time datetime="2015-11-25T03:14:16.000Z" itemprop="datePublished">2015-11-25</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/10/23/wagon-maven-plugin/" title="Maven插件wagon-maven-plugin自动化部署Java项目到Linux远程服务器" itemprop="url">
+  
+    <h1 itemprop="name">Maven插件wagon-maven-plugin自动化部署Java项目到Linux远程服务器</h1>
+    
+     
+           <p itemprop="description">通常情况下，程序开发完成后部署到线上Linux服务器，可能需要经历打包、将包文件传到服务器、SSH连上服务器、敲命令启动程序等一系列繁琐的步骤。实际上这些步骤都可以通过Maven的一个插件wagon-maven-plugin来自动完成。
+文件上传到服务器Maven项目可使用mvn</p>
+        
+    
+    <time datetime="2015-10-23T12:19:16.000Z" itemprop="datePublished">2015-10-23</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/10/16/web-service-client/" title="Java开发Web Service客户端技巧：wsimport、jaxws-maven-plugin、整合Spring" itemprop="url">
+  
+    <h1 itemprop="name">Java开发Web Service客户端技巧：wsimport、jaxws-maven-plugin、整合Spring</h1>
+    
+     
+           <p itemprop="description">搭建一个简单的Web Service服务器要想跑Web Service客户端，前提是要有个Web Service服务器。如果你已经有Web Service服务器，那么可以跳过这一步。如果没有，可以使用JAX-WS搭建一个简单的Web Service服务器。123456789101</p>
+        
+    
+    <time datetime="2015-10-16T12:14:16.000Z" itemprop="datePublished">2015-10-16</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2015/09/06/spring-security-start/" title="Spring Security Web应用入门环境搭建" itemprop="url">
+  
+    <h1 itemprop="name">Spring Security Web应用入门环境搭建</h1>
+    
+     
+           <p itemprop="description">在使用Spring Security配置Web应用之前，首先要准备一个基于Maven的Spring框架创建的Web应用（Spring MVC不是必须的），本文的内容都是基于这个前提下的。
+pom.xml添加依赖除了Spring框架本身的一些依赖包，还需要在pom.xml中添加Sp</p>
+        
+    
+    <time datetime="2015-09-06T03:14:16.000Z" itemprop="datePublished">2015-09-06</time>
+  </a>
+</section>
+
+
+
+
+
+
+
+  <nav id="page-nav" class="clearfix unexpand">
+    <a class="extend prev" rel="prev" href="/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">Next<span></span></a>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>12</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>42</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Security/" title="Spring Security">Spring Security<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blackcoffee2016.github.io/" target="_blank" title="杨灿的博客">杨灿的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.itcodai.com/" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://youngforzy.top/" target="_blank" title="曾勇的博客">曾勇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>

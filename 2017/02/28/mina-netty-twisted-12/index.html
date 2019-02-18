@@ -1,0 +1,642 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>MINA、Netty、Twisted一起学（十二）：HTTPS | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="由于HTTPS协议是由HTTP协议加上SSL/TLS协议组合而成，在阅读本文前可以先阅读一下HTTP服务器和SSL/TLS两篇博文，本文中的代码也是由这两篇博文中的代码组合而成。 HTTPS介绍上一篇博文中介绍了SSL/TLS协议，我们平时接触最多的SSL/TLS协议的应用就是HTTPS协议了，现在可以看到越来越多的网站已经是https开头了，百度搜索也由曾经的http改为https。有关百度为什">
+<meta name="keywords" content="Java,MINA,Netty,Twisted,TCP,Python,HTTPS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MINA、Netty、Twisted一起学（十二）：HTTPS">
+<meta property="og:url" content="https://xxgblog.com/2017/02/28/mina-netty-twisted-12/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="由于HTTPS协议是由HTTP协议加上SSL/TLS协议组合而成，在阅读本文前可以先阅读一下HTTP服务器和SSL/TLS两篇博文，本文中的代码也是由这两篇博文中的代码组合而成。 HTTPS介绍上一篇博文中介绍了SSL/TLS协议，我们平时接触最多的SSL/TLS协议的应用就是HTTPS协议了，现在可以看到越来越多的网站已经是https开头了，百度搜索也由曾经的http改为https。有关百度为什">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://xxgblog.com/img/c3c34282-fd05-11e6-bc64-92361f002671.jpg">
+<meta property="og:image" content="https://xxgblog.com/img/4cf95892-fd07-11e6-bc64-92361f002671.jpg">
+<meta property="og:image" content="https://xxgblog.com/img/f0cd95c6-fd68-11e6-bc64-92361f002671.jpg">
+<meta property="og:updated_time" content="2017-02-28T04:03:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MINA、Netty、Twisted一起学（十二）：HTTPS">
+<meta name="twitter:description" content="由于HTTPS协议是由HTTP协议加上SSL/TLS协议组合而成，在阅读本文前可以先阅读一下HTTP服务器和SSL/TLS两篇博文，本文中的代码也是由这两篇博文中的代码组合而成。 HTTPS介绍上一篇博文中介绍了SSL/TLS协议，我们平时接触最多的SSL/TLS协议的应用就是HTTPS协议了，现在可以看到越来越多的网站已经是https开头了，百度搜索也由曾经的http改为https。有关百度为什">
+<meta name="twitter:image" content="https://xxgblog.com/img/c3c34282-fd05-11e6-bc64-92361f002671.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/02/28/mina-netty-twisted-12/" title="MINA、Netty、Twisted一起学（十二）：HTTPS" itemprop="url">MINA、Netty、Twisted一起学（十二）：HTTPS</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2017-02-28T05:14:00.000Z" itemprop="datePublished"> 发表于 2017-02-28</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTPS介绍"><span class="toc-number">1.</span> <span class="toc-text">HTTPS介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成私钥和证书"><span class="toc-number">2.</span> <span class="toc-text">生成私钥和证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTPS服务器实现"><span class="toc-number">3.</span> <span class="toc-text">HTTPS服务器实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MINA"><span class="toc-number">3.1.</span> <span class="toc-text">MINA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Netty"><span class="toc-number">3.2.</span> <span class="toc-text">Netty</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Twisted"><span class="toc-number">3.3.</span> <span class="toc-text">Twisted</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#客户端测试"><span class="toc-number">4.</span> <span class="toc-text">客户端测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MINA、Netty、Twisted一起学系列"><span class="toc-number">5.</span> <span class="toc-text">MINA、Netty、Twisted一起学系列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#源码"><span class="toc-number">5.1.</span> <span class="toc-text">源码</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>由于HTTPS协议是由HTTP协议加上SSL/TLS协议组合而成，在阅读本文前可以先阅读一下<a href="http://xxgblog.com/2014/09/23/mina-netty-twisted-8/">HTTP服务器</a>和<a href="http://xxgblog.com/2017/02/27/mina-netty-twisted-11/">SSL/TLS</a>两篇博文，本文中的代码也是由这两篇博文中的代码组合而成。</p>
+<h2 id="HTTPS介绍"><a href="#HTTPS介绍" class="headerlink" title="HTTPS介绍"></a>HTTPS介绍</h2><p><a href="http://xxgblog.com/2017/02/27/mina-netty-twisted-11/">上一篇博文</a>中介绍了SSL/TLS协议，我们平时接触最多的SSL/TLS协议的应用就是HTTPS协议了，现在可以看到越来越多的网站已经是https开头了，百度搜索也由曾经的http改为https。有关百度为什么升级https推荐阅读：<a href="http://zhanzhang.baidu.com/wiki/383" target="_blank" rel="noopener">http://zhanzhang.baidu.com/wiki/383</a></p>
+<p>HTTPS即HTTP over SSL，实际上就是在原来HTTP协议的底层加入了SSL/TLS协议层，使得客户端（例如浏览器）与服务器之间的通信加密传输，攻击者无法窃听和篡改。相对而言HTTP协议则是明文传输，安全性并不高。</p>
+<p>HTTPS主要可以避免以下几个安全问题：</p>
+<ol>
+<li>窃听隐私：使用明文传输的HTTP协议，传输过程中的信息都可能会被攻击者窃取到，例如你登录网站的用户名和密码、在电商的购买记录、搜索记录等，这就会造成例如账号被盗、各种隐私泄漏的风险。而使用HTTPS对通信内容加密过后，即使被攻击者窃取到也无法破解其中的内容。</li>
+<li>篡改内容：HTTP使用明文传输，不但消息会被窃取，还可能被篡改，例如常见的运营HTTP商劫持。你是否曾经浏览http协议的百度时，时不时会在页面下方弹出小广告，这些小广告并不是百度放上去的，而是电信网通等运营商干的，运营商通过篡改服务器返回的页面内容，加入一段HTML代码就可以轻松实现小广告。而使用HTTPS的百度，就不再会出现这样的小广告，因为攻击者无法对传输内容解密和加密，就无法篡改。<br><img src="/img/c3c34282-fd05-11e6-bc64-92361f002671.jpg" alt="HTTP劫持插入广告"></li>
+<li>冒充：例如DNS劫持，当你输入一个http网址在浏览器打开时，有可能打开的是一个假的网站，连的并不是真网站的服务器，假的网站可能给你弹出广告，还可能让你输入用户名密码来盗取账户。使用HTTPS的话，服务器都会有数字证书和私钥，数字证书公开的，私钥是网站服务器私密的，假网站如果使用假的证书，浏览器会拦截并提示，如果使用真的证书，由于没有私钥也无法建立连接。<br><img src="/img/4cf95892-fd07-11e6-bc64-92361f002671.jpg" alt="证书有问题时的浏览器提示"></li>
+</ol>
+<h2 id="生成私钥和证书"><a href="#生成私钥和证书" class="headerlink" title="生成私钥和证书"></a>生成私钥和证书</h2><p>浏览器信任的证书一般是CA机构（证书授权中心）颁发的，证书有收费的也有免费的，本文使用免费证书用于测试。可以在腾讯云<a href="https://www.qcloud.com/product/ssl" target="_blank" rel="noopener">https://www.qcloud.com/product/ssl</a>申请一个免费证书，申请证书前需要提供一个域名，即该证书作用的域名。</p>
+<p>我在本文中使用的是我自己的域名gw2.vsgames.cn在腾讯云申请的免费证书，如果没有自己的域名无法申请免费证书，可以在本文的末尾下载源码，其中有我生成好的证书用于测试。</p>
+<p>证书生成好下载后包含一个<strong>私钥文件</strong>(.key)和一个<strong>证书文件</strong>(.crt)，腾讯云生成的证书可以在Nginx目录下找到这两个文件。</p>
+<p>这两个文件在Twisted中可以直接使用，但是Java只能使用PKCS#8私钥文件，需要对上面的.key文件用openssl进行转换（如果你是在我提供的源码中获取证书和私钥文件，我已经提供了转换好的私钥，可以跳过这一步）。</p>
+<p>转换成DER二进制格式私钥文件，供MINA使用：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs8 -topk8 -inform PEM -<span class="keyword">in</span> 2_gw2.vsgames.cn.key -outform DER -nocrypt -out private.der</span><br></pre></td></tr></table></figure></p>
+<p>转换成PEM文本格式私钥文件，供Netty使用：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs8 -topk8 -inform PEM -<span class="keyword">in</span> 2_gw2.vsgames.cn.key -outform PEM -nocrypt -out private.pem</span><br></pre></td></tr></table></figure></p>
+<p>除了在CA机构申请证书，还可以通过自签名的方式生成私钥和证书，<a href="http://xxgblog.com/2017/02/27/mina-netty-twisted-11/#生成私钥和证书">上一篇博文</a>中采用的就是这种方式。不过由于自签名的证书不是CA机构颁发，不受浏览器信任，在浏览器打开HTTPS地址时会有安全提示，测试时可以忽略提示。</p>
+<h2 id="HTTPS服务器实现"><a href="#HTTPS服务器实现" class="headerlink" title="HTTPS服务器实现"></a>HTTPS服务器实现</h2><p>将<a href="http://xxgblog.com/2014/09/23/mina-netty-twisted-8/">MINA、Netty、Twisted一起学（八）：HTTP服务器</a>和<a href="http://xxgblog.com/2017/02/27/mina-netty-twisted-11/">MINA、Netty、Twisted一起学（十一）：SSL/TLS</a>中的代码结合起来，即可实现HTTPS服务器。</p>
+<h3 id="MINA"><a href="#MINA" class="headerlink" title="MINA"></a>MINA</h3><p>在<a href="http://xxgblog.com/2014/09/23/mina-netty-twisted-8/#MINA">http://xxgblog.com/2014/09/23/mina-netty-twisted-8/#MINA</a>代码的基础上，在<code>HttpServerCodec</code>之前加上<code>SslFilter</code>即可。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MinaServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        String certPath = <span class="string">"/Users/wucao/Desktop/https/1_gw2.vsgames.cn_bundle.crt"</span>;  <span class="comment">// 证书</span></span><br><span class="line">        String privateKeyPath = <span class="string">"/Users/wucao/Desktop/https/private.der"</span>;  <span class="comment">// 私钥</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 证书</span></span><br><span class="line">        <span class="comment">// https://docs.oracle.com/javase/7/docs/api/java/security/cert/X509Certificate.html</span></span><br><span class="line">        InputStream inStream = <span class="keyword">null</span>;</span><br><span class="line">        Certificate certificate = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            inStream = <span class="keyword">new</span> FileInputStream(certPath);</span><br><span class="line">            CertificateFactory cf = CertificateFactory.getInstance(<span class="string">"X.509"</span>);</span><br><span class="line">            certificate = cf.generateCertificate(inStream);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (inStream != <span class="keyword">null</span>) &#123;</span><br><span class="line">                inStream.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 私钥</span></span><br><span class="line">        PKCS8EncodedKeySpec keySpec = <span class="keyword">new</span> PKCS8EncodedKeySpec(Files.readAllBytes(<span class="keyword">new</span> File(privateKeyPath).toPath()));</span><br><span class="line">        PrivateKey privateKey = KeyFactory.getInstance(<span class="string">"RSA"</span>).generatePrivate(keySpec);</span><br><span class="line"></span><br><span class="line">        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());</span><br><span class="line">        ks.load(<span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">        Certificate[] certificates = &#123;certificate&#125;;</span><br><span class="line">        ks.setKeyEntry(<span class="string">"key"</span>, privateKey, <span class="string">""</span>.toCharArray(), certificates);</span><br><span class="line"></span><br><span class="line">        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());</span><br><span class="line">        kmf.init(ks, <span class="string">""</span>.toCharArray());</span><br><span class="line"></span><br><span class="line">        SSLContext sslContext = SSLContext.getInstance(<span class="string">"TLS"</span>);</span><br><span class="line">        sslContext.init(kmf.getKeyManagers(), <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        IoAcceptor acceptor = <span class="keyword">new</span> NioSocketAcceptor();</span><br><span class="line">        DefaultIoFilterChainBuilder chain = acceptor.getFilterChain();</span><br><span class="line">        chain.addLast(<span class="string">"ssl"</span>, <span class="keyword">new</span> SslFilter(sslContext));  <span class="comment">// SslFilter + HttpServerCodec实现HTTPS</span></span><br><span class="line">        chain.addLast(<span class="string">"codec"</span>, <span class="keyword">new</span> HttpServerCodec());</span><br><span class="line">        acceptor.setHandler(<span class="keyword">new</span> HttpServerHandle());</span><br><span class="line">        acceptor.bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">8080</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HttpServerHandle</span> <span class="keyword">extends</span> <span class="title">IoHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(IoSession session, Throwable cause)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        cause.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">messageReceived</span><span class="params">(IoSession session, Object message)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (message <span class="keyword">instanceof</span> HttpRequest) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 请求，解码器将请求转换成HttpRequest对象</span></span><br><span class="line">            HttpRequest request = (HttpRequest) message;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 获取请求参数</span></span><br><span class="line">            String name = request.getParameter(<span class="string">"name"</span>);</span><br><span class="line">            <span class="keyword">if</span>(name == <span class="keyword">null</span>) &#123;</span><br><span class="line">                name = <span class="string">"World"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            name = URLDecoder.decode(name, <span class="string">"UTF-8"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 响应HTML</span></span><br><span class="line">            String responseHtml = <span class="string">"&lt;html&gt;&lt;body&gt;Hello, "</span> + name + <span class="string">"&lt;/body&gt;&lt;/html&gt;"</span>;</span><br><span class="line">            <span class="keyword">byte</span>[] responseBytes = responseHtml.getBytes(<span class="string">"UTF-8"</span>);</span><br><span class="line">            <span class="keyword">int</span> contentLength = responseBytes.length;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 构造HttpResponse对象，HttpResponse只包含响应的status line和header部分</span></span><br><span class="line">            Map&lt;String, String&gt; headers = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">            headers.put(<span class="string">"Content-Type"</span>, <span class="string">"text/html; charset=utf-8"</span>);</span><br><span class="line">            headers.put(<span class="string">"Content-Length"</span>, Integer.toString(contentLength));</span><br><span class="line">            HttpResponse response = <span class="keyword">new</span> DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SUCCESS_OK, headers);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 响应BODY</span></span><br><span class="line">            IoBuffer responseIoBuffer = IoBuffer.allocate(contentLength);</span><br><span class="line">            responseIoBuffer.put(responseBytes);</span><br><span class="line">            responseIoBuffer.flip();</span><br><span class="line"></span><br><span class="line">            session.write(response); <span class="comment">// 响应的status line和header部分</span></span><br><span class="line">            session.write(responseIoBuffer); <span class="comment">// 响应body部分</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Netty"><a href="#Netty" class="headerlink" title="Netty"></a>Netty</h3><p>在<a href="http://xxgblog.com/2014/09/23/mina-netty-twisted-8/#Netty">http://xxgblog.com/2014/09/23/mina-netty-twisted-8/#Netty</a>代码的基础上，在<code>ChannelPipeline</code>最前边加上<code>SslHandler</code>即可。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NettyServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException, SSLException </span>&#123;</span><br><span class="line"></span><br><span class="line">        File certificate = <span class="keyword">new</span> File(<span class="string">"/Users/wucao/Desktop/https/1_gw2.vsgames.cn_bundle.crt"</span>);  <span class="comment">// 证书</span></span><br><span class="line">        File privateKey = <span class="keyword">new</span> File(<span class="string">"/Users/wucao/Desktop/https/private.pem"</span>);  <span class="comment">// 私钥</span></span><br><span class="line">        <span class="keyword">final</span> SslContext sslContext = SslContextBuilder.forServer(certificate, privateKey).build();</span><br><span class="line"></span><br><span class="line">        EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">            b.group(bossGroup, workerGroup)</span><br><span class="line">                    .channel(NioServerSocketChannel.class)</span><br><span class="line">                    .childHandler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                            ChannelPipeline pipeline = ch.pipeline();</span><br><span class="line"></span><br><span class="line">                            <span class="comment">// 加入SslHandler实现HTTPS</span></span><br><span class="line">                            SslHandler sslHandler = sslContext.newHandler(ch.alloc());</span><br><span class="line">                            pipeline.addLast(sslHandler);</span><br><span class="line"></span><br><span class="line">                            pipeline.addLast(<span class="keyword">new</span> HttpServerCodec());</span><br><span class="line">                            pipeline.addLast(<span class="keyword">new</span> HttpServerHandler());</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line">            ChannelFuture f = b.bind(<span class="number">8080</span>).sync();</span><br><span class="line">            f.channel().closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            workerGroup.shutdownGracefully();</span><br><span class="line">            bossGroup.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HttpServerHandler</span> <span class="keyword">extends</span> <span class="title">ChannelInboundHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> UnsupportedEncodingException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (msg <span class="keyword">instanceof</span> HttpRequest) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 请求，解码器将请求转换成HttpRequest对象</span></span><br><span class="line">            HttpRequest request = (HttpRequest) msg;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 获取请求参数</span></span><br><span class="line">            QueryStringDecoder queryStringDecoder = <span class="keyword">new</span> QueryStringDecoder(request.uri());</span><br><span class="line">            String name = <span class="string">"World"</span>;</span><br><span class="line">            <span class="keyword">if</span>(queryStringDecoder.parameters().get(<span class="string">"name"</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                name = queryStringDecoder.parameters().get(<span class="string">"name"</span>).get(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 响应HTML</span></span><br><span class="line">            String responseHtml = <span class="string">"&lt;html&gt;&lt;body&gt;Hello, "</span> + name + <span class="string">"&lt;/body&gt;&lt;/html&gt;"</span>;</span><br><span class="line">            <span class="keyword">byte</span>[] responseBytes = responseHtml.getBytes(<span class="string">"UTF-8"</span>);</span><br><span class="line">            <span class="keyword">int</span> contentLength = responseBytes.length;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 构造FullHttpResponse对象，FullHttpResponse包含message body</span></span><br><span class="line">            FullHttpResponse response = <span class="keyword">new</span> DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.wrappedBuffer(responseBytes));</span><br><span class="line">            response.headers().set(<span class="string">"Content-Type"</span>, <span class="string">"text/html; charset=utf-8"</span>);</span><br><span class="line">            response.headers().set(<span class="string">"Content-Length"</span>, Integer.toString(contentLength));</span><br><span class="line"></span><br><span class="line">            ctx.writeAndFlush(response);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> </span>&#123;</span><br><span class="line">        cause.printStackTrace();</span><br><span class="line">        ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Twisted"><a href="#Twisted" class="headerlink" title="Twisted"></a>Twisted</h3><p>将<a href="http://xxgblog.com/2014/09/23/mina-netty-twisted-8/#Twisted">http://xxgblog.com/2014/09/23/mina-netty-twisted-8/#Twisted</a>中reactor.listenTCP改为的reactor.listenSSL，即可从HTTP协议切到HTTPS协议。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 –*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> twisted.internet <span class="keyword">import</span> reactor, ssl</span><br><span class="line"><span class="keyword">from</span> twisted.web <span class="keyword">import</span> server, resource</span><br><span class="line"></span><br><span class="line">sslContext = ssl.DefaultOpenSSLContextFactory(</span><br><span class="line">    <span class="string">'/Users/wucao/Desktop/https/2_gw2.vsgames.cn.key'</span>,  <span class="comment"># 私钥</span></span><br><span class="line">    <span class="string">'/Users/wucao/Desktop/https/1_gw2.vsgames.cn_bundle.crt'</span>,  <span class="comment"># 证书</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainResource</span><span class="params">(resource.Resource)</span>:</span></span><br><span class="line"></span><br><span class="line">    isLeaf = <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 用于处理GET类型请求</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">render_GET</span><span class="params">(self, request)</span>:</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># name参数</span></span><br><span class="line">        name = <span class="string">'World'</span></span><br><span class="line">        <span class="keyword">if</span> request.args.has_key(<span class="string">'name'</span>):</span><br><span class="line">            name = request.args[<span class="string">'name'</span>][<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 设置响应编码</span></span><br><span class="line">        request.responseHeaders.addRawHeader(<span class="string">"Content-Type"</span>, <span class="string">"text/html; charset=utf-8"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 响应的内容直接返回</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">"&lt;html&gt;&lt;body&gt;Hello, "</span> + name + <span class="string">"&lt;/body&gt;&lt;/html&gt;"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">site = server.Site(MainResource())</span><br><span class="line">reactor.listenSSL(<span class="number">8080</span>, site, sslContext)</span><br><span class="line">reactor.run()</span><br></pre></td></tr></table></figure></p>
+<h2 id="客户端测试"><a href="#客户端测试" class="headerlink" title="客户端测试"></a>客户端测试</h2><p>由于浏览器就是最天然的HTTPS客户端，这里可以使用浏览器来测试。</p>
+<p>首先，由于我的证书对应的域名是gw2.vsgames.cn，而服务器代码运行在本机上，所以先需要配置hosts将域名解析到localhost上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 gw2.vsgames.cn</span><br></pre></td></tr></table></figure></p>
+<p>在浏览器打开<a href="https://gw2.vsgames.cn:8080/?name=叉叉哥" target="_blank" rel="noopener">https://gw2.vsgames.cn:8080/?name=叉叉哥</a>可以看到测试结果：<br><img src="/img/f0cd95c6-fd68-11e6-bc64-92361f002671.jpg" alt="浏览器测试HTTPS服务器"><br>证书和私钥正确的HTTPS服务器，在Chrome浏览器左上角会有“安全”提示，其他浏览器也会有相应的提示。</p>
+<h2 id="MINA、Netty、Twisted一起学系列"><a href="#MINA、Netty、Twisted一起学系列" class="headerlink" title="MINA、Netty、Twisted一起学系列"></a>MINA、Netty、Twisted一起学系列</h2><p><a href="http://xxgblog.com/2014/08/15/mina-netty-twisted-1/">MINA、Netty、Twisted一起学（一）：实现简单的TCP服务器</a></p>
+<p><a href="http://xxgblog.com/2014/08/21/mina-netty-twisted-2/">MINA、Netty、Twisted一起学（二）：TCP消息边界问题及按行分割消息</a></p>
+<p><a href="http://xxgblog.com/2014/08/22/mina-netty-twisted-3/">MINA、Netty、Twisted一起学（三）：TCP消息固定大小的前缀(Header)</a></p>
+<p><a href="http://xxgblog.com/2014/08/25/mina-netty-twisted-4/">MINA、Netty、Twisted一起学（四）：定制自己的协议</a></p>
+<p><a href="http://xxgblog.com/2014/08/27/mina-netty-twisted-5/">MINA、Netty、Twisted一起学（五）：整合protobuf</a></p>
+<p><a href="http://xxgblog.com/2014/09/10/mina-netty-twisted-6/">MINA、Netty、Twisted一起学（六）：session</a></p>
+<p><a href="http://xxgblog.com/2014/09/19/mina-netty-twisted-7/">MINA、Netty、Twisted一起学（七）：发布/订阅（Publish/Subscribe）</a></p>
+<p><a href="http://xxgblog.com/2014/09/23/mina-netty-twisted-8/">MINA、Netty、Twisted一起学（八）：HTTP服务器</a></p>
+<p><a href="http://xxgblog.com/2014/10/12/mina-netty-twisted-9/">MINA、Netty、Twisted一起学（九）：异步IO和回调函数</a></p>
+<p><a href="http://xxgblog.com/2014/10/16/mina-netty-twisted-10/">MINA、Netty、Twisted一起学（十）：线程模型</a></p>
+<p><a href="http://xxgblog.com/2017/02/27/mina-netty-twisted-11/">MINA、Netty、Twisted一起学（十一）：SSL/TLS</a></p>
+<p><a href="http://xxgblog.com/2017/02/28/mina-netty-twisted-12/">MINA、Netty、Twisted一起学（十二）：HTTPS</a></p>
+<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p><a href="https://github.com/wucao/mina-netty-twisted" target="_blank" rel="noopener">https://github.com/wucao/mina-netty-twisted</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/异步网络编程/">异步网络编程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/MINA/">MINA</a><a href="/tags/Netty/">Netty</a><a href="/tags/Twisted/">Twisted</a><a href="/tags/TCP/">TCP</a><a href="/tags/Python/">Python</a><a href="/tags/HTTPS/">HTTPS</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2017/02/28/mina-netty-twisted-12/" data-title="MINA、Netty、Twisted一起学（十二）：HTTPS | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2017/06/23/jetty-tomcat-nginx-proxy-config/" title="Jetty/Tomcat + Nginx反向代理获取客户端真实IP、域名、协议、端口">
+  <strong>上一篇：</strong><br>
+  <span>
+  Jetty/Tomcat + Nginx反向代理获取客户端真实IP、域名、协议、端口</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/02/27/mina-netty-twisted-11/" title="MINA、Netty、Twisted一起学（十一）：SSL/TLS">
+ <strong>下一篇：</strong><br> 
+ <span>MINA、Netty、Twisted一起学（十一）：SSL/TLS
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTPS介绍"><span class="toc-number">1.</span> <span class="toc-text">HTTPS介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成私钥和证书"><span class="toc-number">2.</span> <span class="toc-text">生成私钥和证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTPS服务器实现"><span class="toc-number">3.</span> <span class="toc-text">HTTPS服务器实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MINA"><span class="toc-number">3.1.</span> <span class="toc-text">MINA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Netty"><span class="toc-number">3.2.</span> <span class="toc-text">Netty</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Twisted"><span class="toc-number">3.3.</span> <span class="toc-text">Twisted</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#客户端测试"><span class="toc-number">4.</span> <span class="toc-text">客户端测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MINA、Netty、Twisted一起学系列"><span class="toc-number">5.</span> <span class="toc-text">MINA、Netty、Twisted一起学系列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#源码"><span class="toc-number">5.1.</span> <span class="toc-text">源码</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>12</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>42</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Security/" title="Spring Security">Spring Security<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blackcoffee2016.github.io/" target="_blank" title="杨灿的博客">杨灿的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.itcodai.com/" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://youngforzy.top/" target="_blank" title="曾勇的博客">曾勇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

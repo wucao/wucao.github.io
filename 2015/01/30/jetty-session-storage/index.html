@@ -1,0 +1,624 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Jetty集群配置Session存储到MySQL、MongoDB | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="在Web开发中，Session表示HTTP服务器与客户端（例如浏览器）的“会话”，每个客户端会有其对应的Session保存在服务器端，通常用来保存和客户端关联的一些信息，例如是否登录、购物车等。 Session一般情况下是保存在服务器内存中。如果服务器重启，Session就会丢失。另外，如果是集群环境，Web应用部署在多台服务器上，Session如果保存在各自的服务器上，就无法共享了。 针对这个问">
+<meta name="keywords" content="Java,Jetty,Session,MySQL,MongoDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jetty集群配置Session存储到MySQL、MongoDB">
+<meta property="og:url" content="https://xxgblog.com/2015/01/30/jetty-session-storage/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="在Web开发中，Session表示HTTP服务器与客户端（例如浏览器）的“会话”，每个客户端会有其对应的Session保存在服务器端，通常用来保存和客户端关联的一些信息，例如是否登录、购物车等。 Session一般情况下是保存在服务器内存中。如果服务器重启，Session就会丢失。另外，如果是集群环境，Web应用部署在多台服务器上，Session如果保存在各自的服务器上，就无法共享了。 针对这个问">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-05-12T16:24:26.589Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jetty集群配置Session存储到MySQL、MongoDB">
+<meta name="twitter:description" content="在Web开发中，Session表示HTTP服务器与客户端（例如浏览器）的“会话”，每个客户端会有其对应的Session保存在服务器端，通常用来保存和客户端关联的一些信息，例如是否登录、购物车等。 Session一般情况下是保存在服务器内存中。如果服务器重启，Session就会丢失。另外，如果是集群环境，Web应用部署在多台服务器上，Session如果保存在各自的服务器上，就无法共享了。 针对这个问">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/01/30/jetty-session-storage/" title="Jetty集群配置Session存储到MySQL、MongoDB" itemprop="url">Jetty集群配置Session存储到MySQL、MongoDB</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2015-01-30T01:20:00.000Z" itemprop="datePublished"> 发表于 2015-01-30</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置Session存储到关系数据库（MySQL为例）"><span class="toc-number">1.</span> <span class="toc-text">配置Session存储到关系数据库（MySQL为例）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置jetty-xml"><span class="toc-number">1.1.</span> <span class="toc-text">配置jetty.xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置context-xml"><span class="toc-number">1.2.</span> <span class="toc-text">配置context xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动Jetty测试"><span class="toc-number">1.3.</span> <span class="toc-text">启动Jetty测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件说明"><span class="toc-number">1.4.</span> <span class="toc-text">配置文件说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置Session存储到MongoDB"><span class="toc-number">2.</span> <span class="toc-text">配置Session存储到MongoDB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置jetty-xml-1"><span class="toc-number">2.1.</span> <span class="toc-text">配置jetty.xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置context-xml-1"><span class="toc-number">2.2.</span> <span class="toc-text">配置context xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动Jetty测试-1"><span class="toc-number">2.3.</span> <span class="toc-text">启动Jetty测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#“翻译”成Java代码"><span class="toc-number">2.4.</span> <span class="toc-text">“翻译”成Java代码</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>在Web开发中，Session表示HTTP服务器与客户端（例如浏览器）的“会话”，每个客户端会有其对应的Session保存在服务器端，通常用来保存和客户端关联的一些信息，例如是否登录、购物车等。</p>
+<p>Session一般情况下是保存在服务器内存中。如果服务器重启，Session就会丢失。另外，如果是集群环境，Web应用部署在多台服务器上，Session如果保存在各自的服务器上，就无法共享了。</p>
+<p>针对这个问题，Jetty服务器提供了用于集群环境下的Session实现方式，即通过多台Jetty服务器连接到同一个Session数据库来实现Session共享。</p>
+<h2 id="配置Session存储到关系数据库（MySQL为例）"><a href="#配置Session存储到关系数据库（MySQL为例）" class="headerlink" title="配置Session存储到关系数据库（MySQL为例）"></a>配置Session存储到关系数据库（MySQL为例）</h2><h3 id="配置jetty-xml"><a href="#配置jetty-xml" class="headerlink" title="配置jetty.xml"></a>配置jetty.xml</h3><p>打开Jetty目录下的etc/jetty.xml，在Configure元素内部加入XML片段：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"sessionIdManager"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">New</span> <span class="attr">id</span>=<span class="string">"jdbcidmgr"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.session.JDBCSessionIdManager"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Arg</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">Ref</span> <span class="attr">id</span>=<span class="string">"Server"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"workerName"</span>&gt;</span>fred<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Call</span> <span class="attr">name</span>=<span class="string">"setDriverInfo"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">Arg</span>&gt;</span>com.mysql.jdbc.Driver<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">Arg</span>&gt;</span>jdbc:mysql://192.168.20.1:3306/jetty_session?user=root&amp;amp;password=123<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Call</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"scavengeInterval"</span>&gt;</span>60<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">New</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Call</span> <span class="attr">name</span>=<span class="string">"setAttribute"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Arg</span>&gt;</span>jdbcIdMgr<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Ref</span> <span class="attr">id</span>=<span class="string">"jdbcidmgr"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Call</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>修改上面XML片段中的数据库连接的URL，如果用其他关系数据库，还要修改数据库驱动。要注意在XML中&amp;符号要转义成&amp;amp;。</p>
+<h3 id="配置context-xml"><a href="#配置context-xml" class="headerlink" title="配置context xml"></a>配置context xml</h3><p>在Jetty的webapps目录下，新建一个XML文件，例如test.xml，这个XML用于配置一个web应用：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd"&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">Configure</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.webapp.WebAppContext"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"contextPath"</span>&gt;</span>/test<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"war"</span>&gt;</span>D:\test.war<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">Ref</span> <span class="attr">name</span>=<span class="string">"Server"</span> <span class="attr">id</span>=<span class="string">"Server"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Call</span> <span class="attr">id</span>=<span class="string">"jdbcIdMgr"</span> <span class="attr">name</span>=<span class="string">"getAttribute"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">Arg</span>&gt;</span>jdbcIdMgr<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Call</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Ref</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"sessionHandler"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">New</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.session.SessionHandler"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">Arg</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">New</span> <span class="attr">id</span>=<span class="string">"jdbcmgr"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.session.JDBCSessionManager"</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"sessionIdManager"</span>&gt;</span></span><br><span class="line">						<span class="tag">&lt;<span class="name">Ref</span> <span class="attr">id</span>=<span class="string">"jdbcIdMgr"</span> /&gt;</span></span><br><span class="line">					<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">New</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">New</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configure</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>其中，&lt;Set name=”war”&gt;D:\test.war&lt;/Set&gt;配置web应用的war包，&lt;Set name=”contextPath”&gt;/test&lt;/Set&gt;配置web应用的contextPath，例如<a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a>。</p>
+<h3 id="启动Jetty测试"><a href="#启动Jetty测试" class="headerlink" title="启动Jetty测试"></a>启动Jetty测试</h3><p>在启动Jetty之前，还需要把MySQL驱动jar包放在lib/ext目录下。此外，还要创建好数据库，准备好war包。</p>
+<p>一切就绪以后，就可以启动Jetty服务器测试Session是否已经保存在数据库中。</p>
+<p>通过java -jar start.jar命令启动Jetty服务器，打开浏览器访问页面。可以看到在数据库中会生成两个表：jettysessionids、jettysessions，分别用于存储session id和session的信息。如果重启Jetty服务器，由于Session已经持久化到数据库中，所以Session不会丢失。</p>
+<p>需要注意的是，由于Session保存的是Java对象，会通过Java的序列化写入数据库，也就是<strong>Session中的对象必须支持序列化和反序列化，即实现Serializable接口</strong>。</p>
+<h3 id="配置文件说明"><a href="#配置文件说明" class="headerlink" title="配置文件说明"></a>配置文件说明</h3><p>如果看不懂上面两段XML配置的话，这里做一个简单的说明。</p>
+<p>上面的这些XML实际上是Jetty的IOC配置文件，说到IOC首先会想到Spring框架，实际上Jetty的IOC和Spring的IOC解决的问题是类似的，只是XML的格式有些区别。</p>
+<p>Jetty的IOC配置也很好理解，例如&lt;Set name=”contextPath”&gt;/test&lt;/Set&gt;即调用setContextPath(“/test”)，&lt;Call name=”getAttribute”&gt;&lt;Arg&gt;jdbcIdMgr&lt;/Arg&gt;&lt;/Call&gt;即调用getAttribute(“jdbcIdMgr”)，&lt;New class=”org.eclipse.jetty.server.session.SessionHandler”&gt;&lt;/New&gt;即为Java实例化对象new SessionHandler()。</p>
+<p>将上面的两段XML“翻译”成Java代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.eclipse.jetty.server.Server;</span><br><span class="line"><span class="keyword">import</span> org.eclipse.jetty.server.session.JDBCSessionIdManager;</span><br><span class="line"><span class="keyword">import</span> org.eclipse.jetty.server.session.JDBCSessionManager;</span><br><span class="line"><span class="keyword">import</span> org.eclipse.jetty.server.session.SessionHandler;</span><br><span class="line"><span class="keyword">import</span> org.eclipse.jetty.webapp.WebAppContext;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">		Server server = <span class="keyword">new</span> Server(<span class="number">8080</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 以下对应jetty.xml的配置</span></span><br><span class="line">		JDBCSessionIdManager sessionIdManager = <span class="keyword">new</span> JDBCSessionIdManager(server);</span><br><span class="line">		sessionIdManager.setWorkerName(<span class="string">"fred"</span>);</span><br><span class="line">		sessionIdManager.setDriverInfo(<span class="string">"com.mysql.jdbc.Driver"</span>,</span><br><span class="line">				<span class="string">"jdbc:mysql://192.168.20.1:3306/jetty_session?user=root&amp;password=123"</span>);</span><br><span class="line">		sessionIdManager.setScavengeInterval(<span class="number">60</span>);</span><br><span class="line">		server.setAttribute(<span class="string">"jdbcIdMgr"</span>, sessionIdManager);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 以下对应context xml的配置</span></span><br><span class="line">		WebAppContext webapp = <span class="keyword">new</span> WebAppContext();</span><br><span class="line">		webapp.setContextPath(<span class="string">"/test"</span>);</span><br><span class="line">		webapp.setWar(<span class="string">"D:\\test.war"</span>);</span><br><span class="line">		JDBCSessionIdManager jdbcIdMgr = (JDBCSessionIdManager) server.getAttribute(<span class="string">"jdbcIdMgr"</span>);</span><br><span class="line">		JDBCSessionManager sessionManager = <span class="keyword">new</span> JDBCSessionManager();</span><br><span class="line">		sessionManager.setSessionIdManager(jdbcIdMgr);</span><br><span class="line">		SessionHandler sessionHandler = <span class="keyword">new</span> SessionHandler(sessionManager);</span><br><span class="line">		webapp.setSessionHandler(sessionHandler);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 启动服务器</span></span><br><span class="line">		server.setHandler(webapp);</span><br><span class="line">		server.start();</span><br><span class="line">		server.join();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行Java代码，同样可以启动服务器，将Session存入数据库，实现同样的效果。</p>
+<h2 id="配置Session存储到MongoDB"><a href="#配置Session存储到MongoDB" class="headerlink" title="配置Session存储到MongoDB"></a>配置Session存储到MongoDB</h2><h3 id="配置jetty-xml-1"><a href="#配置jetty-xml-1" class="headerlink" title="配置jetty.xml"></a>配置jetty.xml</h3><p>打开Jetty目录下的etc/jetty.xml，在Configure元素内部加入XML片段：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">New</span> <span class="attr">id</span>=<span class="string">"mongodb"</span> <span class="attr">class</span>=<span class="string">"com.mongodb.MongoClient"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Arg</span> <span class="attr">type</span>=<span class="string">"java.lang.String"</span>&gt;</span>192.168.20.1<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Arg</span> <span class="attr">type</span>=<span class="string">"int"</span>&gt;</span>27017<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Call</span> <span class="attr">name</span>=<span class="string">"getDB"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Arg</span>&gt;</span>jetty_session<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Call</span> <span class="attr">id</span>=<span class="string">"sessionDocument"</span> <span class="attr">name</span>=<span class="string">"getCollection"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">Arg</span>&gt;</span>jetty_session_collection<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Call</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Call</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">New</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"sessionIdManager"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">New</span> <span class="attr">id</span>=<span class="string">"mongoIdMgr"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.nosql.mongodb.MongoSessionIdManager"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Arg</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">Ref</span> <span class="attr">id</span>=<span class="string">"Server"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Arg</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">Ref</span> <span class="attr">id</span>=<span class="string">"sessionDocument"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"workerName"</span>&gt;</span>fred<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"scavengePeriod"</span>&gt;</span>60<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">New</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Call</span> <span class="attr">name</span>=<span class="string">"setAttribute"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Arg</span>&gt;</span>mongoIdMgr<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">Ref</span> <span class="attr">id</span>=<span class="string">"mongoIdMgr"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Call</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>修改上面XML片段中的MongoDB的IP、端口号、数据库名、Collection名。</p>
+<h3 id="配置context-xml-1"><a href="#配置context-xml-1" class="headerlink" title="配置context xml"></a>配置context xml</h3><p>在Jetty的webapps目录下，新建一个XML文件，例如test.xml，这个XML用于配置一个web应用：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd"&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">Configure</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.webapp.WebAppContext"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"contextPath"</span>&gt;</span>/test<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"war"</span>&gt;</span>D:\test.war<span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">Ref</span> <span class="attr">name</span>=<span class="string">"Server"</span> <span class="attr">id</span>=<span class="string">"Server"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Call</span> <span class="attr">id</span>=<span class="string">"mongoIdMgr"</span> <span class="attr">name</span>=<span class="string">"getSessionIdManager"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Ref</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"sessionHandler"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">New</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.session.SessionHandler"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Arg</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">New</span> <span class="attr">id</span>=<span class="string">"mongoMgr"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.nosql.mongodb.MongoSessionManager"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">Set</span> <span class="attr">name</span>=<span class="string">"sessionIdManager"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Ref</span> <span class="attr">id</span>=<span class="string">"mongoIdMgr"</span>/&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">New</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">New</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Set</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configure</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="启动Jetty测试-1"><a href="#启动Jetty测试-1" class="headerlink" title="启动Jetty测试"></a>启动Jetty测试</h3><p>测试前，首先要吧两个jar包放在Jetty的lib/ext目录下，一个是MongoDB的驱动包，另一个是jetty-nosql的jar包，在<a href="http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-nosql/" target="_blank" rel="noopener">http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-nosql/</a>下载对应版本的jar包。此外，在MongoDB中创建好对应的数据库。</p>
+<p>通过java -jar start.jar命令启动Jetty服务器，打开浏览器打开页面。可以看到在MongoDB中创建了配置的Collection并插入了数据。</p>
+<h3 id="“翻译”成Java代码"><a href="#“翻译”成Java代码" class="headerlink" title="“翻译”成Java代码"></a>“翻译”成Java代码</h3><p>将上面的两段Jetty的IOC配置文件转成Java代码，直接运行可以实现同样的功能：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.eclipse.jetty.nosql.mongodb.MongoSessionIdManager;</span><br><span class="line"><span class="keyword">import</span> org.eclipse.jetty.nosql.mongodb.MongoSessionManager;</span><br><span class="line"><span class="keyword">import</span> org.eclipse.jetty.server.Server;</span><br><span class="line"><span class="keyword">import</span> org.eclipse.jetty.server.session.SessionHandler;</span><br><span class="line"><span class="keyword">import</span> org.eclipse.jetty.webapp.WebAppContext;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.mongodb.DB;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.DBCollection;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.MongoClient;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">		Server server = <span class="keyword">new</span> Server(<span class="number">8080</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 以下对应jetty.xml的配置</span></span><br><span class="line">		MongoClient mongoClient = <span class="keyword">new</span> MongoClient(<span class="string">"192.168.20.1"</span>, <span class="number">27017</span>);</span><br><span class="line">		DB db = mongoClient.getDB(<span class="string">"jetty_session"</span>);</span><br><span class="line">		DBCollection collection = db.getCollection(<span class="string">"jetty_session_collection"</span>);</span><br><span class="line">		MongoSessionIdManager sessionIdManager = <span class="keyword">new</span> MongoSessionIdManager(server, collection);</span><br><span class="line">		sessionIdManager.setWorkerName(<span class="string">"fred"</span>);</span><br><span class="line">		sessionIdManager.setScavengePeriod(<span class="number">60</span>);</span><br><span class="line">		server.setAttribute(<span class="string">"mongoIdMgr"</span>, sessionIdManager);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 以下对应context xml的配置</span></span><br><span class="line">		WebAppContext webapp = <span class="keyword">new</span> WebAppContext();</span><br><span class="line">		webapp.setContextPath(<span class="string">"/test"</span>);</span><br><span class="line">		webapp.setWar(<span class="string">"D:\\test.war"</span>);</span><br><span class="line">		MongoSessionIdManager mongoIdMgr = (MongoSessionIdManager) server.getAttribute(<span class="string">"mongoIdMgr"</span>);</span><br><span class="line">		MongoSessionManager sessionManager = <span class="keyword">new</span> MongoSessionManager();</span><br><span class="line">		sessionManager.setSessionIdManager(mongoIdMgr);</span><br><span class="line">		SessionHandler sessionHandler = <span class="keyword">new</span> SessionHandler(sessionManager);</span><br><span class="line">		webapp.setSessionHandler(sessionHandler);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 启动服务器</span></span><br><span class="line">		server.setHandler(webapp);</span><br><span class="line">		server.start();</span><br><span class="line">		server.join();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Jetty/">Jetty</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Jetty/">Jetty</a><a href="/tags/Session/">Session</a><a href="/tags/MySQL/">MySQL</a><a href="/tags/MongoDB/">MongoDB</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2015/01/30/jetty-session-storage/" data-title="Jetty集群配置Session存储到MySQL、MongoDB | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2015/05/17/nginx-start/" title="Nginx基本功能极速入门">
+  <strong>上一篇：</strong><br>
+  <span>
+  Nginx基本功能极速入门</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/01/13/strophe-xmpp/" title="Strophe.js连接XMPP服务器Openfire、Tigase实现Web私聊、群聊(MUC)">
+ <strong>下一篇：</strong><br> 
+ <span>Strophe.js连接XMPP服务器Openfire、Tigase实现Web私聊、群聊(MUC)
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置Session存储到关系数据库（MySQL为例）"><span class="toc-number">1.</span> <span class="toc-text">配置Session存储到关系数据库（MySQL为例）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置jetty-xml"><span class="toc-number">1.1.</span> <span class="toc-text">配置jetty.xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置context-xml"><span class="toc-number">1.2.</span> <span class="toc-text">配置context xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动Jetty测试"><span class="toc-number">1.3.</span> <span class="toc-text">启动Jetty测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件说明"><span class="toc-number">1.4.</span> <span class="toc-text">配置文件说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置Session存储到MongoDB"><span class="toc-number">2.</span> <span class="toc-text">配置Session存储到MongoDB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置jetty-xml-1"><span class="toc-number">2.1.</span> <span class="toc-text">配置jetty.xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置context-xml-1"><span class="toc-number">2.2.</span> <span class="toc-text">配置context xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动Jetty测试-1"><span class="toc-number">2.3.</span> <span class="toc-text">启动Jetty测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#“翻译”成Java代码"><span class="toc-number">2.4.</span> <span class="toc-text">“翻译”成Java代码</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>12</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>42</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Security/" title="Spring Security">Spring Security<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blackcoffee2016.github.io/" target="_blank" title="杨灿的博客">杨灿的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.itcodai.com/" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://youngforzy.top/" target="_blank" title="曾勇的博客">曾勇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
