@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2016/06/01/maven-spring-profile/</loc>
+    
+    <lastmod>2019-03-05T08:46:09.034Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2019/02/17/java-ipv6-system-properties/</loc>
     
     <lastmod>2019-02-17T17:18:46.787Z</lastmod>
@@ -166,13 +173,6 @@
     <loc>https://xxgblog.com/2016/09/22/http-server-maven-repository/</loc>
     
     <lastmod>2016-09-23T04:41:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xxgblog.com/2016/06/01/maven-spring-profile/</loc>
-    
-    <lastmod>2016-06-01T10:13:39.000Z</lastmod>
     
   </url>
   
