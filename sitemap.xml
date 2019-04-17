@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2015/05/17/nginx-start/</loc>
+    
+    <lastmod>2019-04-10T15:39:19.942Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2018/08/30/dbutils-spring/</loc>
     
     <lastmod>2019-04-09T12:08:02.576Z</lastmod>
@@ -250,13 +257,6 @@
     <loc>https://xxgblog.com/2015/10/16/web-service-client/</loc>
     
     <lastmod>2015-10-16T12:32:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xxgblog.com/2015/05/17/nginx-start/</loc>
-    
-    <lastmod>2015-10-13T03:20:34.000Z</lastmod>
     
   </url>
   

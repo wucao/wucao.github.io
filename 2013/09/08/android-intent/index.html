@@ -12,7 +12,7 @@
 
     
     <meta name="description" content="Intent是Android初学者比较难理解的一个东西。我这里以通俗易懂的语言和通俗易懂的代码，让初学者简单感受一下Intent。 intent就是意图的意思。Intent分两种：显式(Explicit intent)和隐式(Implicit intent)。 显式（设置Component）显式，即直接指定需要打开的Activity对应的类。 以下多种方式都是一样的，实际上都是设置Componen">
-<meta name="keywords" content="Android,Java">
+<meta name="keywords" content="Java,Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android开发：显式和隐式Intent">
 <meta property="og:url" content="https://xxgblog.com/2013/09/08/android-intent/index.html">
@@ -144,7 +144,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Android/">Android</a><a href="/tags/Java/">Java</a>
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Android/">Android</a>
   </div>
 
 </div>
@@ -189,6 +189,8 @@
 
 
 
+
+<div id="gitalk-container"></div>
 
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
@@ -561,6 +563,24 @@ $(document).ready(function(){
 
 
 
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
 
 
 

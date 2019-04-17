@@ -19,14 +19,14 @@
 <meta property="og:site_name" content="叉叉哥的BLOG">
 <meta property="og:description" content="本文主要介绍一些Nginx的最基本功能以及简单配置，但不包括Nginx的安装部署以及实现原理。废话不多，直接开始。 1、静态HTTP服务器首先，Nginx是一个HTTP服务器，可以将服务器上的静态文件（如HTML、图片）通过HTTP协议展现给客户端。 配置：123456server &amp;#123;	listen 80; # 端口号	location / &amp;#123;		root /usr/share">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517220513170.png">
-<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517221003659.jpg">
-<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517221800380.jpg">
-<meta property="og:updated_time" content="2015-10-13T03:20:34.000Z">
+<meta property="og:image" content="https://xxgblog.com/img/1fbd79d6-a73c-4ee7-bba1-45fc020d0b54.png">
+<meta property="og:image" content="https://xxgblog.com/img/0ea92511-eba8-48dc-92e4-4c4a6046dcee.jpg">
+<meta property="og:image" content="https://xxgblog.com/img/a94c7c39-d833-4480-9acb-34a2356964be.jpg">
+<meta property="og:updated_time" content="2019-04-10T15:39:19.942Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Nginx基本功能极速入门">
 <meta name="twitter:description" content="本文主要介绍一些Nginx的最基本功能以及简单配置，但不包括Nginx的安装部署以及实现原理。废话不多，直接开始。 1、静态HTTP服务器首先，Nginx是一个HTTP服务器，可以将服务器上的静态文件（如HTML、图片）通过HTTP协议展现给客户端。 配置：123456server &amp;#123;	listen 80; # 端口号	location / &amp;#123;		root /usr/share">
-<meta name="twitter:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517220513170.png">
+<meta name="twitter:image" content="https://xxgblog.com/img/1fbd79d6-a73c-4ee7-bba1-45fc020d0b54.png">
 
     
     <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
@@ -106,19 +106,19 @@
 <h2 id="1、静态HTTP服务器"><a href="#1、静态HTTP服务器" class="headerlink" title="1、静态HTTP服务器"></a>1、静态HTTP服务器</h2><p>首先，Nginx是一个HTTP服务器，可以将服务器上的静态文件（如HTML、图片）通过HTTP协议展现给客户端。</p>
 <p>配置：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>; <span class="comment"># 端口号</span></span><br><span class="line">	<span class="attribute">location</span> / &#123;</span><br><span class="line">		<span class="attribute">root</span> /usr/share/nginx/html; <span class="comment"># 静态文件路径</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="2、反向代理服务器"><a href="#2、反向代理服务器" class="headerlink" title="2、反向代理服务器"></a>2、反向代理服务器</h2><p>什么是反向代理？</p>
-<p>客户端本来可以直接通过HTTP协议访问某网站应用服务器，如果网站管理员在中间加上一个Nginx，客户端请求Nginx，Nginx请求应用服务器，然后将结果返回给客户端，此时Nginx就是反向代理服务器。<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517220513170.png" alt="反向代理"><br>配置：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">location</span> / &#123;</span><br><span class="line">		<span class="attribute">proxy_pass</span> http://192.168.20.1:8080; <span class="comment"># 应用服务器HTTP地址</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>客户端本来可以直接通过HTTP协议访问某网站应用服务器，如果网站管理员在中间加上一个Nginx，客户端请求Nginx，Nginx请求应用服务器，然后将结果返回给客户端，此时Nginx就是反向代理服务器。<br><img src="/img/1fbd79d6-a73c-4ee7-bba1-45fc020d0b54.png" alt="反向代理"><br>配置：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">location</span> / &#123;</span><br><span class="line">		<span class="attribute">proxy_pass</span> http://192.168.20.1:8080; <span class="comment"># 应用服务器HTTP地址</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>既然服务器可以直接HTTP访问，为什么要在中间加上一个反向代理，不是多此一举吗？反向代理有什么作用？继续往下看，下面的负载均衡、虚拟主机，都基于反向代理实现，当然反向代理的功能也不仅仅是这些。</p>
 <h2 id="3、负载均衡"><a href="#3、负载均衡" class="headerlink" title="3、负载均衡"></a>3、负载均衡</h2><p>当网站访问量非常大，网站站长开心赚钱的同时，也摊上事儿了。因为网站越来越慢，一台服务器已经不够用了。于是将相同的应用部署在多台服务器上，将大量用户的请求分配给多台机器处理。同时带来的好处是，其中一台服务器万一挂了，只要还有其他服务器正常运行，就不会影响用户使用。</p>
-<p>Nginx可以通过反向代理来实现负载均衡。<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517221003659.jpg" alt="负载均衡"><br>配置：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">upstream</span> myapp &#123;</span><br><span class="line">	<span class="attribute">server</span> <span class="number">192.168.20.1:8080</span>; <span class="comment"># 应用服务器1</span></span><br><span class="line">	<span class="attribute">server</span> <span class="number">192.168.20.2:8080</span>; <span class="comment"># 应用服务器2</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">location</span> / &#123;</span><br><span class="line">		<span class="attribute">proxy_pass</span> http://myapp;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Nginx可以通过反向代理来实现负载均衡。<br><img src="/img/0ea92511-eba8-48dc-92e4-4c4a6046dcee.jpg" alt="负载均衡"><br>配置：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">upstream</span> myapp &#123;</span><br><span class="line">	<span class="attribute">server</span> <span class="number">192.168.20.1:8080</span>; <span class="comment"># 应用服务器1</span></span><br><span class="line">	<span class="attribute">server</span> <span class="number">192.168.20.2:8080</span>; <span class="comment"># 应用服务器2</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">location</span> / &#123;</span><br><span class="line">		<span class="attribute">proxy_pass</span> http://myapp;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="4、虚拟主机"><a href="#4、虚拟主机" class="headerlink" title="4、虚拟主机"></a>4、虚拟主机</h2><p>的网站访问量大，需要负载均衡。然而并不是所有网站都如此出色，有的网站，由于访问量太小，需要节省成本，将多个网站部署在同一台服务器上。</p>
-<p>例如将<a href="http://www.aaa.com和www.bbb.com两个网站部署在同一台服务器上，两个域名解析到同一个IP地址，但是用户通过两个域名却可以打开两个完全不同的网站，互相不影响，就像访问两个服务器一样，所以叫两个虚拟主机。" target="_blank" rel="noopener">www.aaa.com和www.bbb.com两个网站部署在同一台服务器上，两个域名解析到同一个IP地址，但是用户通过两个域名却可以打开两个完全不同的网站，互相不影响，就像访问两个服务器一样，所以叫两个虚拟主机。</a></p>
+<p>例如将 <code>www.aaa.com</code> 和 <code>www.bbb.com</code> 两个网站部署在同一台服务器上，两个域名解析到同一个IP地址，但是用户通过两个域名却可以打开两个完全不同的网站，互相不影响，就像访问两个服务器一样，所以叫两个虚拟主机。</p>
 <p>配置：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span> default_server;</span><br><span class="line">	<span class="attribute">server_name</span> _;</span><br><span class="line">	<span class="attribute">return</span> <span class="number">444</span>; <span class="comment"># 过滤其他域名的请求，返回444状态码</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">server_name</span> www.aaa.com; <span class="comment"># www.aaa.com域名</span></span><br><span class="line">	<span class="attribute">location</span> / &#123;</span><br><span class="line">		<span class="attribute">proxy_pass</span> http://localhost:8080; <span class="comment"># 对应端口号8080</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">server_name</span> www.bbb.com; <span class="comment"># www.bbb.com域名</span></span><br><span class="line">	<span class="attribute">location</span> / &#123;</span><br><span class="line">		<span class="attribute">proxy_pass</span> http://localhost:8081; <span class="comment"># 对应端口号8081</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>在服务器8080和8081分别开了一个应用，客户端通过不同的域名访问，根据server_name可以反向代理到对应的应用服务器。</p>
 <p>虚拟主机的原理是通过HTTP请求头中的Host是否匹配server_name来实现的，有兴趣的同学可以研究一下HTTP协议。</p>
 <p>另外，server_name配置还可以过滤有人恶意将某些域名指向你的主机服务器。</p>
 <h2 id="5、FastCGI"><a href="#5、FastCGI" class="headerlink" title="5、FastCGI"></a>5、FastCGI</h2><p>Nginx本身不支持PHP等语言，但是它可以通过FastCGI来将请求扔给某些语言或框架处理（例如PHP、Python、Perl）。<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">location</span> <span class="regexp">~ \.php$</span> &#123;</span><br><span class="line">		<span class="attribute">include</span> fastcgi_params;</span><br><span class="line">		<span class="attribute">fastcgi_param</span> SCRIPT_FILENAME /PHP文件路径<span class="variable">$fastcgi_script_name</span>; <span class="comment"># PHP文件路径</span></span><br><span class="line">		<span class="attribute">fastcgi_pass</span> <span class="number">127.0.0.1:9000</span>; <span class="comment"># PHP-FPM地址和端口号</span></span><br><span class="line">		<span class="comment"># 另一种方式：fastcgi_pass unix:/var/run/php5-fpm.sock;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>配置中将.php结尾的请求通过FashCGI交给PHP-FPM处理，PHP-FPM是PHP的一个FastCGI管理器。有关FashCGI可以查阅其他资料，本文不再介绍。</p>
-<p>fastcgi_pass和proxy_pass有什么区别？下面一张图带你看明白：<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150517221800380.jpg" alt="fastcgi_pass和proxy_pass区别"></p>
+<p>fastcgi_pass和proxy_pass有什么区别？下面一张图带你看明白：<br><img src="/img/a94c7c39-d833-4480-9acb-34a2356964be.jpg" alt="fastcgi_pass和proxy_pass区别"></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -177,6 +177,8 @@
 
 
 
+
+<div id="gitalk-container"></div>
 
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
@@ -549,6 +551,24 @@ $(document).ready(function(){
 
 
 
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
 
 
 
