@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2019/04/19/nginx-non-idempotent/</loc>
+    
+    <lastmod>2019-04-20T16:47:38.938Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2015/05/17/nginx-start/</loc>
     
     <lastmod>2019-04-10T15:39:19.942Z</lastmod>
