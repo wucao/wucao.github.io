@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2018/10/12/x-forwarded-for-header-trick/</loc>
+    
+    <lastmod>2019-05-14T16:29:35.845Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2019/04/19/nginx-non-idempotent/</loc>
     
     <lastmod>2019-04-20T16:47:38.938Z</lastmod>
@@ -68,13 +75,6 @@
     <loc>https://xxgblog.com/2014/08/22/mina-netty-twisted-3/</loc>
     
     <lastmod>2019-01-02T11:41:10.253Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xxgblog.com/2018/10/12/x-forwarded-for-header-trick/</loc>
-    
-    <lastmod>2018-10-12T14:56:46.208Z</lastmod>
     
   </url>
   
