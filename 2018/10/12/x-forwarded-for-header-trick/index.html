@@ -20,7 +20,7 @@
 <meta property="og:description" content="问题背景在Web应用开发中，经常会需要获取客户端IP地址。一个典型的例子就是投票系统，为了防止刷票，需要限制每个IP地址只能投票一次。 如何获取客户端IP在Java中，获取客户端IP最直接的方式就是使用request.getRemoteAddr()。这种方式能获取到连接服务器的客户端IP，在中间没有代理的情况下，的确是最简单有效的方式。但是目前互联网Web应用很少会将应用服务器直接对外提供服务，一">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://xxgblog.com/img/38165b59-6e62-430f-8b35-4b17540be135.png">
-<meta property="og:updated_time" content="2019-05-14T16:29:35.845Z">
+<meta property="og:updated_time" content="2019-05-14T16:43:04.063Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="利用X-Forwarded-For伪造客户端IP漏洞成因及防范">
 <meta name="twitter:description" content="问题背景在Web应用开发中，经常会需要获取客户端IP地址。一个典型的例子就是投票系统，为了防止刷票，需要限制每个IP地址只能投票一次。 如何获取客户端IP在Java中，获取客户端IP最直接的方式就是使用request.getRemoteAddr()。这种方式能获取到连接服务器的客户端IP，在中间没有代理的情况下，的确是最简单有效的方式。但是目前互联网Web应用很少会将应用服务器直接对外提供服务，一">
@@ -102,7 +102,7 @@
 		
 		<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在Web应用开发中，经常会需要获取客户端IP地址。一个典型的例子就是投票系统，为了防止刷票，需要限制每个IP地址只能投票一次。</p>
 <h2 id="如何获取客户端IP"><a href="#如何获取客户端IP" class="headerlink" title="如何获取客户端IP"></a>如何获取客户端IP</h2><p>在Java中，获取客户端IP最直接的方式就是使用<code>request.getRemoteAddr()</code>。这种方式能获取到连接服务器的客户端IP，在中间没有代理的情况下，的确是最简单有效的方式。但是目前互联网Web应用很少会将应用服务器直接对外提供服务，一般都会有一层Nginx做反向代理和负载均衡，有的甚至可能有多层代理。在有反向代理的情况下，直接使用<code>request.getRemoteAddr()</code>获取到的IP地址是Nginx所在服务器的IP地址，而不是客户端的IP。</p>
-<p>HTTP协议是基于TCP协议的，由于<code>request.getRemoteAddr()</code>获取到的是TCP层直接连接的客户端的IP，对于Web应用服务器来说直接连接它的客户端实际上是Nginx，也就是TCP层是拿不到真实客户端的IP。</p>
+<p>HTTP协议是基于TCP协议的，由于<code>request.getRemoteAddr()</code>默认获取到的是TCP层直接连接的客户端的IP，对于Web应用服务器来说直接连接它的客户端实际上是Nginx，也就是TCP层是拿不到真实客户端的IP。</p>
 <p>为了解决上面的问题，很多HTTP代理会在HTTP协议头中添加<code>X-Forwarded-For</code>头，用来追踪请求的来源。<code>X-Forwarded-For</code>的格式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">X-Forwarded-For: client1, proxy1, proxy2</span><br></pre></td></tr></table></figure></p>
 <p><code>X-Forwarded-For</code>包含多个IP地址，每个值通过逗号+空格分开，最左边（client1）是最原始客户端的IP地址，中间如果有多层代理，每一层代理会将连接它的客户端IP追加在<code>X-Forwarded-For</code>右边。</p>
 <p>下面就是一种常用的获取客户端真实IP的方法，首先从HTTP头中获取<code>X-Forwarded-For</code>，如果<code>X-Forwarded-For</code>头存在就按逗号分隔取最左边第一个IP地址，不存在直接通过<code>request.getRemoteAddr()</code>获取IP地址：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getClientIp</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</span><br><span class="line">    String xff = request.getHeader(<span class="string">"X-Forwarded-For"</span>);</span><br><span class="line">    <span class="keyword">if</span> (xff == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> request.getRemoteAddr();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> xff.contains(<span class="string">","</span>) ? xff.split(<span class="string">","</span>)[<span class="number">0</span>] : xff;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -239,7 +239,7 @@
 		  
 		
 		  
-			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>5</sup></a></li>
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
 		  
 		
 		  
@@ -320,6 +320,10 @@
 			
 		
 			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
 			
 		
@@ -332,15 +336,11 @@
 			
 		
 			
-				<li><a href="/tags/反向代理/" title="反向代理">反向代理<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/负载均衡/" title="负载均衡">负载均衡<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/HTTP/" title="HTTP">HTTP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/反向代理/" title="反向代理">反向代理<sup>2</sup></a></li>
 			
 		
 		</ul>
@@ -422,7 +422,7 @@
 		
 
 		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
 		
 		<a href="/about" target="_blank" title="wucao">wucao</a>
 		

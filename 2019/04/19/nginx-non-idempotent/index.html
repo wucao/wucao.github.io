@@ -12,7 +12,7 @@
 
     
     <meta name="description" content="Nginx通过反向代理做负载均衡时，如果被代理的其中一个服务发生错误或者超时的时候，通常希望Nginx自动重试其他的服务，从而实现服务的高可用性。实际上Nginx本身默认会有错误重试机制，并且可以通过proxy_next_upstream来自定义配置。 如果不了解HTTP协议以及Nginx的机制，就可能在使用过程中遇到各种各样的坑。例如服务出现了错误或超时却未重试，或者一些例如创建订单或发送短信这">
-<meta name="keywords" content="Nginx,反向代理,负载均衡,HTTP">
+<meta name="keywords" content="Nginx,HTTP,反向代理,负载均衡">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nginx失败重试中的HTTP协议幂等问题: non_idempotent">
 <meta property="og:url" content="https://xxgblog.com/2019/04/19/nginx-non-idempotent/index.html">
@@ -138,7 +138,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Nginx/">Nginx</a><a href="/tags/反向代理/">反向代理</a><a href="/tags/负载均衡/">负载均衡</a><a href="/tags/HTTP/">HTTP</a>
+  <span></span> <a href="/tags/Nginx/">Nginx</a><a href="/tags/HTTP/">HTTP</a><a href="/tags/反向代理/">反向代理</a><a href="/tags/负载均衡/">负载均衡</a>
   </div>
 
 </div>
@@ -160,6 +160,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev">
+ <a href="/2020/03/12/spring-redistemplate-listoperations/" title="Spring Data Redis 如何将 RedisTemplate 注入为 ListOperations 类型">
+  <strong>上一篇：</strong><br>
+  <span>
+  Spring Data Redis 如何将 RedisTemplate 注入为 ListOperations 类型</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2019/02/17/java-ipv6-system-properties/" title="Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍">
@@ -234,7 +242,7 @@
 		  
 		
 		  
-			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>5</sup></a></li>
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
 		  
 		
 		  
@@ -315,6 +323,10 @@
 			
 		
 			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
 			
 		
@@ -327,15 +339,11 @@
 			
 		
 			
-				<li><a href="/tags/反向代理/" title="反向代理">反向代理<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/负载均衡/" title="负载均衡">负载均衡<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/HTTP/" title="HTTP">HTTP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/反向代理/" title="反向代理">反向代理<sup>2</sup></a></li>
 			
 		
 		</ul>
@@ -417,7 +425,7 @@
 		
 
 		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
 		
 		<a href="/about" target="_blank" title="wucao">wucao</a>
 		

@@ -2,9 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2020/03/12/spring-redistemplate-listoperations/</loc>
+    
+    <lastmod>2020-03-12T09:53:07.006Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2016/04/02/traverse-list-thread-safe/</loc>
+    
+    <lastmod>2019-11-03T13:55:47.538Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2018/10/12/x-forwarded-for-header-trick/</loc>
     
-    <lastmod>2019-05-14T16:29:35.845Z</lastmod>
+    <lastmod>2019-05-14T16:43:04.063Z</lastmod>
     
   </url>
   
@@ -215,13 +229,6 @@
     <loc>https://xxgblog.com/2013/09/15/java-bitmask/</loc>
     
     <lastmod>2016-04-05T11:37:34.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xxgblog.com/2016/04/02/traverse-list-thread-safe/</loc>
-    
-    <lastmod>2016-04-04T10:00:48.000Z</lastmod>
     
   </url>
   
