@@ -20,7 +20,7 @@
 <meta property="og:description" content="Stream 简介Stream 是什么 Classes to support functional-style operations on streams of elements, such as map-reduce transformations on collections.  Stream 是 Java 8 新特性，可对 Stream 中元素进行函数式编程操作，例如 map-reduce。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://xxgblog.com/img/62cbb4d9-ca15-4f57-bacf-b1a90e1e30e0.jpg">
-<meta property="og:updated_time" content="2020-04-17T04:51:14.065Z">
+<meta property="og:updated_time" content="2020-04-21T17:32:17.557Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 8 Stream 总结">
 <meta name="twitter:description" content="Stream 简介Stream 是什么 Classes to support functional-style operations on streams of elements, such as map-reduce transformations on collections.  Stream 是 Java 8 新特性，可对 Stream 中元素进行函数式编程操作，例如 map-reduce。">
@@ -96,7 +96,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream-简介"><span class="toc-number">1.</span> <span class="toc-text">Stream 简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Stream-是什么"><span class="toc-number">1.1.</span> <span class="toc-text">Stream 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stream-类型"><span class="toc-number">1.2.</span> <span class="toc-text">Stream 类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何获得-Stream"><span class="toc-number">2.</span> <span class="toc-text">如何获得 Stream</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-to-Stream"><span class="toc-number">2.1.</span> <span class="toc-text">Collection to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array-to-Stream"><span class="toc-number">2.2.</span> <span class="toc-text">Array to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map-to-Stream"><span class="toc-number">2.3.</span> <span class="toc-text">Map to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他"><span class="toc-number">2.4.</span> <span class="toc-text">其他</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream-的方法"><span class="toc-number">3.</span> <span class="toc-text">Stream 的方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#intermediate-operation-和-terminal-operation"><span class="toc-number">3.1.</span> <span class="toc-text">intermediate operation 和 terminal operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#intermediate-operation"><span class="toc-number">3.2.</span> <span class="toc-text">intermediate operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#intermediate-operation-常用方法"><span class="toc-number">3.2.1.</span> <span class="toc-text">intermediate operation 常用方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#map、flatMap-区别"><span class="toc-number">3.2.2.</span> <span class="toc-text">map、flatMap 区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#terminal-operation"><span class="toc-number">3.3.</span> <span class="toc-text">terminal operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#terminal-operation-常用方法"><span class="toc-number">3.3.1.</span> <span class="toc-text">terminal operation 常用方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#reduce"><span class="toc-number">3.3.2.</span> <span class="toc-text">reduce</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#collect"><span class="toc-number">3.3.3.</span> <span class="toc-text">collect</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collector"><span class="toc-number">3.3.4.</span> <span class="toc-text">Collector</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collectors"><span class="toc-number">3.3.5.</span> <span class="toc-text">Collectors</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">4.</span> <span class="toc-text">参考文档</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream-简介"><span class="toc-number">1.</span> <span class="toc-text">Stream 简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Stream-是什么"><span class="toc-number">1.1.</span> <span class="toc-text">Stream 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stream-类型"><span class="toc-number">1.2.</span> <span class="toc-text">Stream 类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何获得-Stream"><span class="toc-number">2.</span> <span class="toc-text">如何获得 Stream</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-to-Stream"><span class="toc-number">2.1.</span> <span class="toc-text">Collection to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array-to-Stream"><span class="toc-number">2.2.</span> <span class="toc-text">Array to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map-to-Stream"><span class="toc-number">2.3.</span> <span class="toc-text">Map to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他"><span class="toc-number">2.4.</span> <span class="toc-text">其他</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream-的方法"><span class="toc-number">3.</span> <span class="toc-text">Stream 的方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#intermediate-operation-和-terminal-operation"><span class="toc-number">3.1.</span> <span class="toc-text">intermediate operation 和 terminal operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#intermediate-operation"><span class="toc-number">3.2.</span> <span class="toc-text">intermediate operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#intermediate-operation-常用方法"><span class="toc-number">3.2.1.</span> <span class="toc-text">intermediate operation 常用方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#map、flatMap-区别"><span class="toc-number">3.2.2.</span> <span class="toc-text">map、flatMap 区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#terminal-operation"><span class="toc-number">3.3.</span> <span class="toc-text">terminal operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#terminal-operation-常用方法"><span class="toc-number">3.3.1.</span> <span class="toc-text">terminal operation 常用方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#reduce"><span class="toc-number">3.3.2.</span> <span class="toc-text">reduce</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#collect"><span class="toc-number">3.3.3.</span> <span class="toc-text">collect</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collector"><span class="toc-number">3.3.4.</span> <span class="toc-text">Collector</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collectors"><span class="toc-number">3.3.5.</span> <span class="toc-text">Collectors</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扩展阅读"><span class="toc-number">4.</span> <span class="toc-text">扩展阅读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">5.</span> <span class="toc-text">参考文档</span></a></li></ol>
 		
 		</div>
 		
@@ -106,7 +106,7 @@
 <p>Stream 是 Java 8 新特性，可对 Stream 中元素进行函数式编程操作，例如 map-reduce。</p>
 <p>先来看一段代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sum = widgets.stream()</span><br><span class="line">                 .filter(b -&gt; b.getColor() == RED)</span><br><span class="line">                 .mapToInt(b -&gt; b.getWeight())</span><br><span class="line">                 .sum();</span><br></pre></td></tr></table></figure></p>
 <p>这段 Java 代码看起来是不是像通过 SQL 来操作集合：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">sum</span>(weight) <span class="keyword">from</span> widgets <span class="keyword">where</span> color=<span class="string">'RED'</span>;</span><br></pre></td></tr></table></figure></p>
-<h3 id="Stream-类型"><a href="#Stream-类型" class="headerlink" title="Stream 类型"></a>Stream 类型</h3><p><code>java.util.stream</code> 包下提供了一下四种类型的 Stream：</p>
+<h3 id="Stream-类型"><a href="#Stream-类型" class="headerlink" title="Stream 类型"></a>Stream 类型</h3><p><code>java.util.stream</code> 包下提供了以下四种类型的 Stream：</p>
 <ul>
 <li><code>Stream</code>  ： 对象类型对应的 Stream</li>
 <li><code>IntStream</code>  ： 基本类型 int 对应的 Stream</li>
@@ -172,188 +172,188 @@
 </thead>
 <tbody>
 <tr>
-<td>Stream<t></t></td>
-<td>map</td>
-<td>Function</td>
-<td>T</td>
-<td>R</td>
-<td>Stream<r></r></td>
+<td><code>Stream&lt;T&gt;</code></td>
+<td><code>map</code></td>
+<td><code>Function</code></td>
+<td><code>T</code></td>
+<td><code>R</code></td>
+<td><code>Stream&lt;R&gt;</code></td>
 </tr>
 <tr>
-<td>Stream<t></t></td>
-<td>mapToInt</td>
-<td>ToIntFunction</td>
-<td>T</td>
-<td>int</td>
-<td>IntStream</td>
+<td><code>Stream&lt;T&gt;</code></td>
+<td><code>mapToInt</code></td>
+<td><code>ToIntFunction</code></td>
+<td><code>T</code></td>
+<td><code>int</code></td>
+<td><code>IntStream</code></td>
 </tr>
 <tr>
-<td>Stream<t></t></td>
-<td>mapToLong</td>
-<td>ToLongFunction</td>
-<td>T</td>
-<td>long</td>
-<td>LongStream</td>
+<td><code>Stream&lt;T&gt;</code></td>
+<td><code>mapToLong</code></td>
+<td><code>ToLongFunction</code></td>
+<td><code>T</code></td>
+<td><code>long</code></td>
+<td><code>LongStream</code></td>
 </tr>
 <tr>
-<td>Stream<t></t></td>
-<td>mapToDouble</td>
-<td>ToDoubleFunction</td>
-<td>T</td>
-<td>double</td>
-<td>DoubleStream</td>
+<td><code>Stream&lt;T&gt;</code></td>
+<td><code>mapToDouble</code></td>
+<td><code>ToDoubleFunction</code></td>
+<td><code>T</code></td>
+<td><code>double</code></td>
+<td><code>DoubleStream</code></td>
 </tr>
 <tr>
-<td>Stream<t></t></td>
-<td>flatMap</td>
-<td>Function</td>
-<td>T</td>
-<td>Stream<r></r></td>
-<td>Stream<r></r></td>
+<td><code>Stream&lt;T&gt;</code></td>
+<td><code>flatMap</code></td>
+<td><code>Function</code></td>
+<td><code>T</code></td>
+<td><code>Stream&lt;R&gt;</code></td>
+<td><code>Stream&lt;R&gt;</code></td>
 </tr>
 <tr>
-<td>Stream<t></t></td>
-<td>flatMapToInt</td>
-<td>Function</td>
-<td>T</td>
-<td>IntStream</td>
-<td>IntStream</td>
+<td><code>Stream&lt;T&gt;</code></td>
+<td><code>flatMapToInt</code></td>
+<td><code>Function</code></td>
+<td><code>T</code></td>
+<td><code>IntStream</code></td>
+<td><code>IntStream</code></td>
 </tr>
 <tr>
-<td>Stream<t></t></td>
-<td>flatMapToLong</td>
-<td>Function</td>
-<td>T</td>
-<td>LongStream</td>
-<td>LongStream</td>
+<td><code>Stream&lt;T&gt;</code></td>
+<td><code>flatMapToLong</code></td>
+<td><code>Function</code></td>
+<td><code>T</code></td>
+<td><code>LongStream</code></td>
+<td><code>LongStream</code></td>
 </tr>
 <tr>
-<td>Stream<t></t></td>
-<td>flatMapToDouble</td>
-<td>Function</td>
-<td>T</td>
-<td>DoubleStream</td>
-<td>DoubleStream</td>
+<td><code>Stream&lt;T&gt;</code></td>
+<td><code>flatMapToDouble</code></td>
+<td><code>Function</code></td>
+<td><code>T</code></td>
+<td><code>DoubleStream</code></td>
+<td><code>DoubleStream</code></td>
 </tr>
 <tr>
-<td>IntStream</td>
-<td>map</td>
-<td>IntUnaryOperator</td>
-<td>int</td>
-<td>int</td>
-<td>IntStream</td>
+<td><code>IntStream</code></td>
+<td><code>map</code></td>
+<td><code>IntUnaryOperator</code></td>
+<td><code>int</code></td>
+<td><code>int</code></td>
+<td><code>IntStream</code></td>
 </tr>
 <tr>
-<td>IntStream</td>
-<td>mapToLong</td>
-<td>IntToLongFunction</td>
-<td>int</td>
-<td>long</td>
-<td>LongStream</td>
+<td><code>IntStream</code></td>
+<td><code>mapToLong</code></td>
+<td><code>IntToLongFunction</code></td>
+<td><code>int</code></td>
+<td><code>long</code></td>
+<td><code>LongStream</code></td>
 </tr>
 <tr>
-<td>IntStream</td>
-<td>mapToDouble</td>
-<td>IntToDoubleFunction</td>
-<td>int</td>
-<td>double</td>
-<td>DoubleStream</td>
+<td><code>IntStream</code></td>
+<td><code>mapToDouble</code></td>
+<td><code>IntToDoubleFunction</code></td>
+<td><code>int</code></td>
+<td><code>double</code></td>
+<td><code>DoubleStream</code></td>
 </tr>
 <tr>
-<td>IntStream</td>
-<td>mapToObj</td>
-<td>IntFunction</td>
-<td>int</td>
-<td>R</td>
-<td>Stream<r></r></td>
+<td><code>IntStream</code></td>
+<td><code>mapToObj</code></td>
+<td><code>IntFunction</code></td>
+<td><code>int</code></td>
+<td><code>R</code></td>
+<td><code>Stream&lt;R&gt;</code></td>
 </tr>
 <tr>
-<td>IntStream</td>
-<td>flatMap</td>
-<td>IntFunction</td>
-<td>int</td>
-<td>IntStream</td>
-<td>IntStream</td>
+<td><code>IntStream</code></td>
+<td><code>flatMap</code></td>
+<td><code>IntFunction</code></td>
+<td><code>int</code></td>
+<td><code>IntStream</code></td>
+<td><code>IntStream</code></td>
 </tr>
 <tr>
-<td>LongStream</td>
-<td>map</td>
-<td>LongUnaryOperator</td>
-<td>long</td>
-<td>long</td>
-<td>LongStream</td>
+<td><code>LongStream</code></td>
+<td><code>map</code></td>
+<td><code>LongUnaryOperator</code></td>
+<td><code>long</code></td>
+<td><code>long</code></td>
+<td><code>LongStream</code></td>
 </tr>
 <tr>
-<td>LongStream</td>
-<td>mapToInt</td>
-<td>LongToIntFunction</td>
-<td>long</td>
-<td>int</td>
-<td>IntStream</td>
+<td><code>LongStream</code></td>
+<td><code>mapToInt</code></td>
+<td><code>LongToIntFunction</code></td>
+<td><code>long</code></td>
+<td><code>int</code></td>
+<td><code>IntStream</code></td>
 </tr>
 <tr>
-<td>LongStream</td>
-<td>mapToDouble</td>
-<td>LongToDoubleFunction</td>
-<td>long</td>
-<td>double</td>
-<td>DoubleStream</td>
+<td><code>LongStream</code></td>
+<td><code>mapToDouble</code></td>
+<td><code>LongToDoubleFunction</code></td>
+<td><code>long</code></td>
+<td><code>double</code></td>
+<td><code>DoubleStream</code></td>
 </tr>
 <tr>
-<td>LongStream</td>
-<td>mapToObj</td>
-<td>LongFunction</td>
-<td>long</td>
-<td>R</td>
-<td>Stream<r></r></td>
+<td><code>LongStream</code></td>
+<td><code>mapToObj</code></td>
+<td><code>LongFunction</code></td>
+<td><code>long</code></td>
+<td><code>R</code></td>
+<td><code>Stream&lt;R&gt;</code></td>
 </tr>
 <tr>
-<td>LongStream</td>
-<td>flatMap</td>
-<td>LongFunction</td>
-<td>long</td>
-<td>LongStream</td>
-<td>LongStream</td>
+<td><code>LongStream</code></td>
+<td><code>flatMap</code></td>
+<td><code>LongFunction</code></td>
+<td><code>long</code></td>
+<td><code>LongStream</code></td>
+<td><code>LongStream</code></td>
 </tr>
 <tr>
-<td>DoubleStream</td>
-<td>map</td>
-<td>DoubleUnaryOperator</td>
-<td>double</td>
-<td>double</td>
-<td>DoubleStream</td>
+<td><code>DoubleStream</code></td>
+<td><code>map</code></td>
+<td><code>DoubleUnaryOperator</code></td>
+<td><code>double</code></td>
+<td><code>double</code></td>
+<td><code>DoubleStream</code></td>
 </tr>
 <tr>
-<td>DoubleStream</td>
-<td>mapToInt</td>
-<td>DoubleToIntFunction</td>
-<td>double</td>
-<td>int</td>
-<td>IntStream</td>
+<td><code>DoubleStream</code></td>
+<td><code>mapToInt</code></td>
+<td><code>DoubleToIntFunction</code></td>
+<td><code>double</code></td>
+<td><code>int</code></td>
+<td><code>IntStream</code></td>
 </tr>
 <tr>
-<td>DoubleStream</td>
-<td>mapToLong</td>
-<td>DoubleToLongFunction</td>
-<td>double</td>
-<td>long</td>
-<td>LongStream</td>
+<td><code>DoubleStream</code></td>
+<td><code>mapToLong</code></td>
+<td><code>DoubleToLongFunction</code></td>
+<td><code>double</code></td>
+<td><code>long</code></td>
+<td><code>LongStream</code></td>
 </tr>
 <tr>
-<td>DoubleStream</td>
-<td>mapToObj</td>
-<td>DoubleFunction</td>
-<td>double</td>
-<td>R</td>
-<td>Stream<r></r></td>
+<td><code>DoubleStream</code></td>
+<td><code>mapToObj</code></td>
+<td><code>DoubleFunction</code></td>
+<td><code>double</code></td>
+<td><code>R</code></td>
+<td><code>Stream&lt;R&gt;</code></td>
 </tr>
 <tr>
-<td>DoubleStream</td>
-<td>flatMap</td>
-<td>DoubleFunction</td>
-<td>double</td>
-<td>DoubleStream</td>
-<td>DoubleStream</td>
+<td><code>DoubleStream</code></td>
+<td><code>flatMap</code></td>
+<td><code>DoubleFunction</code></td>
+<td><code>double</code></td>
+<td><code>DoubleStream</code></td>
+<td><code>DoubleStream</code></td>
 </tr>
 </tbody>
 </table>
@@ -382,15 +382,15 @@
 <p>或者<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">IntStream intStream = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">8</span>);</span><br><span class="line"><span class="keyword">int</span> sum = intStream.reduce(<span class="number">0</span>, (a, b) -&gt; a + b);</span><br></pre></td></tr></table></figure></p>
 <p>上面例子中的 <code>reduce</code> 方法有两个参数：</p>
 <ul>
-<li><code>identity</code>  ： 初始值，当 Stream 中没有元素是也会作为默认值返回</li>
+<li><code>identity</code>  ： 初始值，当 Stream 中没有元素时也会作为默认值返回</li>
 <li><code>accumulator</code>  ： 一个带有两个参数和一个返回值的函数，例如上面代码中的 <code>Integer::sum</code> 或者 <code>(a, b) -&gt; a + b</code> 求和函数</li>
 </ul>
 <p>以上代码等同于：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> result = identity;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> element : intArray)</span><br><span class="line">    result = Integer.sum(result, element); <span class="comment">// 或者 result = result + element;</span></span><br><span class="line"><span class="keyword">return</span> result;</span><br></pre></td></tr></table></figure></p>
 <h4 id="collect"><a href="#collect" class="headerlink" title="collect"></a>collect</h4><p>先看一段代码，将一个 <code>Stream&lt;String&gt;</code> 中的元素拼接成一个字符串，如果用 <code>reduce</code> 可以这样实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"Hello"</span>, <span class="string">"World"</span>);</span><br><span class="line">String result = stream.reduce(<span class="string">""</span>, String::concat); <span class="comment">// 或者 String result = stream.reduce("", (a, b) -&gt; a + b);</span></span><br></pre></td></tr></table></figure></p>
-<p>当 Stream 中有大量元素是，用字符串拼接方式性能会大打折扣，应该使用性能更高的 <code>StringBuilder</code>，可以通过 <code>collect</code> 方法来实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"Hello"</span>, <span class="string">"World"</span>);</span><br><span class="line">StringBuilder result = stream.collect(StringBuilder::<span class="keyword">new</span>, StringBuilder::append, StringBuilder::append);</span><br></pre></td></tr></table></figure></p>
+<p>当 Stream 中有大量元素时，用字符串拼接方式性能会大打折扣，应该使用性能更高的 <code>StringBuilder</code>，可以通过 <code>collect</code> 方法来实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"Hello"</span>, <span class="string">"World"</span>);</span><br><span class="line">StringBuilder result = stream.collect(StringBuilder::<span class="keyword">new</span>, StringBuilder::append, StringBuilder::append);</span><br></pre></td></tr></table></figure></p>
 <p>上面例子中的 <code>collect</code> 方法有三个参数：</p>
 <ul>
-<li><code>supplier</code>  ： 传入一个函数，用于创建一个存放聚合计算结果的容器（result container），例如上面的例子中第一个传入参数 <code>StringBuilder::new</code> ，该函数用于创建一个新的 <code>StringBuilder</code> 来存放接成字符串的结果</li>
+<li><code>supplier</code>  ： 传入一个函数，用于创建一个存放聚合计算结果的容器（result container），例如上面的例子中第一个传入参数 <code>StringBuilder::new</code> ，该函数用于创建一个新的 <code>StringBuilder</code> 来存放拼接字符串的结果</li>
 <li><code>accumulator</code>  ： 传入一个函数，用于将 Stream 中的一个元素合并到 result container 中，例如上面的例子中第二个传入参数 <code>StringBuilder::append</code> ，该函数用于将 Stream 中的字符串 append 到 StringBuilder 中</li>
 <li><code>combiner</code>  ： 传入一个函数，用于将两个 result container 合并，这个函数一般会在并行流中用到，例如上面的例子中第三个传入参数 <code>StringBuilder::append</code> ，该函数用于将两个 <code>StringBuilder</code> 合并</li>
 </ul>
@@ -431,6 +431,7 @@
   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Student&gt; stream = ...;</span><br><span class="line">Double data = stream.collect(Collectors.averagingInt(Student::getAge)); </span><br><span class="line"><span class="comment">// 或者可以 double average = stream.mapToInt(Student::getAge).average().getAsDouble();</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><p><a href="/2020/04/22/java-8-lambda/">Java 8 函数式编程：Lambda 表达式和方法引用</a></p>
 <h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html</a></li>
 <li><a href="https://docs.oracle.com/javase/tutorial/collections/streams/reduction.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/collections/streams/reduction.html</a></li>
@@ -471,6 +472,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev">
+ <a href="/2020/04/22/java-8-lambda/" title="Java 8 函数式编程：Lambda 表达式和方法引用">
+  <strong>上一篇：</strong><br>
+  <span>
+  Java 8 函数式编程：Lambda 表达式和方法引用</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2020/03/24/spring-cloud-eureka-zero-downtime/" title="Spring Cloud Eureka 服务实现不停机（Zero-downtime）部署">
@@ -495,7 +504,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream-简介"><span class="toc-number">1.</span> <span class="toc-text">Stream 简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Stream-是什么"><span class="toc-number">1.1.</span> <span class="toc-text">Stream 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stream-类型"><span class="toc-number">1.2.</span> <span class="toc-text">Stream 类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何获得-Stream"><span class="toc-number">2.</span> <span class="toc-text">如何获得 Stream</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-to-Stream"><span class="toc-number">2.1.</span> <span class="toc-text">Collection to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array-to-Stream"><span class="toc-number">2.2.</span> <span class="toc-text">Array to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map-to-Stream"><span class="toc-number">2.3.</span> <span class="toc-text">Map to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他"><span class="toc-number">2.4.</span> <span class="toc-text">其他</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream-的方法"><span class="toc-number">3.</span> <span class="toc-text">Stream 的方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#intermediate-operation-和-terminal-operation"><span class="toc-number">3.1.</span> <span class="toc-text">intermediate operation 和 terminal operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#intermediate-operation"><span class="toc-number">3.2.</span> <span class="toc-text">intermediate operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#intermediate-operation-常用方法"><span class="toc-number">3.2.1.</span> <span class="toc-text">intermediate operation 常用方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#map、flatMap-区别"><span class="toc-number">3.2.2.</span> <span class="toc-text">map、flatMap 区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#terminal-operation"><span class="toc-number">3.3.</span> <span class="toc-text">terminal operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#terminal-operation-常用方法"><span class="toc-number">3.3.1.</span> <span class="toc-text">terminal operation 常用方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#reduce"><span class="toc-number">3.3.2.</span> <span class="toc-text">reduce</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#collect"><span class="toc-number">3.3.3.</span> <span class="toc-text">collect</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collector"><span class="toc-number">3.3.4.</span> <span class="toc-text">Collector</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collectors"><span class="toc-number">3.3.5.</span> <span class="toc-text">Collectors</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">4.</span> <span class="toc-text">参考文档</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream-简介"><span class="toc-number">1.</span> <span class="toc-text">Stream 简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Stream-是什么"><span class="toc-number">1.1.</span> <span class="toc-text">Stream 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stream-类型"><span class="toc-number">1.2.</span> <span class="toc-text">Stream 类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何获得-Stream"><span class="toc-number">2.</span> <span class="toc-text">如何获得 Stream</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-to-Stream"><span class="toc-number">2.1.</span> <span class="toc-text">Collection to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array-to-Stream"><span class="toc-number">2.2.</span> <span class="toc-text">Array to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map-to-Stream"><span class="toc-number">2.3.</span> <span class="toc-text">Map to Stream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他"><span class="toc-number">2.4.</span> <span class="toc-text">其他</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stream-的方法"><span class="toc-number">3.</span> <span class="toc-text">Stream 的方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#intermediate-operation-和-terminal-operation"><span class="toc-number">3.1.</span> <span class="toc-text">intermediate operation 和 terminal operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#intermediate-operation"><span class="toc-number">3.2.</span> <span class="toc-text">intermediate operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#intermediate-operation-常用方法"><span class="toc-number">3.2.1.</span> <span class="toc-text">intermediate operation 常用方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#map、flatMap-区别"><span class="toc-number">3.2.2.</span> <span class="toc-text">map、flatMap 区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#terminal-operation"><span class="toc-number">3.3.</span> <span class="toc-text">terminal operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#terminal-operation-常用方法"><span class="toc-number">3.3.1.</span> <span class="toc-text">terminal operation 常用方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#reduce"><span class="toc-number">3.3.2.</span> <span class="toc-text">reduce</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#collect"><span class="toc-number">3.3.3.</span> <span class="toc-text">collect</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collector"><span class="toc-number">3.3.4.</span> <span class="toc-text">Collector</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Collectors"><span class="toc-number">3.3.5.</span> <span class="toc-text">Collectors</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扩展阅读"><span class="toc-number">4.</span> <span class="toc-text">扩展阅读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">5.</span> <span class="toc-text">参考文档</span></a></li></ol>
  
   </div>
 
@@ -521,7 +530,7 @@
 		  
 		
 		  
-			<li><a href="/categories/Java/" title="Java">Java<sup>15</sup></a></li>
+			<li><a href="/categories/Java/" title="Java">Java<sup>16</sup></a></li>
 		  
 		
 		  
@@ -574,7 +583,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/Java/" title="Java">Java<sup>43</sup></a></li>
+				<li><a href="/tags/Java/" title="Java">Java<sup>44</sup></a></li>
 			
 		
 			
@@ -634,15 +643,15 @@
 			
 		
 			
-				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
 			
 		
 			

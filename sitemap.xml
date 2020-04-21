@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2020/04/22/java-8-lambda/</loc>
+    
+    <lastmod>2020-04-21T17:32:23.719Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2020/04/17/java-8-stream/</loc>
     
-    <lastmod>2020-04-17T04:51:14.065Z</lastmod>
+    <lastmod>2020-04-21T17:32:17.557Z</lastmod>
     
   </url>
   
