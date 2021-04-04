@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="叉叉哥的BLOG">
 <meta property="og:description" content="在 Java 7 之前，程序中如果有需要关闭的资源，例如 java.io.InputStream、java.sql.Connection 等，通常会在 finally 中关闭，例如：123456789101112131415InputStream inputStream = null;try &amp;#123;    inputStream = new FileInputStream(&quot;/my/file">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-07-23T03:02:26.892Z">
+<meta property="og:updated_time" content="2020-07-23T03:37:27.043Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java try-with-resources 中的细节">
 <meta name="twitter:description" content="在 Java 7 之前，程序中如果有需要关闭的资源，例如 java.io.InputStream、java.sql.Connection 等，通常会在 finally 中关闭，例如：123456789101112131415InputStream inputStream = null;try &amp;#123;    inputStream = new FileInputStream(&quot;/my/file">
@@ -116,9 +116,9 @@
 <h3 id="创建和关闭-resources-时的异常处理"><a href="#创建和关闭-resources-时的异常处理" class="headerlink" title="创建和关闭 resources 时的异常处理"></a>创建和关闭 resources 时的异常处理</h3><p>在 try-with-resources 中，如果创建资源发生异常，即 <code>try (...)</code> 中小括号里的代码出现异常，以及 close 时发生异常，都是会在 catch 中捕捉到的。例如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (InputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">"/not/exist/file"</span>)) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    e.printStackTrace(); <span class="comment">// 如果文件不存在，这里会捕获异常</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>这段代码中，如果 <code>new FileInputStream(&quot;/not/exist/file&quot;)</code> 对应的文件不存在，就会抛出异常，这个异常会在下面的 catch 中捕获到。</p>
 <h3 id="Suppressed-Exceptions"><a href="#Suppressed-Exceptions" class="headerlink" title="Suppressed Exceptions"></a>Suppressed Exceptions</h3><p>在 try-with-resources 中，如果 try block（即 try 后面大括号中的代码）抛出异常，会触发资源的 close，如果此时 close 也发生了异常，那么 catch 中会捕获到哪一个呢？</p>
-<p>由于 close 抛出异常不是很常见，所以自己实现一个 <code>AutoCloseable</code> 实现类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyResource</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"doSomething exception"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"close Exception"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于 close 抛出异常不是很常见，所以自己实现一个 <code>AutoCloseable</code> 实现类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyResource</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"doSomething exception"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"close exception"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>测试代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> (MyResource myResource = <span class="keyword">new</span> MyResource()) &#123;</span><br><span class="line">            myResource.doSomething();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>运行结果：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Exception: doSomething exception</span><br><span class="line">	at com.xxg.MyResource.doSomething(MyResource.java:<span class="number">6</span>)</span><br><span class="line">	at com.xxg.Test.main(Test.java:<span class="number">12</span>)</span><br><span class="line">	Suppressed: java.lang.Exception: close Exception</span><br><span class="line">		at com.xxg.MyResource.close(MyResource.java:<span class="number">11</span>)</span><br><span class="line">		at com.xxg.Test.main(Test.java:<span class="number">13</span>)</span><br></pre></td></tr></table></figure></p>
+<p>运行结果：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Exception: doSomething exception</span><br><span class="line">	at com.xxg.MyResource.doSomething(MyResource.java:<span class="number">6</span>)</span><br><span class="line">	at com.xxg.Test.main(Test.java:<span class="number">12</span>)</span><br><span class="line">	Suppressed: java.lang.Exception: close exception</span><br><span class="line">		at com.xxg.MyResource.close(MyResource.java:<span class="number">11</span>)</span><br><span class="line">		at com.xxg.Test.main(Test.java:<span class="number">13</span>)</span><br></pre></td></tr></table></figure></p>
 <p>可以看到 catch 中捕获的是 <code>doSomething()</code> 方法抛出的异常，同时这个异常会包含一个 Suppressed Exception，即 <code>close()</code> 方法抛出的异常。</p>
 <p>如果想直接拿到 <code>close()</code> 方法抛出的异常，可以通过 <code>Throwable.getSuppressed()</code> 方法获取：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (MyResource myResource = <span class="keyword">new</span> MyResource()) &#123;</span><br><span class="line">    myResource.doSomething();</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="comment">// e 是 doSomething 抛出的异常，想要拿到 close 方法抛出的异常需要通过 e.getSuppressed 方法获取</span></span><br><span class="line">    Throwable[] suppressedExceptions = e.getSuppressed();</span><br><span class="line">    Throwable closeException = suppressedExceptions[<span class="number">0</span>];</span><br><span class="line">    closeException.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="Closeable-和-AutoCloseable"><a href="#Closeable-和-AutoCloseable" class="headerlink" title="Closeable 和 AutoCloseable"></a>Closeable 和 AutoCloseable</h3><p><code>AutoCloseable</code> 是 Java 7 新增的接口，<code>Closeable</code> 早就有了。二者的关系是 <code>Closeable extends AutoCloseable</code>。二者都仅包含一个 <code>close()</code> 方法。那么为什么 Java 7 还要新增 <code>AutoCloseable</code> 接口呢？</p>
@@ -289,11 +289,11 @@
 			
 		
 			
-				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
 			
 		
 			
@@ -321,15 +321,15 @@
 			
 		
 			
-				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
 			
 		
 			
@@ -423,7 +423,7 @@
 		
 
 		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2021 
 		
 		<a href="/about" target="_blank" title="wucao">wucao</a>
 		

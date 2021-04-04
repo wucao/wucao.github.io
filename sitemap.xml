@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2020/03/24/spring-cloud-eureka-zero-downtime/</loc>
+    
+    <lastmod>2021-04-03T17:22:04.168Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2020/07/22/try-with-resources/</loc>
     
-    <lastmod>2020-07-23T03:02:26.892Z</lastmod>
+    <lastmod>2020-07-23T03:37:27.043Z</lastmod>
     
   </url>
   
@@ -19,13 +26,6 @@
     <loc>https://xxgblog.com/2020/04/17/java-8-stream/</loc>
     
     <lastmod>2020-04-21T17:32:17.557Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xxgblog.com/2020/03/24/spring-cloud-eureka-zero-downtime/</loc>
-    
-    <lastmod>2020-03-24T12:32:27.697Z</lastmod>
     
   </url>
   
