@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2021/04/14/netty-websocket/</loc>
+    
+    <lastmod>2021-04-14T11:21:03.366Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2020/03/24/spring-cloud-eureka-zero-downtime/</loc>
     
     <lastmod>2021-04-08T06:46:41.321Z</lastmod>
