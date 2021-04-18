@@ -4,28 +4,25 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="UTF-8">
   
-    <title>Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍 | 叉叉哥的BLOG</title>
+    <title>Jaeger API 请求超时的故障排查 | 叉叉哥的BLOG</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="wucao">
     
 
     
-    <meta name="description" content="IPv6背景介绍目前被广泛使用的IPv4，它的最大问题是网络地址资源有限。IPv4仅有32二进制位，满打满算也仅有不到43亿个IP地址，已经完全不能满足目前需求。IPv6有128二进制位，地址数量非常庞大。目前主流操作系统早已支持IPv6，Google、Facebook和Yahoo等网站也早已支持IPv6。2017年底中共中央办公厅、国务院办公厅印发《推进互联网协议第六版（IPv6）规模部署行动计">
-<meta name="keywords" content="Java,IPv6">
+    <meta name="description" content="问题背景使用 Jaeger 的 9411 端口（用于兼容 Zipkin 的端口）提交调用链的 span 信息，Jaeger 服务运行一段时候后，9411 端口上的请求就会全部超时，必须重启后才能恢复。 除 9411 端口外其他端口也有同样的问题。 版本Jaeger 1.22 产生原因查看日志发现有以下路径的请求：1/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C">
+<meta name="keywords" content="Jaeger">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍">
-<meta property="og:url" content="https://xxgblog.com/2019/02/17/java-ipv6-system-properties/index.html">
+<meta property="og:title" content="Jaeger API 请求超时的故障排查">
+<meta property="og:url" content="https://xxgblog.com/2021/04/18/jaeger-api-timeout-issue/index.html">
 <meta property="og:site_name" content="叉叉哥的BLOG">
-<meta property="og:description" content="IPv6背景介绍目前被广泛使用的IPv4，它的最大问题是网络地址资源有限。IPv4仅有32二进制位，满打满算也仅有不到43亿个IP地址，已经完全不能满足目前需求。IPv6有128二进制位，地址数量非常庞大。目前主流操作系统早已支持IPv6，Google、Facebook和Yahoo等网站也早已支持IPv6。2017年底中共中央办公厅、国务院办公厅印发《推进互联网协议第六版（IPv6）规模部署行动计">
+<meta property="og:description" content="问题背景使用 Jaeger 的 9411 端口（用于兼容 Zipkin 的端口）提交调用链的 span 信息，Jaeger 服务运行一段时候后，9411 端口上的请求就会全部超时，必须重启后才能恢复。 除 9411 端口外其他端口也有同样的问题。 版本Jaeger 1.22 产生原因查看日志发现有以下路径的请求：1/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://xxgblog.com/img/c3c91a63-6a81-410d-8ede-6904aa0d7d6c.jpg">
-<meta property="og:image" content="https://xxgblog.com/img/f17a9d70-80a4-11e6-ae22-56b6b6499688.jpg">
-<meta property="og:updated_time" content="2019-02-17T17:18:46.787Z">
+<meta property="og:updated_time" content="2021-04-18T07:43:22.391Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍">
-<meta name="twitter:description" content="IPv6背景介绍目前被广泛使用的IPv4，它的最大问题是网络地址资源有限。IPv4仅有32二进制位，满打满算也仅有不到43亿个IP地址，已经完全不能满足目前需求。IPv6有128二进制位，地址数量非常庞大。目前主流操作系统早已支持IPv6，Google、Facebook和Yahoo等网站也早已支持IPv6。2017年底中共中央办公厅、国务院办公厅印发《推进互联网协议第六版（IPv6）规模部署行动计">
-<meta name="twitter:image" content="https://xxgblog.com/img/c3c91a63-6a81-410d-8ede-6904aa0d7d6c.jpg">
+<meta name="twitter:title" content="Jaeger API 请求超时的故障排查">
+<meta name="twitter:description" content="问题背景使用 Jaeger 的 9411 端口（用于兼容 Zipkin 的端口）提交调用链的 span 信息，Jaeger 服务运行一段时候后，9411 端口上的请求就会全部超时，必须重启后才能恢复。 除 9411 端口外其他端口也有同样的问题。 版本Jaeger 1.22 产生原因查看日志发现有以下路径的请求：1/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C">
 
     
     <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
@@ -84,10 +81,10 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2019/02/17/java-ipv6-system-properties/" title="Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍" itemprop="url">Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍</a>
+      <a href="/2021/04/18/jaeger-api-timeout-issue/" title="Jaeger API 请求超时的故障排查" itemprop="url">Jaeger API 请求超时的故障排查</a>
   </h1>
   <p class="article-time">
-    <time datetime="2019-02-17T03:14:16.000Z" itemprop="datePublished"> 发表于 2019-02-17</time>
+    <time datetime="2021-04-18T12:14:16.000Z" itemprop="datePublished"> 发表于 2021-04-18</time>
 
   </p>
 </header>
@@ -97,42 +94,23 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IPv6背景介绍"><span class="toc-number">1.</span> <span class="toc-text">IPv6背景介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java对IPv6的支持"><span class="toc-number">2.</span> <span class="toc-text">Java对IPv6的支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-IPv6相关系统属性"><span class="toc-number">3.</span> <span class="toc-text">Java IPv6相关系统属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#java-net-preferIPv4Stack（默认值false）"><span class="toc-number">3.1.</span> <span class="toc-text">java.net.preferIPv4Stack（默认值false）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#java-net-preferIPv6Addresses（默认值false）"><span class="toc-number">3.2.</span> <span class="toc-text">java.net.preferIPv6Addresses（默认值false）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题背景"><span class="toc-number">1.</span> <span class="toc-text">问题背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#版本"><span class="toc-number">2.</span> <span class="toc-text">版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#产生原因"><span class="toc-number">3.</span> <span class="toc-text">产生原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重现步骤"><span class="toc-number">4.</span> <span class="toc-text">重现步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#临时解决方案"><span class="toc-number">5.</span> <span class="toc-text">临时解决方案</span></a></li></ol>
 		
 		</div>
 		
-		<h2 id="IPv6背景介绍"><a href="#IPv6背景介绍" class="headerlink" title="IPv6背景介绍"></a>IPv6背景介绍</h2><p>目前被广泛使用的IPv4，它的最大问题是网络地址资源有限。IPv4仅有32二进制位，满打满算也仅有不到43亿个IP地址，已经完全不能满足目前需求。IPv6有128二进制位，地址数量非常庞大。目前主流操作系统早已支持IPv6，Google、Facebook和Yahoo等网站也早已支持IPv6。2017年底中共中央办公厅、国务院办公厅印发<a href="http://www.gov.cn/zhengce/2017-11/26/content_5242389.htm" target="_blank" rel="noopener">《推进互联网协议第六版（IPv6）规模部署行动计划》</a>，推动国内IPv6的支持。目前已有大量国内网站和APP已经支持IPv6。未来数年将是IPv4到IPv6的过渡时期，IPv6和IPv4会并存，IPv6使用率也会逐渐提高。</p>
-<h2 id="Java对IPv6的支持"><a href="#Java对IPv6的支持" class="headerlink" title="Java对IPv6的支持"></a>Java对IPv6的支持</h2><p>在<a href="https://docs.oracle.com/javase/8/docs/technotes/guides/net/ipv6_guide/index.html" target="_blank" rel="noopener">Networking IPv6 User Guide</a>文档中，介绍了Java对IPv6的支持情况：</p>
-<blockquote>
-<p>IPv6 in Java is transparent and automatic. Porting is not necessary; there is no need to recompile source files.</p>
-</blockquote>
-<p>Java中对IPv6的支持是透明的且自动化的，无需移植，也无需重新编译源码。相对于其他语言而言（例如C++），Java很好封装了IPv4和IPv6两种版本的不同，Java一般不需要在编写代码时关注IPv6如何支持，一个原本运行在IPv4环境的代码放到支持IPv6环境中一般也可以直接使用。</p>
-<h2 id="Java-IPv6相关系统属性"><a href="#Java-IPv6相关系统属性" class="headerlink" title="Java IPv6相关系统属性"></a>Java IPv6相关系统属性</h2><p>由于Java封装了IPv4和IPv6的差异，在代码层面上不需要关注同时也无法设置使用IPv4还是IPv6，Java提供了<code>java.net.preferIPv4Stack</code>、<code>java.net.preferIPv6Addresses</code>两个系统属性，用于设置协议栈和地址族的选择。</p>
-<p>这两个系统参数既可以在Java代码中设置：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.setProperty(<span class="string">"java.net.preferIPv4Stack"</span>, <span class="string">"true"</span>);</span><br></pre></td></tr></table></figure></p>
-<p>也可以在启动时通过JVM参数设置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Djava.net.preferIPv4Stack=<span class="literal">true</span></span><br></pre></td></tr></table></figure></p>
-<h3 id="java-net-preferIPv4Stack（默认值false）"><a href="#java-net-preferIPv4Stack（默认值false）" class="headerlink" title="java.net.preferIPv4Stack（默认值false）"></a>java.net.preferIPv4Stack（默认值false）</h3><p>官方文档解释：</p>
-<blockquote>
-<p>If IPv6 is available on the operating system, the underlying native socket will be an IPv6 socket. This allows Java applications to connect to, and accept connections from, both IPv4 and IPv6 hosts.</p>
-</blockquote>
-<p>当<code>java.net.preferIPv4Stack</code>为默认值false时，在支持IPv6的双栈系统上，使用Java的Socket会默认通过底层native方法创建一个IPv6 Socket，这个IPv6 Socket可以同时支持和IPv4或IPv6主机通信。如果设置为true，Java程序将无法使用IPv6进行网络通信，也就是仅支持IPv4。</p>
-<p>例如，当TCP客户端<code>java.net.preferIPv4Stack</code>设置为true时，如果想创建一个host为IPv6的Socket，会抛出异常<code>java.net.SocketException: Protocol family unavailable</code>，设置为false时则程序可以正常运行：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.setProperty(<span class="string">"java.net.preferIPv4Stack"</span>, <span class="string">"true"</span>);</span><br><span class="line">Socket socket = <span class="keyword">new</span> Socket(<span class="string">"::1"</span>, <span class="number">80</span>); <span class="comment">// 访问IPv6地址::1（相当于IPv4的127.0.0.1）的80端口会抛出异常</span></span><br></pre></td></tr></table></figure></p>
-<p>当TCP服务器<code>java.net.preferIPv4Stack</code>设置为true时，通过IPv6访问就会访问不通。</p>
-<p>在正常情况下，Tomcat或者Jetty等Java服务器启动后，可以使用浏览器通过IPv4地址<a href="http://127.0.0.1:8080" target="_blank" rel="noopener">http://127.0.0.1:8080</a>或IPv6地址<a href="http://[::1]:8080" target="_blank" rel="noopener">http://[::1]:8080</a>两种方式访问，此时通过<code>lsof -i:8080</code>命令可以看到对应进程的Type为IPv6：<br><img src="/img/c3c91a63-6a81-410d-8ede-6904aa0d7d6c.jpg" alt="lsof命令"></p>
-<p>如果加上JVM参数<code>-Djava.net.preferIPv4Stack=true</code>启动，此时通过<code>lsof -i:8080</code>命令可以看到对应进程的Type为IPv4：<br><img src="/img/f17a9d70-80a4-11e6-ae22-56b6b6499688.jpg" alt="lsof命令"><br>此时通过IPv6地址<a href="http://[::1]:8080" target="_blank" rel="noopener">http://[::1]:8080</a>将无法访问，仅可通过IPv4地址<a href="http://127.0.0.1:8080" target="_blank" rel="noopener">http://127.0.0.1:8080</a>访问。</p>
-<h3 id="java-net-preferIPv6Addresses（默认值false）"><a href="#java-net-preferIPv6Addresses（默认值false）" class="headerlink" title="java.net.preferIPv6Addresses（默认值false）"></a>java.net.preferIPv6Addresses（默认值false）</h3><p>官方文档解释：</p>
-<blockquote>
-<p>By default, IPv4 addresses are preferred over IPv6 addresses, for example, when querying the name service (for instance, DNS service), IPv4 addresses would be returned ahead of IPv6 addresses. </p>
-</blockquote>
-<p>当<code>java.net.preferIPv6Addresses</code>为默认值false时，IPv4地址会优先使用，例如在DNS通过域名查询IP地址时，会优先使用IPv4地址，反之设为true，则会优先使用IPv6地址。</p>
-<p>Google目前支持IPv4和IPv6，可以<code>host</code>命令查看域名<code>www.google.com</code>DNS解析的IPv4和IPv6地址：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">host www.google.com</span><br><span class="line">&gt; www.google.com has address 66.220.146.94</span><br><span class="line">&gt; www.google.com has IPv6 address 2404:6800:4008:803::2004</span><br></pre></td></tr></table></figure></p>
-<p>默认情况下会优先使用IPv4地址：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(InetAddress.getByName(<span class="string">"www.google.com"</span>));</span><br></pre></td></tr></table></figure></p>
-<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">www.google.com/66.220.146.94</span><br></pre></td></tr></table></figure></p>
-<p>当<code>java.net.preferIPv6Addresses</code>设置为true时会优先使用IPv6地址：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.setProperty(<span class="string">"java.net.preferIPv6Addresses"</span>, <span class="string">"true"</span>);</span><br><span class="line">System.out.println(InetAddress.getByName(<span class="string">"www.google.com"</span>));</span><br></pre></td></tr></table></figure></p>
-<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">www.google.com/2404:6800:4008:803:0:0:0:2004</span><br></pre></td></tr></table></figure></p>
-<p>另外，通过<code>InetAddress.getLocalHost()</code>方法返回本机IP地址，最终返回的是IPv4还是IPv6地址，也会由<code>java.net.preferIPv6Addresses</code>的值来决定。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/net/ipv6_guide/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/technotes/guides/net/ipv6_guide/index.html</a></li>
-</ul>
+		<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>使用 Jaeger 的 9411 端口（用于兼容 Zipkin 的端口）提交调用链的 span 信息，Jaeger 服务运行一段时候后，9411 端口上的请求就会全部超时，必须重启后才能恢复。</p>
+<p>除 9411 端口外其他端口也有同样的问题。</p>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><p>Jaeger 1.22</p>
+<h2 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h2><p>查看日志发现有以下路径的请求：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/%C0%AE%C0%AE/etc/profile</span><br></pre></td></tr></table></figure></p>
+<p>这个请求来源我们公司的安全组扫描。这个请求导致了以下错误，日志：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">2021/04/18 04:10:51 http: panic serving xx.xx.xx.xx:xxxx: label value &quot;/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/etc/profile&quot; is not valid UTF-8</span><br><span class="line">goroutine 35495 [running]:</span><br><span class="line">net/http.(*conn).serve.func1(0xc0004a2640)</span><br><span class="line">	net/http/server.go:1801 +0x147</span><br><span class="line">panic(0x1392360, 0xc00093cae0)</span><br><span class="line">	runtime/panic.go:975 +0x47a</span><br><span class="line">github.com/prometheus/client_golang/prometheus.(*HistogramVec).WithLabelValues(0xc000182e28, 0xc000947560, 0x3, 0x3, 0xc000947500, 0xc000947560)</span><br><span class="line">	github.com/prometheus/client_golang@v1.5.1/prometheus/histogram.go:489 +0xda</span><br><span class="line">github.com/uber/jaeger-lib/metrics/prometheus.(*Factory).Timer(0xc00044a140, 0x15b70ed, 0x15, 0xc0009474d0, 0x15bbfcd, 0x19, 0x0, 0x0, 0x0, 0x1512b80, ...)</span><br><span class="line">	github.com/uber/jaeger-lib@v2.4.0+incompatible/metrics/prometheus/factory.go:181 +0x2ce</span><br><span class="line">github.com/uber/jaeger-lib/metrics/fork.(*Factory).Timer(0xc0001934a0, 0x15b70ed, 0x15, 0xc0009474d0, 0x15bbfcd, 0x19, 0x0, 0x0, 0x0, 0xc0005299f5, ...)</span><br><span class="line">	github.com/uber/jaeger-lib@v2.4.0+incompatible/metrics/fork/fork.go:48 +0x65</span><br><span class="line">github.com/jaegertracing/jaeger/pkg/httpmetrics.buildTimer(...)</span><br><span class="line">	github.com/jaegertracing/jaeger/pkg/httpmetrics/metrics.go:111</span><br><span class="line">github.com/jaegertracing/jaeger/pkg/httpmetrics.(*requestDurations).record(0xc000535e60, 0xc000042240, 0x3, 0xc0004a1580, 0x3e, 0xc0002bde6d, 0x3, 0x40b0)</span><br><span class="line">	github.com/jaegertracing/jaeger/pkg/httpmetrics/metrics.go:101 +0x465</span><br><span class="line">github.com/jaegertracing/jaeger/pkg/httpmetrics.Wrap.func1(0x1e1c2c0, 0xc0009447e0, 0xc000937000)</span><br><span class="line">	github.com/jaegertracing/jaeger/pkg/httpmetrics/metrics.go:63 +0x1fe</span><br><span class="line">net/http.HandlerFunc.ServeHTTP(0xc00000cf60, 0x1e1c2c0, 0xc0009447e0, 0xc000937000)</span><br><span class="line">	net/http/server.go:2042 +0x44</span><br><span class="line">github.com/rs/cors.(*Cors).Handler.func1(0x1e1c2c0, 0xc0009447e0, 0xc000937000)</span><br><span class="line">	github.com/rs/cors@v1.7.0/cors.go:219 +0x1b9</span><br><span class="line">net/http.HandlerFunc.ServeHTTP(0xc00000cf80, 0x1e1c2c0, 0xc0009447e0, 0xc000937000)</span><br><span class="line">	net/http/server.go:2042 +0x44</span><br><span class="line">net/http.serverHandler.ServeHTTP(0xc0002a0460, 0x1e1c2c0, 0xc0009447e0, 0xc000937000)</span><br><span class="line">	net/http/server.go:2843 +0xa3</span><br><span class="line">net/http.(*conn).serve(0xc0004a2640, 0x1e225c0, 0xc000125140)</span><br><span class="line">	net/http/server.go:1925 +0x8ad</span><br><span class="line">created by net/http.(*Server).Serve</span><br><span class="line">	net/http/server.go:2969 +0x36c</span><br></pre></td></tr></table></figure></p>
+<p>这个错误一旦出现，就会导致所有的其他请求全部超时，只有重启才能恢复。</p>
+<p>从日志上看，这个问题貌似和 Prometheus 监控有关。由于 URL 路径比较特殊，没办法转换成 Prometheus 的 Label，导致程序出错。</p>
+<p>当然这是 Jaeger 本身的 BUG，即使这一个请求出错也不应该影响到其他请求。</p>
+<h2 id="重现步骤"><a href="#重现步骤" class="headerlink" title="重现步骤"></a>重现步骤</h2><p>下面是一个简单的重现流程：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 14250:14250 -p 9411:9411 jaegertracing/all-in-one:1.22</span><br><span class="line">curl http://localhost:9411/%C0%AE%C0%AE</span><br></pre></td></tr></table></figure></p>
+<p>再次对 9411 端口进行其他请求，都会 timeout。</p>
+<h2 id="临时解决方案"><a href="#临时解决方案" class="headerlink" title="临时解决方案"></a>临时解决方案</h2><p>在官方修复这个 BUG 前，临时解决方案是将监控设置为 expvar 来禁用 Prometheus：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e METRICS_BACKEND=expvar -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 14250:14250 -p 9411:9411 jaegertracing/all-in-one:1.22</span><br></pre></td></tr></table></figure></p>
+<p>或者<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--metrics-backend=expvar</span><br></pre></td></tr></table></figure></p>
+<p>由于我对 Go 语言不熟悉没有尝试自己修复，已向官方提了 issue：<br><a href="https://github.com/jaegertracing/jaeger/issues/2944" target="_blank" rel="noopener">https://github.com/jaegertracing/jaeger/issues/2944</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -140,13 +118,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Java/">Java</a>
+  <a class="article-category-link" href="/categories/Jaeger/">Jaeger</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/IPv6/">IPv6</a>
+  <span></span> <a href="/tags/Jaeger/">Jaeger</a>
   </div>
 
 </div>
@@ -155,7 +133,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://xxgblog.com/2019/02/17/java-ipv6-system-properties/" data-title="Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍 | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  <div data-url="https://xxgblog.com/2021/04/18/jaeger-api-timeout-issue/" data-title="Jaeger API 请求超时的故障排查 | 叉叉哥的BLOG" data-tsina class="share clearfix">
 	  </div>
 	
 	</div>
@@ -168,19 +146,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev">
- <a href="/2019/04/19/nginx-non-idempotent/" title="Nginx失败重试中的HTTP协议幂等问题: non_idempotent">
-  <strong>上一篇：</strong><br>
-  <span>
-  Nginx失败重试中的HTTP协议幂等问题: non_idempotent</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2018/10/12/x-forwarded-for-header-trick/" title="利用X-Forwarded-For伪造客户端IP漏洞成因及防范">
+<a href="/2021/04/14/netty-websocket/" title="基于 Netty 实现 WebSocket 服务器">
  <strong>下一篇：</strong><br> 
- <span>利用X-Forwarded-For伪造客户端IP漏洞成因及防范
+ <span>基于 Netty 实现 WebSocket 服务器
 </span>
 </a>
 </div>
@@ -200,7 +170,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IPv6背景介绍"><span class="toc-number">1.</span> <span class="toc-text">IPv6背景介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java对IPv6的支持"><span class="toc-number">2.</span> <span class="toc-text">Java对IPv6的支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-IPv6相关系统属性"><span class="toc-number">3.</span> <span class="toc-text">Java IPv6相关系统属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#java-net-preferIPv4Stack（默认值false）"><span class="toc-number">3.1.</span> <span class="toc-text">java.net.preferIPv4Stack（默认值false）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#java-net-preferIPv6Addresses（默认值false）"><span class="toc-number">3.2.</span> <span class="toc-text">java.net.preferIPv6Addresses（默认值false）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">4.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题背景"><span class="toc-number">1.</span> <span class="toc-text">问题背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#版本"><span class="toc-number">2.</span> <span class="toc-text">版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#产生原因"><span class="toc-number">3.</span> <span class="toc-text">产生原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重现步骤"><span class="toc-number">4.</span> <span class="toc-text">重现步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#临时解决方案"><span class="toc-number">5.</span> <span class="toc-text">临时解决方案</span></a></li></ol>
  
   </div>
 

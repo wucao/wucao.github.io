@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2021/04/18/jaeger-api-timeout-issue/</loc>
+    
+    <lastmod>2021-04-18T07:43:22.391Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2021/04/14/netty-websocket/</loc>
     
     <lastmod>2021-04-14T11:21:03.366Z</lastmod>
