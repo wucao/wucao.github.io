@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="叉叉哥的BLOG">
 <meta property="og:description" content="WebSocket 协议介绍WebSocket 协议是一种在单个 TCP 连接上进行全双工通信的协议，在建立连接完成握手阶段后，服务端也可以主动推送数据给客户端，使得 Web 浏览器和服务器之间的交互性更强大。 目前 WebSocket 协议应用非常广泛，大部分浏览器均已支持 WebSocket，不仅仅在 Web 应用中，其他很多类型应用（例如游戏）也经常用到 WebSocket 协议。 WebS">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2021-04-14T11:21:03.366Z">
+<meta property="og:updated_time" content="2021-04-21T14:56:03.794Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于 Netty 实现 WebSocket 服务器">
 <meta name="twitter:description" content="WebSocket 协议介绍WebSocket 协议是一种在单个 TCP 连接上进行全双工通信的协议，在建立连接完成握手阶段后，服务端也可以主动推送数据给客户端，使得 Web 浏览器和服务器之间的交互性更强大。 目前 WebSocket 协议应用非常广泛，大部分浏览器均已支持 WebSocket，不仅仅在 Web 应用中，其他很多类型应用（例如游戏）也经常用到 WebSocket 协议。 WebS">
@@ -94,7 +94,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#WebSocket-协议介绍"><span class="toc-number">1.</span> <span class="toc-text">WebSocket 协议介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WebSocket-建立连接的过程"><span class="toc-number">2.</span> <span class="toc-text">WebSocket 建立连接的过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#握手阶段（-handshake-）"><span class="toc-number">2.1.</span> <span class="toc-text">握手阶段（ handshake ）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据传输阶段（-data-transfer-）"><span class="toc-number">2.2.</span> <span class="toc-text">数据传输阶段（ data transfer ）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Netty-实现-WebSocket-服务器"><span class="toc-number">3.</span> <span class="toc-text">Netty 实现 WebSocket 服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#源代码分析"><span class="toc-number">3.1.</span> <span class="toc-text">源代码分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#WebSocket-协议介绍"><span class="toc-number">1.</span> <span class="toc-text">WebSocket 协议介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WebSocket-建立连接的过程"><span class="toc-number">2.</span> <span class="toc-text">WebSocket 建立连接的过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#握手阶段（-handshake-）"><span class="toc-number">2.1.</span> <span class="toc-text">握手阶段（ handshake ）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据传输阶段（-data-transfer-）"><span class="toc-number">2.2.</span> <span class="toc-text">数据传输阶段（ data transfer ）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Netty-实现-WebSocket-服务器"><span class="toc-number">3.</span> <span class="toc-text">Netty 实现 WebSocket 服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#源代码分析"><span class="toc-number">3.1.</span> <span class="toc-text">源代码分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本文源码"><span class="toc-number">5.</span> <span class="toc-text">本文源码</span></a></li></ol>
 		
 		</div>
 		
@@ -117,6 +117,9 @@
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li><a href="https://tools.ietf.org/html/rfc6455" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc6455</a></li>
 <li><a href="https://github.com/netty/netty/tree/netty-4.1.42.Final/example/src/main/java/io/netty/example/http/websocketx/server" target="_blank" rel="noopener">https://github.com/netty/netty/tree/netty-4.1.42.Final/example/src/main/java/io/netty/example/http/websocketx/server</a></li>
+</ul>
+<h2 id="本文源码"><a href="#本文源码" class="headerlink" title="本文源码"></a>本文源码</h2><ul>
+<li><a href="https://github.com/wucao/mina-netty-twisted/tree/master/src/main/java/com/xxg/network/netty/websocket" target="_blank" rel="noopener">https://github.com/wucao/mina-netty-twisted/tree/master/src/main/java/com/xxg/network/netty/websocket</a></li>
 </ul>
   
 	</div>
@@ -185,7 +188,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#WebSocket-协议介绍"><span class="toc-number">1.</span> <span class="toc-text">WebSocket 协议介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WebSocket-建立连接的过程"><span class="toc-number">2.</span> <span class="toc-text">WebSocket 建立连接的过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#握手阶段（-handshake-）"><span class="toc-number">2.1.</span> <span class="toc-text">握手阶段（ handshake ）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据传输阶段（-data-transfer-）"><span class="toc-number">2.2.</span> <span class="toc-text">数据传输阶段（ data transfer ）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Netty-实现-WebSocket-服务器"><span class="toc-number">3.</span> <span class="toc-text">Netty 实现 WebSocket 服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#源代码分析"><span class="toc-number">3.1.</span> <span class="toc-text">源代码分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#WebSocket-协议介绍"><span class="toc-number">1.</span> <span class="toc-text">WebSocket 协议介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WebSocket-建立连接的过程"><span class="toc-number">2.</span> <span class="toc-text">WebSocket 建立连接的过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#握手阶段（-handshake-）"><span class="toc-number">2.1.</span> <span class="toc-text">握手阶段（ handshake ）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据传输阶段（-data-transfer-）"><span class="toc-number">2.2.</span> <span class="toc-text">数据传输阶段（ data transfer ）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Netty-实现-WebSocket-服务器"><span class="toc-number">3.</span> <span class="toc-text">Netty 实现 WebSocket 服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#源代码分析"><span class="toc-number">3.1.</span> <span class="toc-text">源代码分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本文源码"><span class="toc-number">5.</span> <span class="toc-text">本文源码</span></a></li></ol>
  
   </div>
 
