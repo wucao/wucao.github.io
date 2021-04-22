@@ -11,22 +11,22 @@
     
 
     
-    <meta name="description" content="Zipkin 是什么微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。 Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个">
+    <meta name="description" content="微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。 Zipkin 是什么Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个">
 <meta name="keywords" content="Zipkin,Brave">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分布式链路追踪系统 Zipkin 埋点库 Brave 使用入门">
 <meta property="og:url" content="https://xxgblog.com/2021/04/19/zipkin-brave/index.html">
 <meta property="og:site_name" content="叉叉哥的BLOG">
-<meta property="og:description" content="Zipkin 是什么微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。 Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个">
+<meta property="og:description" content="微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。 Zipkin 是什么Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://xxgblog.com/img/824e3d2a-413c-4cfb-9a66-e45658772abe.png">
 <meta property="og:image" content="https://xxgblog.com/img/483b6f62-e19c-4333-b4ef-e2de7d4f4acf.png">
 <meta property="og:image" content="https://xxgblog.com/img/7c2fd9fd-530a-4f24-ba05-219e284c203d.png">
 <meta property="og:image" content="https://xxgblog.com/img/09e9701c-bd25-405e-8f69-c0816e9b0bc0.png">
-<meta property="og:updated_time" content="2021-04-21T14:49:04.453Z">
+<meta property="og:updated_time" content="2021-04-22T06:13:06.957Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式链路追踪系统 Zipkin 埋点库 Brave 使用入门">
-<meta name="twitter:description" content="Zipkin 是什么微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。 Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个">
+<meta name="twitter:description" content="微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。 Zipkin 是什么Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个">
 <meta name="twitter:image" content="https://xxgblog.com/img/824e3d2a-413c-4cfb-9a66-e45658772abe.png">
 
     
@@ -103,8 +103,8 @@
 		
 		</div>
 		
-		<h2 id="Zipkin-是什么"><a href="#Zipkin-是什么" class="headerlink" title="Zipkin 是什么"></a>Zipkin 是什么</h2><p>微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。</p>
-<p>Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个 HTTP 请求从开始到最终返回结果之间完整的调用链。</p>
+		<p>微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。</p>
+<h2 id="Zipkin-是什么"><a href="#Zipkin-是什么" class="headerlink" title="Zipkin 是什么"></a>Zipkin 是什么</h2><p>Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个 HTTP 请求从开始到最终返回结果之间完整的调用链。</p>
 <p><img src="/img/824e3d2a-413c-4cfb-9a66-e45658772abe.png" alt="Zipkin UI"></p>
 <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><ul>
 <li><code>Trace</code> 代表一个完整的调用链。一个 trace 对应一个随机生成的唯一的 traceId。例如一个 HTTP 请求到响应是一个 trace。一个 trace 内部包含多个 span。</li>
@@ -175,9 +175,9 @@
 </li>
 <li><p>在 <code>CurrentTraceContext</code> 中可以添加 <code>ScopeDecorator</code> ，通过 MDC （Mapped Diagnostic Contexts） 机制关联一些日志框架：</p>
 <ul>
-<li><a href="https://github.com/openzipkin/brave/tree/release-5.11.2/context/slf4j" target="_blank" rel="noopener">brave-context-slf4j</a> SLF4J </li>
-<li><a href="https://github.com/openzipkin/brave/tree/release-5.11.2/context/log4j2" target="_blank" rel="noopener">brave-context-log4j2</a> Log4J 2</li>
-<li><a href="https://github.com/openzipkin/brave/tree/release-5.11.2/context/log4j12" target="_blank" rel="noopener">brave-context-log4j12</a> Log4J v1.2  </li>
+<li><a href="https://github.com/openzipkin/brave/tree/5.11.2/context/slf4j" target="_blank" rel="noopener">brave-context-slf4j</a> SLF4J </li>
+<li><a href="https://github.com/openzipkin/brave/tree/5.11.2/context/log4j2" target="_blank" rel="noopener">brave-context-log4j2</a> Log4J 2</li>
+<li><a href="https://github.com/openzipkin/brave/tree/5.11.2/context/log4j12" target="_blank" rel="noopener">brave-context-log4j12</a> Log4J v1.2  </li>
 </ul>
 <p>以 Logback 为例（本文中案例使用的方式），可以配置下面的 pattern 在日志中输出 traceId 和 spanId：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">pattern</span>&gt;</span>%d [%X&#123;traceId&#125;/%X&#123;spanId&#125;] [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -190,18 +190,17 @@
 <h4 id="添加-DelegatingTracingFilter"><a href="#添加-DelegatingTracingFilter" class="headerlink" title="添加 DelegatingTracingFilter"></a>添加 DelegatingTracingFilter</h4><p><code>DelegatingTracingFilter</code> 用于处理外部调用的 HTTP 请求，记录 <code>sr</code>（Server Receive） 和 <code>ss</code>（Server Send） 两个 annotation。</p>
 <p>非 Spring Boot 项目可以在 web.xml 中添加 <code>DelegatingTracingFilter</code>：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>tracingFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>brave.spring.webmvc.DelegatingTracingFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>tracingFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>如果是 Spring Boot 项目可以用 <code>FilterRegistrationBean</code> 来添加 <code>DelegatingTracingFilter</code>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> FilterRegistrationBean <span class="title">delegatingTracingFilterRegistrationBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    FilterRegistrationBean registration = <span class="keyword">new</span> FilterRegistrationBean();</span><br><span class="line">    registration.setFilter(<span class="keyword">new</span> DelegatingTracingFilter());</span><br><span class="line">    registration.setName(<span class="string">"tracingFilter"</span>);</span><br><span class="line">    <span class="keyword">return</span> registration;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>如果有兴趣的话可以看下 <code>DelegatingTracingFilter</code> 的<a href="https://github.com/openzipkin/brave/blob/release-5.11.2/instrumentation/spring-webmvc/src/main/java/brave/spring/webmvc/DelegatingTracingFilter.java" target="_blank" rel="noopener">源码</a>，它本质上是一个 <code>TracingFilter</code> 的代理。<code>TracingFilter</code> 来源于 <a href="https://github.com/openzipkin/brave/tree/release-5.11.2/instrumentation/servlet" target="_blank" rel="noopener">brave-instrumentation-servlet</a> 模块。<code>DelegatingTracingFilter</code> 通过 Spring 容器中的 <code>HttpTracing</code> 对象创建了一个 <code>TracingFilter</code>。相关代码在 <a href="https://github.com/openzipkin/brave/blob/release-5.11.2/instrumentation/spring-webmvc/src/main/java/brave/spring/webmvc/DelegatingTracingFilter.java#L54" target="_blank" rel="noopener"><code>DelegatingTracingFilter.java</code> 54 行</a>。</p>
 <p>到此，Spring MVC 项目已经完成了最基本的 Brave 埋点和提交 Zipkin 的配置。如果有现有的 Zipkin 服务，将创建 <code>OkHttpSender</code> 提供的接口地址换成实际地址，启动服务后通过 HTTP 请求一下服务，就会在 Zipkin 上找到一个对应的 trace。</p>
 <h2 id="其他-instrumentation-介绍"><a href="#其他-instrumentation-介绍" class="headerlink" title="其他 instrumentation 介绍"></a>其他 instrumentation 介绍</h2><p>由于每个服务内部还会调用其他服务，例如通过 HTTP 调用外部服务的 Api、连接远程数据库执行 SQL，此时还需要用到其他 instrumentation。</p>
 <p>由于篇幅有限，下面仅介绍几个常用的 instrumentation。</p>
-<h3 id="brave-instrumentation-mysql"><a href="#brave-instrumentation-mysql" class="headerlink" title="brave-instrumentation-mysql"></a>brave-instrumentation-mysql</h3><p><a href="https://github.com/openzipkin/brave/tree/release-5.11.2/instrumentation/mysql" target="_blank" rel="noopener">brave-instrumentation-mysql</a> 可以为 MySQL 上执行的每条 SQL 语句生成一个 span，用于分析 SQL 的执行时间。</p>
+<h3 id="brave-instrumentation-mysql"><a href="#brave-instrumentation-mysql" class="headerlink" title="brave-instrumentation-mysql"></a>brave-instrumentation-mysql</h3><p><a href="https://github.com/openzipkin/brave/tree/5.11.2/instrumentation/mysql" target="_blank" rel="noopener">brave-instrumentation-mysql</a> 可以为 MySQL 上执行的每条 SQL 语句生成一个 span，用于分析 SQL 的执行时间。</p>
 <p>添加依赖：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.zipkin.brave<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>brave-instrumentation-mysql<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>使用方法：在 JDBC 连接地址末尾加上参数 <code>?statementInterceptors=brave.mysql.TracingStatementInterceptor</code> 即可。</p>
-<p>该模块用于 mysql-connector-java 5.x 版本，另外还有 <a href="https://github.com/openzipkin/brave/tree/release-5.11.2/instrumentation/mysql6" target="_blank" rel="noopener">brave-instrumentation-mysql6</a> 和 <a href="https://github.com/openzipkin/brave/tree/release-5.11.2/instrumentation/mysql8" target="_blank" rel="noopener">brave-instrumentation-mysql8</a> 可分别用于 mysql-connector-java 6+ 和 mysql-connector-java 8+ 版本。</p>
-<h3 id="brave-instrumentation-okhttp3"><a href="#brave-instrumentation-okhttp3" class="headerlink" title="brave-instrumentation-okhttp3"></a>brave-instrumentation-okhttp3</h3><p><a href="https://github.com/openzipkin/brave/tree/release-5.11.2/instrumentation/okhttp3" target="_blank" rel="noopener">brave-instrumentation-okhttp3</a> 用于 OkHttp 3.x，在通过 <code>OkHttpClient</code> 请求外部 API 时，生成 span，并且通过 B3 传播规范将链路信息传递给被调用方。</p>
+<p>该模块用于 mysql-connector-java 5.x 版本，另外还有 <a href="https://github.com/openzipkin/brave/tree/5.11.2/instrumentation/mysql6" target="_blank" rel="noopener">brave-instrumentation-mysql6</a> 和 <a href="https://github.com/openzipkin/brave/tree/5.11.2/instrumentation/mysql8" target="_blank" rel="noopener">brave-instrumentation-mysql8</a> 可分别用于 mysql-connector-java 6+ 和 mysql-connector-java 8+ 版本。</p>
+<h3 id="brave-instrumentation-okhttp3"><a href="#brave-instrumentation-okhttp3" class="headerlink" title="brave-instrumentation-okhttp3"></a>brave-instrumentation-okhttp3</h3><p><a href="https://github.com/openzipkin/brave/tree/5.11.2/instrumentation/okhttp3" target="_blank" rel="noopener">brave-instrumentation-okhttp3</a> 用于 OkHttp 3.x，在通过 <code>OkHttpClient</code> 请求外部 API 时，生成 span，并且通过 B3 传播规范将链路信息传递给被调用方。</p>
 <p>添加依赖：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.zipkin.brave<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>brave-instrumentation-okhttp3<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>使用方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient okHttpClient = <span class="keyword">new</span> OkHttpClient.Builder()</span><br><span class="line">                .dispatcher(<span class="keyword">new</span> Dispatcher(</span><br><span class="line">                        httpTracing.tracing().currentTraceContext()</span><br><span class="line">                                .executorService(<span class="keyword">new</span> Dispatcher().executorService())</span><br><span class="line">                ))</span><br><span class="line">                .addNetworkInterceptor(TracingInterceptor.create(httpTracing))</span><br><span class="line">                .build();</span><br></pre></td></tr></table></figure></p>
-<p>如果你使用的 HTTP 客户端库不是 OkHttp 而是 Apache HttpClient 的话，可以使用 <a href="https://github.com/openzipkin/brave/tree/release-5.11.2/instrumentation/httpclient" target="_blank" rel="noopener">brave-instrumentation-httpclient</a>。</p>
+<p>如果你使用的 HTTP 客户端库不是 OkHttp 而是 Apache HttpClient 的话，可以使用 <a href="https://github.com/openzipkin/brave/tree/5.11.2/instrumentation/httpclient" target="_blank" rel="noopener">brave-instrumentation-httpclient</a>。</p>
 <h2 id="更多玩法"><a href="#更多玩法" class="headerlink" title="更多玩法"></a>更多玩法</h2><h3 id="获取当前-traceId-和-spanId"><a href="#获取当前-traceId-和-spanId" class="headerlink" title="获取当前 traceId 和 spanId"></a>获取当前 traceId 和 spanId</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Span currentSpan = Tracing.currentTracer().currentSpan(); <span class="comment">// 获取当前 span</span></span><br><span class="line"><span class="keyword">if</span> (currentSpan != <span class="keyword">null</span>) &#123;</span><br><span class="line">    String traceId = currentSpan.context().traceIdString();</span><br><span class="line">    String spanId = currentSpan.context().spanIdString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="自定义-tag"><a href="#自定义-tag" class="headerlink" title="自定义 tag"></a>自定义 tag</h3><p>可将业务相关的信息写入 tag 中，方便在查看调用链信息时关联查看业务相关信息。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Span currentSpan = Tracing.currentTracer().currentSpan(); <span class="comment">// 获取当前 span</span></span><br><span class="line"><span class="keyword">if</span> (currentSpan != <span class="keyword">null</span>) &#123;</span><br><span class="line">    currentSpan.tag(<span class="string">"biz.k1"</span>, <span class="string">"v1"</span>).tag(<span class="string">"biz.k2"</span>, <span class="string">"v2"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="创建新-span"><a href="#创建新-span" class="headerlink" title="创建新 span"></a>创建新 span</h3><p>如果使用了某些组件访问外部服务，找不到官方或开源的 instrumentation，或者有一个本地的耗时任务，也想通过创建一个 span 来记录任务的运行时间和结果，可以自己创建一个新的 span。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ScopedSpan span = Tracing.currentTracer().startScopedSpan(<span class="string">"span name"</span>);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 访问外部服务 或 本地耗时任务</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    span.error(e); <span class="comment">// 任务出错</span></span><br><span class="line">    <span class="keyword">throw</span> e;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    span.finish(); <span class="comment">// 必须记得结束 span</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -381,11 +380,11 @@
 			
 		
 			
-				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
 			
 		
 			
@@ -417,10 +416,6 @@
 			
 		
 			
-				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
 			
 		
@@ -434,6 +429,10 @@
 		
 			
 				<li><a href="/tags/HTTP/" title="HTTP">HTTP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
 			
 		
 		</ul>
