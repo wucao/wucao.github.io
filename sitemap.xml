@@ -2,16 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2021/04/25/redisson-distributed-lock/</loc>
+    
+    <lastmod>2021-04-25T15:07:38.907Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2021/04/19/zipkin-brave/</loc>
     
-    <lastmod>2021-04-22T06:13:06.957Z</lastmod>
+    <lastmod>2021-04-22T09:07:56.312Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://xxgblog.com/2021/04/14/netty-websocket/</loc>
     
-    <lastmod>2021-04-21T14:56:03.794Z</lastmod>
+    <lastmod>2021-04-22T02:58:10.327Z</lastmod>
     
   </url>
   

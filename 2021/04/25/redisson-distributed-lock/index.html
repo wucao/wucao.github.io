@@ -4,25 +4,25 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="UTF-8">
   
-    <title>Java使用Jetty实现嵌入式Web服务器及Servlet容器 | 叉叉哥的BLOG</title>
+    <title>Redis 分布式锁原理及 Redisson 实现 | 叉叉哥的BLOG</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="wucao">
     
 
     
-    <meta name="description" content="Jetty是一个Java实现的开源的servlet容器，它既可以像Tomcat一样作为一个完整的Web服务器和Servlet容器，同时也可以嵌入在Java应用程序中，在Java程序中调用Jetty。 下面介绍如何在Java应用程序中嵌入Jetty。 Jetty下载地址，本文写作时的最新版本是9.1.2，下载jetty-distribution-9.1.2.v20140210.zip： http:/">
-<meta name="keywords" content="Java,Jetty">
+    <meta name="description" content="Redis 分布式锁原理Redis 分布式锁原理，可以直接看官方文档：https://redis.io/commands/set#patterns  The command SET resource-name anystring NX EX max-lock-time is a simple way to implement a locking system with Redis.  SET re">
+<meta name="keywords" content="Java,Redis">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java使用Jetty实现嵌入式Web服务器及Servlet容器">
-<meta property="og:url" content="https://xxgblog.com/2014/03/07/jetty-embed/index.html">
+<meta property="og:title" content="Redis 分布式锁原理及 Redisson 实现">
+<meta property="og:url" content="https://xxgblog.com/2021/04/25/redisson-distributed-lock/index.html">
 <meta property="og:site_name" content="叉叉哥的BLOG">
-<meta property="og:description" content="Jetty是一个Java实现的开源的servlet容器，它既可以像Tomcat一样作为一个完整的Web服务器和Servlet容器，同时也可以嵌入在Java应用程序中，在Java程序中调用Jetty。 下面介绍如何在Java应用程序中嵌入Jetty。 Jetty下载地址，本文写作时的最新版本是9.1.2，下载jetty-distribution-9.1.2.v20140210.zip： http:/">
+<meta property="og:description" content="Redis 分布式锁原理Redis 分布式锁原理，可以直接看官方文档：https://redis.io/commands/set#patterns  The command SET resource-name anystring NX EX max-lock-time is a simple way to implement a locking system with Redis.  SET re">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-06-23T01:53:29.000Z">
+<meta property="og:updated_time" content="2021-04-25T15:07:38.907Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java使用Jetty实现嵌入式Web服务器及Servlet容器">
-<meta name="twitter:description" content="Jetty是一个Java实现的开源的servlet容器，它既可以像Tomcat一样作为一个完整的Web服务器和Servlet容器，同时也可以嵌入在Java应用程序中，在Java程序中调用Jetty。 下面介绍如何在Java应用程序中嵌入Jetty。 Jetty下载地址，本文写作时的最新版本是9.1.2，下载jetty-distribution-9.1.2.v20140210.zip： http:/">
+<meta name="twitter:title" content="Redis 分布式锁原理及 Redisson 实现">
+<meta name="twitter:description" content="Redis 分布式锁原理Redis 分布式锁原理，可以直接看官方文档：https://redis.io/commands/set#patterns  The command SET resource-name anystring NX EX max-lock-time is a simple way to implement a locking system with Redis.  SET re">
 
     
     <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
@@ -81,10 +81,10 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/03/07/jetty-embed/" title="Java使用Jetty实现嵌入式Web服务器及Servlet容器" itemprop="url">Java使用Jetty实现嵌入式Web服务器及Servlet容器</a>
+      <a href="/2021/04/25/redisson-distributed-lock/" title="Redis 分布式锁原理及 Redisson 实现" itemprop="url">Redis 分布式锁原理及 Redisson 实现</a>
   </h1>
   <p class="article-time">
-    <time datetime="2014-03-07T01:49:00.000Z" itemprop="datePublished"> 发表于 2014-03-07</time>
+    <time datetime="2021-04-25T03:14:16.000Z" itemprop="datePublished"> 发表于 2021-04-25</time>
 
   </p>
 </header>
@@ -94,23 +94,89 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现Web服务器"><span class="toc-number">1.</span> <span class="toc-text">实现Web服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现Servlet容器"><span class="toc-number">2.</span> <span class="toc-text">实现Servlet容器</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-分布式锁原理"><span class="toc-number">1.</span> <span class="toc-text">Redis 分布式锁原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redisson-分布式锁"><span class="toc-number">2.</span> <span class="toc-text">Redisson 分布式锁</span></a></li></ol>
 		
 		</div>
 		
-		<p>Jetty是一个Java实现的开源的servlet容器，它既可以像Tomcat一样作为一个完整的Web服务器和Servlet容器，同时也可以嵌入在Java应用程序中，在Java程序中调用Jetty。</p>
-<p>下面介绍如何在Java应用程序中嵌入Jetty。</p>
-<p>Jetty下载地址，本文写作时的最新版本是9.1.2，下载jetty-distribution-9.1.2.v20140210.zip：</p>
-<p><a href="http://download.eclipse.org/jetty/stable-9/dist/" target="_blank" rel="noopener">http://download.eclipse.org/jetty/stable-9/dist/</a></p>
-<p>注意Jetty 9需要JDK 7，如果使用JDK 6的话会出现错误：java.lang.UnsupportedClassVersionError: Unsupported major.minor version 51.0。</p>
-<h2 id="实现Web服务器"><a href="#实现Web服务器" class="headerlink" title="实现Web服务器"></a>实现Web服务器</h2><p>在lib文件夹中找到下面五个jar文件：</p>
-<p>jetty-server-9.1.2.v20140210.jar<br>jetty-io-9.1.2.v20140210.jar<br>jetty-http-9.1.2.v20140210.jar<br>jetty-util-9.1.2.v20140210.jar<br>servlet-api-3.1.jar<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Server server = <span class="keyword">new</span> Server(<span class="number">8080</span>);</span><br><span class="line"></span><br><span class="line">	ResourceHandler resourceHandler = <span class="keyword">new</span> ResourceHandler();</span><br><span class="line">	resourceHandler.setResourceBase(<span class="string">"D:/test"</span>);</span><br><span class="line"></span><br><span class="line">	server.setHandler(resourceHandler);</span><br><span class="line"></span><br><span class="line">	server.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>运行Java程序，Jetty服务器启动。此时在浏览器中访问<a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a>就可以浏览D:/test文件夹中的html页面或者其他文件。但是只能访问静态页面，上面的程序无法支持Servlet/JSP。</p>
-<p>如果想要显示文件夹中的所有文件的列表，可以设置：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">resourceHandler.setDirectoriesListed(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure></p>
-<h2 id="实现Servlet容器"><a href="#实现Servlet容器" class="headerlink" title="实现Servlet容器"></a>实现Servlet容器</h2><p>这里需要另外加入下面的jar包：</p>
-<p>jetty-servlet-9.1.2.v20140210.jar<br>jetty-webapp-9.1.2.v20140210.jar<br>jetty-xml-9.1.2.v20140210.jar<br>jetty-security-9.1.2.v20140210.jar<br>lib/jsp文件夹中的jar包<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Server server = <span class="keyword">new</span> Server(<span class="number">8080</span>);</span><br><span class="line"></span><br><span class="line">	WebAppContext webapp = <span class="keyword">new</span> WebAppContext();</span><br><span class="line">	webapp.setResourceBase(<span class="string">"E:/webapps/test"</span>);</span><br><span class="line"></span><br><span class="line">	server.setHandler(webapp);</span><br><span class="line"></span><br><span class="line">	server.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>设置一个Java Web应用程序的目录，访问<a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a>，此时已经支持Servlet/JSP。</p>
-<p>另外还可以使用war文件：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Server server = <span class="keyword">new</span> Server(<span class="number">8080</span>);</span><br><span class="line"></span><br><span class="line">	WebAppContext webapp = <span class="keyword">new</span> WebAppContext();</span><br><span class="line">	webapp.setWar(<span class="string">"D:/war/test.war"</span>);</span><br><span class="line"></span><br><span class="line">	server.setHandler(webapp);</span><br><span class="line"></span><br><span class="line">	server.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+		<h2 id="Redis-分布式锁原理"><a href="#Redis-分布式锁原理" class="headerlink" title="Redis 分布式锁原理"></a>Redis 分布式锁原理</h2><p>Redis 分布式锁原理，可以直接看官方文档：<br><a href="https://redis.io/commands/set#patterns" target="_blank" rel="noopener">https://redis.io/commands/set#patterns</a></p>
+<blockquote>
+<p>The command <code>SET resource-name anystring NX EX max-lock-time</code> is a simple way to implement a locking system with Redis.</p>
+</blockquote>
+<p><code>SET resource-name anystring NX EX max-lock-time</code> 命令可以基于 Redis 实现分布式锁。</p>
+<blockquote>
+<ul>
+<li><code>NX</code> Only set the key if it does not already exist</li>
+<li><code>EX seconds</code> Set the specified expire time, in seconds</li>
+</ul>
+</blockquote>
+<ul>
+<li><code>NX</code> 仅当 key 不存在时设置成功</li>
+<li><code>EX seconds</code> 失效时间（秒）</li>
+</ul>
+<blockquote>
+<p>A client can acquire the lock if the above command returns <code>OK</code> (or retry after some time if the command returns <code>Nil</code>), and remove the lock just using <code>DEL</code>.</p>
+</blockquote>
+<ul>
+<li>当命令返回 <code>OK</code> 时，该客户端获得锁</li>
+<li>当命令返回 <code>Nil</code> 时，客户端未获得锁，需要过一段时间再重试命令尝试获取锁</li>
+<li>使用 <code>DEL</code> 删除命令可用来释放锁</li>
+</ul>
+<blockquote>
+<p>The lock will be auto-released after the expire time is reached.</p>
+</blockquote>
+<p>当达到失效时间时，锁自动释放。</p>
+<blockquote>
+<p>It is possible to make this system more robust modifying the unlock schema as follows:</p>
+<ul>
+<li>Instead of setting a fixed string, set a non-guessable large random string, called token.</li>
+<li>Instead of releasing the lock with DEL, send a script that only removes the key if the value matches.</li>
+</ul>
+<p>This avoids that a client will try to release the lock after the expire time deleting the key created by another client that acquired the lock later.</p>
+</blockquote>
+<p>更加健壮的释放锁的方式：</p>
+<ul>
+<li>设置的 value 是一个随机生成的无法预测的值，叫做 token</li>
+<li>不再使用 DEL 直接删除 key 来释放锁，而是使用一个 script，仅当 value 匹配 token 时才会删除 key</li>
+</ul>
+<p>这样可以防止某个客户端在超过失效时间后尝试释放锁，直接使用 DEL 可能会删除掉别的客户端添加的锁。</p>
+<p>下面是释放锁脚本的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if redis.call(&quot;get&quot;,KEYS[1]) == ARGV[1]</span><br><span class="line">then</span><br><span class="line">    return redis.call(&quot;del&quot;,KEYS[1])</span><br><span class="line">else</span><br><span class="line">    return 0</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>The script should be called with <code>EVAL ...script... 1 resource-name token-value</code></p>
+</blockquote>
+<p>执行 <code>EVAL ...script... 1 resource-name token-value</code> 命令释放锁。</p>
+<p>以上是官方文档中的内容，阅读到这里可以发现一个问题：</p>
+<ul>
+<li>官方的方案中，分布式锁是有个失效时间的，达到失效时间锁会被自动释放，如果此时需要加锁执行的任务还未完成，同时锁又被其他客户端获取到，那么就可能会出现严重的问题；</li>
+<li>如果锁不加上失效时间，万一获得锁的客户端突然 crash 了，没有来得及释放锁，那么这个锁就永远不会被释放。</li>
+</ul>
+<p>针对这个问题，可以看下 Redisson 是如何解决的。</p>
+<h2 id="Redisson-分布式锁"><a href="#Redisson-分布式锁" class="headerlink" title="Redisson 分布式锁"></a>Redisson 分布式锁</h2><p>官方文档：<br><a href="https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers" target="_blank" rel="noopener">https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers</a></p>
+<p>通过以下方式，可以获得一个 key 为 <code>myLock</code> 的 <code>RLock</code> 对象：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Config config = <span class="keyword">new</span> Config();</span><br><span class="line">config.useSingleServer().setAddress(<span class="string">"redis://localhost:6379"</span>);</span><br><span class="line">RedissonClient redisson = Redisson.create(config);</span><br><span class="line">RLock lock = redisson.getLock(<span class="string">"myLock"</span>);</span><br></pre></td></tr></table></figure></p>
+<p>获取锁和释放锁：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">lock.lock(); <span class="comment">// 获取锁</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  lock.unlock(); <span class="comment">// 在 finally 中释放锁</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>RLock</code> 提供了以下多种获取锁的方法：</p>
+<ul>
+<li><code>void lock()</code></li>
+<li><code>void lock(long leaseTime, TimeUnit unit)</code></li>
+<li><code>void lockInterruptibly()</code></li>
+<li><code>void lockInterruptibly(long leaseTime, TimeUnit unit)</code></li>
+<li><code>boolean tryLock()</code></li>
+<li><code>boolean tryLock(long time, TimeUnit unit)</code></li>
+<li><code>boolean tryLock(long waitTime, long leaseTime, TimeUnit unit)</code></li>
+</ul>
+<p><code>RLock</code> 实现了 <code>java.util.concurrent.locks.Lock</code> 接口，所以 <code>RLock</code> 是符合 Java 中的 <code>Lock</code> 接口规范的。以上的方法中，这四个方法是来源于 Java 中的 <code>Lock</code> 接口：</p>
+<ul>
+<li><code>void lock()</code> 获取锁，如果锁不可用，则当前线程一直等待，直到获得到锁</li>
+<li><code>void lockInterruptibly()</code> 和 <code>lock()</code> 方法类似，区别是 <code>lockInterruptibly()</code> 方法在等待的过程中可以被 interrupt 打断</li>
+<li><code>boolean tryLock()</code> 获取锁，不等待，立即返回一个 boolean 类型的值表示是否获取成功</li>
+<li><code>boolean tryLock(long time, TimeUnit unit)</code> 获取锁，如果锁不可用，则等待一段时间，等待的最长时间由 <code>long time</code> 和 <code>TimeUnit unit</code> 两个参数指定，如果超过时间未获得锁则返回 false，获取成功返回 true</li>
+</ul>
+<p>除了以上四个方法外，还有三个方法不是来源于 Java 中的 <code>Lock</code> 接口，而是 <code>RLock</code> 中的方法。这三个方法和上面四个方法有一个最大的区别就是多了一个 <code>long leaseTime</code> 参数。<code>leaseTime</code> 指的就是 Redis 中的 key 的失效时间。通过这三个方法获取到的锁，如果达到 <code>leaseTime</code> 锁还未释放，那么这个锁会自动失效。</p>
+<p>回到上面的问题：如果设置了失效时间，当任务未完成且达到失效时间时，锁会被自动释放；如果不设置失效时间，突然 crash 了，锁又会永远得不到释放。Redisson 是怎么解决这个问题的呢？</p>
+<blockquote>
+<p>If Redisson instance which acquired lock crashes then such lock could hang forever in acquired state. To avoid this Redisson maintains lock watchdog, it prolongs lock expiration while lock holder Redisson instance is alive. By default lock watchdog timeout is 30 seconds and can be changed through <code>Config.lockWatchdogTimeout</code> setting.</p>
+</blockquote>
+<p>为了防止 Redisson 实例 crash 导致锁永远不会被释放，针对未指定 <code>leaseTime</code> 的四个方法，Redisson 为锁维护了看门狗（watchdog）。看门狗每隔一段时间去延长一下锁的失效时间。锁的默认失效时间是 30 秒，可通过 <code>Config.lockWatchdogTimeout</code> 修改。延长失效时间的任务的执行频率也是由该配置项决定，是锁的失效时间的 1/3，即默认每隔 10 秒执行一次。</p>
+<p>如果 Redisson 实例 crash 了，看门狗也会跟着 crash，那么达到失效时间这个 key 会被 Redis 自动清除，锁也就被释放了，不会出现锁永久被占用的情况。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -118,13 +184,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Jetty/">Jetty</a>
+  <a class="article-category-link" href="/categories/Redis/">Redis</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Jetty/">Jetty</a>
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Redis/">Redis</a>
   </div>
 
 </div>
@@ -133,7 +199,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://xxgblog.com/2014/03/07/jetty-embed/" data-title="Java使用Jetty实现嵌入式Web服务器及Servlet容器 | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  <div data-url="https://xxgblog.com/2021/04/25/redisson-distributed-lock/" data-title="Redis 分布式锁原理及 Redisson 实现 | 叉叉哥的BLOG" data-tsina class="share clearfix">
 	  </div>
 	
 	</div>
@@ -146,19 +212,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev">
- <a href="/2014/03/12/struts2-thinkphp/" title="Struts 2实现类似ThinkPHP的MVC开发方式">
-  <strong>上一篇：</strong><br>
-  <span>
-  Struts 2实现类似ThinkPHP的MVC开发方式</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2014/02/24/apache-ftpserver-embed/" title="Java使用Apache FtpServer实现嵌入式FTP服务器">
+<a href="/2021/04/19/zipkin-brave/" title="分布式链路追踪系统 Zipkin 埋点库 Brave 使用入门">
  <strong>下一篇：</strong><br> 
- <span>Java使用Apache FtpServer实现嵌入式FTP服务器
+ <span>分布式链路追踪系统 Zipkin 埋点库 Brave 使用入门
 </span>
 </a>
 </div>
@@ -178,7 +236,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现Web服务器"><span class="toc-number">1.</span> <span class="toc-text">实现Web服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现Servlet容器"><span class="toc-number">2.</span> <span class="toc-text">实现Servlet容器</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-分布式锁原理"><span class="toc-number">1.</span> <span class="toc-text">Redis 分布式锁原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redisson-分布式锁"><span class="toc-number">2.</span> <span class="toc-text">Redisson 分布式锁</span></a></li></ol>
  
   </div>
 

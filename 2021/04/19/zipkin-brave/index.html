@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://xxgblog.com/img/483b6f62-e19c-4333-b4ef-e2de7d4f4acf.png">
 <meta property="og:image" content="https://xxgblog.com/img/7c2fd9fd-530a-4f24-ba05-219e284c203d.png">
 <meta property="og:image" content="https://xxgblog.com/img/09e9701c-bd25-405e-8f69-c0816e9b0bc0.png">
-<meta property="og:updated_time" content="2021-04-22T06:13:06.957Z">
+<meta property="og:updated_time" content="2021-04-22T09:07:56.312Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式链路追踪系统 Zipkin 埋点库 Brave 使用入门">
 <meta name="twitter:description" content="微服务架构下，服务之间的关系错综复杂。从调用一个 HTTP API 到最终返回结果，中间可能发生了多个服务间的调用。而这些被调用的服务，可能部署在不同的服务器上，由不同的团队开发，甚至可能使用了不同的编程语言。在这样的环境中，排查性能问题或者定位故障就很麻烦。 Zipkin 是什么Zipkin 是一个分布式链路追踪系统（distributed tracing system）。它可以收集并展示一个">
@@ -203,8 +203,8 @@
 <p>如果你使用的 HTTP 客户端库不是 OkHttp 而是 Apache HttpClient 的话，可以使用 <a href="https://github.com/openzipkin/brave/tree/5.11.2/instrumentation/httpclient" target="_blank" rel="noopener">brave-instrumentation-httpclient</a>。</p>
 <h2 id="更多玩法"><a href="#更多玩法" class="headerlink" title="更多玩法"></a>更多玩法</h2><h3 id="获取当前-traceId-和-spanId"><a href="#获取当前-traceId-和-spanId" class="headerlink" title="获取当前 traceId 和 spanId"></a>获取当前 traceId 和 spanId</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Span currentSpan = Tracing.currentTracer().currentSpan(); <span class="comment">// 获取当前 span</span></span><br><span class="line"><span class="keyword">if</span> (currentSpan != <span class="keyword">null</span>) &#123;</span><br><span class="line">    String traceId = currentSpan.context().traceIdString();</span><br><span class="line">    String spanId = currentSpan.context().spanIdString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="自定义-tag"><a href="#自定义-tag" class="headerlink" title="自定义 tag"></a>自定义 tag</h3><p>可将业务相关的信息写入 tag 中，方便在查看调用链信息时关联查看业务相关信息。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Span currentSpan = Tracing.currentTracer().currentSpan(); <span class="comment">// 获取当前 span</span></span><br><span class="line"><span class="keyword">if</span> (currentSpan != <span class="keyword">null</span>) &#123;</span><br><span class="line">    currentSpan.tag(<span class="string">"biz.k1"</span>, <span class="string">"v1"</span>).tag(<span class="string">"biz.k2"</span>, <span class="string">"v2"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="创建新-span"><a href="#创建新-span" class="headerlink" title="创建新 span"></a>创建新 span</h3><p>如果使用了某些组件访问外部服务，找不到官方或开源的 instrumentation，或者有一个本地的耗时任务，也想通过创建一个 span 来记录任务的运行时间和结果，可以自己创建一个新的 span。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ScopedSpan span = Tracing.currentTracer().startScopedSpan(<span class="string">"span name"</span>);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 访问外部服务 或 本地耗时任务</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    span.error(e); <span class="comment">// 任务出错</span></span><br><span class="line">    <span class="keyword">throw</span> e;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    span.finish(); <span class="comment">// 必须记得结束 span</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>下面是另外一种方式，这种方式提供了更多的特性：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Tracer tracer = Tracing.currentTracer();</span><br><span class="line">Span span = tracer.nextSpan().name(<span class="string">"span name"</span>).start();</span><br><span class="line"><span class="keyword">try</span> (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) &#123; <span class="comment">// SpanInScope 对象需要关闭</span></span><br><span class="line">    <span class="comment">// 访问外部服务 或 本地耗时任务</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    span.error(e); <span class="comment">// 任务出错</span></span><br><span class="line">    <span class="keyword">throw</span> e;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    span.finish(); <span class="comment">// 必须记得结束 span</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="创建新-span"><a href="#创建新-span" class="headerlink" title="创建新 span"></a>创建新 span</h3><p>如果使用了某些组件访问外部服务，找不到官方或开源的 instrumentation，或者有一个本地的耗时任务，也想通过创建一个 span 来记录任务的运行时间和结果，可以自己创建一个新的 span。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ScopedSpan span = Tracing.currentTracer().startScopedSpan(<span class="string">"span name"</span>); <span class="comment">// 创建一个 Span 并记录 Span 开始时间，将 TraceContext 通过 ThreadLocal 绑定到当前线程</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 访问外部服务 或 本地耗时任务</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    span.error(e); <span class="comment">// 任务出错</span></span><br><span class="line">    <span class="keyword">throw</span> e;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    span.finish(); <span class="comment">// 记录 Span 的结束时间，移除当前 TraceContext 和 ThreadLocal 绑定</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面是另外一种方式，这种方式提供了更多的特性：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Tracer tracer = Tracing.currentTracer();</span><br><span class="line">Span span = tracer.nextSpan().name(<span class="string">"span name"</span>).start(); <span class="comment">// 创建一个 Span 并记录 Span 开始时间</span></span><br><span class="line"><span class="keyword">try</span> (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) &#123; <span class="comment">// 将 TraceContext 通过 ThreadLocal 绑定到当前线程，任务结束后会通过 try-with-resources 关闭来解除绑定</span></span><br><span class="line">    <span class="comment">// 访问外部服务 或 本地耗时任务</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    span.error(e); <span class="comment">// 任务出错</span></span><br><span class="line">    <span class="keyword">throw</span> e;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    span.finish(); <span class="comment">// 记录 Span 的结束时间</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="跨线程追踪"><a href="#跨线程追踪" class="headerlink" title="跨线程追踪"></a>跨线程追踪</h3><h4 id="使用包装过的-Runnable-和-Callable-对象"><a href="#使用包装过的-Runnable-和-Callable-对象" class="headerlink" title="使用包装过的 Runnable 和 Callable 对象"></a>使用包装过的 Runnable 和 Callable 对象</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Runnable runnable = ...; <span class="comment">// 原始的 Runnable 对象</span></span><br><span class="line">Runnable tracingRunnable = Tracing.current().currentTraceContext().wrap(runnable); <span class="comment">// 包装过的 Runnable 对象</span></span><br></pre></td></tr></table></figure>
 <p>同样的方式也可以使用于 <code>Callable</code> 对象。</p>
 <h4 id="使用包装过的线程池"><a href="#使用包装过的线程池" class="headerlink" title="使用包装过的线程池"></a>使用包装过的线程池</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService service = ....;</span><br><span class="line">ExecutorService proxiedService = tracing.currentTraceContext().executorService(service);</span><br></pre></td></tr></table></figure>
@@ -249,6 +249,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev">
+ <a href="/2021/04/25/redisson-distributed-lock/" title="Redis 分布式锁原理及 Redisson 实现">
+  <strong>上一篇：</strong><br>
+  <span>
+  Redis 分布式锁原理及 Redisson 实现</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2021/04/18/jaeger-api-timeout-issue/" title="Jaeger API 请求超时的故障排查">
@@ -327,6 +335,10 @@
 		  
 		
 		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
 		  
 		
@@ -356,7 +368,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/Java/" title="Java">Java<sup>46</sup></a></li>
+				<li><a href="/tags/Java/" title="Java">Java<sup>47</sup></a></li>
 			
 		
 			
@@ -380,11 +392,11 @@
 			
 		
 			
-				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
 			
 		
 			
@@ -408,11 +420,19 @@
 			
 		
 			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
 			
 		
 			
@@ -425,14 +445,6 @@
 		
 			
 				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/HTTP/" title="HTTP">HTTP<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
 			
 		
 		</ul>
