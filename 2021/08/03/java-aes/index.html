@@ -1,0 +1,696 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Java 中的加密算法： AES | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="加密算法加密算法通常分为对称加密算法和非对称加密算法：  对称加密算法（symmetric-key cryptography）：加密和解密时使用相同的密钥。常用的对称加密算法有 DES、AES。 非对称加密算法（asymmetric-key cryptography）：加密和解密使用不同的密钥，例如公钥加密的内容只能用私钥解密，所以又称为公钥加密算法（public-key cryptography">
+<meta name="keywords" content="Java,AES,加密">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 中的加密算法： AES">
+<meta property="og:url" content="https://xxgblog.com/2021/08/03/java-aes/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="加密算法加密算法通常分为对称加密算法和非对称加密算法：  对称加密算法（symmetric-key cryptography）：加密和解密时使用相同的密钥。常用的对称加密算法有 DES、AES。 非对称加密算法（asymmetric-key cryptography）：加密和解密使用不同的密钥，例如公钥加密的内容只能用私钥解密，所以又称为公钥加密算法（public-key cryptography">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://xxgblog.com/img/java-aes-ecb-encryption.svg">
+<meta property="og:image" content="https://xxgblog.com/img/java-aes-ecb-decryption.svg">
+<meta property="og:image" content="https://xxgblog.com/img/java-aes-ecb.png">
+<meta property="og:image" content="https://xxgblog.com/img/java-aes-cbc-encryption.svg">
+<meta property="og:image" content="https://xxgblog.com/img/java-aes-cbc-decryption.svg">
+<meta property="og:image" content="https://xxgblog.com/img/java-aes-https.png">
+<meta property="og:updated_time" content="2021-08-03T11:55:51.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 中的加密算法： AES">
+<meta name="twitter:description" content="加密算法加密算法通常分为对称加密算法和非对称加密算法：  对称加密算法（symmetric-key cryptography）：加密和解密时使用相同的密钥。常用的对称加密算法有 DES、AES。 非对称加密算法（asymmetric-key cryptography）：加密和解密使用不同的密钥，例如公钥加密的内容只能用私钥解密，所以又称为公钥加密算法（public-key cryptography">
+<meta name="twitter:image" content="https://xxgblog.com/img/java-aes-ecb-encryption.svg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/08/03/java-aes/" title="Java 中的加密算法： AES" itemprop="url">Java 中的加密算法： AES</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2021-08-03T03:14:16.000Z" itemprop="datePublished"> 发表于 2021-08-03</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#加密算法"><span class="toc-number">1.</span> <span class="toc-text">加密算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AES"><span class="toc-number">2.</span> <span class="toc-text">AES</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AES-工作模式"><span class="toc-number">2.1.</span> <span class="toc-text">AES 工作模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AES-填充方式"><span class="toc-number">2.2.</span> <span class="toc-text">AES 填充方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-中的-AES"><span class="toc-number">3.</span> <span class="toc-text">Java 中的 AES</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ECB"><span class="toc-number">3.1.</span> <span class="toc-text">ECB</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CBC"><span class="toc-number">3.2.</span> <span class="toc-text">CBC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GCM"><span class="toc-number">3.3.</span> <span class="toc-text">GCM</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">4.</span> <span class="toc-text">参考文档</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="加密算法"><a href="#加密算法" class="headerlink" title="加密算法"></a>加密算法</h2><p>加密算法通常分为对称加密算法和非对称加密算法：</p>
+<ul>
+<li>对称加密算法（symmetric-key cryptography）：加密和解密时使用相同的密钥。常用的对称加密算法有 DES、AES。</li>
+<li>非对称加密算法（asymmetric-key cryptography）：加密和解密使用不同的密钥，例如公钥加密的内容只能用私钥解密，所以又称为公钥加密算法（public-key cryptography）。使用最广泛的非对称加密算法是 RSA 算法。</li>
+</ul>
+<p>两者有不同的使用场景，而且经常会一起搭配起来使用，例如 SSL/TLS 协议就结合了对称加密算法和非对称加密算法。</p>
+<p>本文主要介绍最常用的对称加密算法：AES。</p>
+<h2 id="AES"><a href="#AES" class="headerlink" title="AES"></a>AES</h2><p>AES 全称 Advanced Encryption Standard，是一种对称加密算法。AES 的出现主要是用来取代 DES 加密算法，因为 AES 的安全性相对更高。</p>
+<p>AES 使用非常广泛，可以说只要上网，无论是使用手机 APP 还是 Web 应用，几乎都离不开 AES 加密算法。因为目前大部分网站，包括手机 APP 后端接口，都已经使用 HTTPS 协议，而 HTTPS 在数据传输阶段大部分都是使用 AES 对称加密算法。</p>
+<p>在学习 AES 之前，首先要知道以下规则：</p>
+<ul>
+<li>AES 是一种区块加密算法，加密时会将原始数据按大小拆分成一个个区块进行加密，区块大小固定为 128 比特（即 16 字节）</li>
+<li>AES 密钥长度可以是 128、192 或 256 比特（即 16、25 或 32 字节），密钥长度越长，安全性越高，而性能也就越低</li>
+</ul>
+<h3 id="AES-工作模式"><a href="#AES-工作模式" class="headerlink" title="AES 工作模式"></a>AES 工作模式</h3><p>AES加密算法有多种工作模式（mode of operation），如：ECB、CBC、OFB、CFB、CTR、XTS、OCB、GCM。不同的模式参数和加密流程不同，但是核心仍然是 AES 算法。</p>
+<p>本文主要介绍 ECB、CBC、GCM 三种模式。</p>
+<h3 id="AES-填充方式"><a href="#AES-填充方式" class="headerlink" title="AES 填充方式"></a>AES 填充方式</h3><p>由于 AES 是一种区块加密算法，加密时会将原始数据按大小拆分成一个个 128 比特（即 16 字节）区块进行加密，如果需要加密的原始数据不是 16 字节的整数倍时，就需要对原始数据进行填充，使其达到 16 字节的整数倍。</p>
+<p>常用的填充方式有 PKCS5Padding、ISO10126Padding 等，另外如果能保证待加密的原始数据大小为 16 字节的整数倍，也可以选择不填充，即 NoPadding。</p>
+<h2 id="Java-中的-AES"><a href="#Java-中的-AES" class="headerlink" title="Java 中的 AES"></a>Java 中的 AES</h2><p>Java 中的 <code>javax.crypto.Cipher</code> 类提供加密和解密的功能。</p>
+<p>创建一个 <code>Cipher</code>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cipher cipher = Cipher.getInstance(<span class="string">"AES/CBC/PKCS5Padding"</span>);</span><br></pre></td></tr></table></figure></p>
+<p><code>Cipher</code> 类 <code>getInstance</code> 方法需传递一个加密算法的名称作为参数，用来创建对应的 <code>Cipher</code>，其格式为 <code>algorithm/mode/padding</code>，即 <code>算法名称/工作模式/填充方式</code>，例如 <code>AES/CBC/PKCS5Padding</code>。具体有哪些可选的加密方式，可以参考文档： </p>
+<p><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Cipher" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Cipher</a></p>
+<h3 id="ECB"><a href="#ECB" class="headerlink" title="ECB"></a>ECB</h3><p>ECB 全称为电子密码本（Electronic codebook），将待加密的数据拆分成块，并对每个块进行独立加密。</p>
+<p><img src="/img/java-aes-ecb-encryption.svg" alt="ECB 加密"><br><img src="/img/java-aes-ecb-decryption.svg" alt="ECB 解密"></p>
+<p>代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] encryptECB(<span class="keyword">byte</span>[] data, <span class="keyword">byte</span>[] key) <span class="keyword">throws</span> NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException &#123;</span><br><span class="line">    Cipher cipher = Cipher.getInstance(<span class="string">"AES/ECB/PKCS5Padding"</span>);</span><br><span class="line">    cipher.init(Cipher.ENCRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key, <span class="string">"AES"</span>));</span><br><span class="line">    <span class="keyword">byte</span>[] result = cipher.doFinal(data);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] decryptECB(<span class="keyword">byte</span>[] data, <span class="keyword">byte</span>[] key) <span class="keyword">throws</span> NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException &#123;</span><br><span class="line">    Cipher cipher = Cipher.getInstance(<span class="string">"AES/ECB/PKCS5Padding"</span>);</span><br><span class="line">    cipher.init(Cipher.DECRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key, <span class="string">"AES"</span>));</span><br><span class="line">    <span class="keyword">byte</span>[] result = cipher.doFinal(data);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException </span>&#123;</span><br><span class="line">    String data = <span class="string">"Hello World"</span>; <span class="comment">// 待加密的明文</span></span><br><span class="line">    String key = <span class="string">"12345678abcdefgh"</span>; <span class="comment">// key 长度只能是 16、25 或 32 字节</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span>[] ciphertext = encryptECB(data.getBytes(), key.getBytes());</span><br><span class="line">    System.out.println(<span class="string">"ECB 模式加密结果（Base64）："</span> + Base64.getEncoder().encodeToString(ciphertext));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span>[] plaintext = decryptECB(ciphertext, key.getBytes());</span><br><span class="line">    System.out.println(<span class="string">"解密结果："</span> + <span class="keyword">new</span> String(plaintext));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于加密后的密文是二进制格式而非字符串，所以这里使用了 Base64 编码方式将其转换成字符串方便输出查看。输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ECB 模式加密结果（Base64）：bB0gie8pCE2RBQoIAAIxeA==</span><br><span class="line">解密结果：Hello World</span><br></pre></td></tr></table></figure></p>
+<p>需要注意，AES 密钥长度只能是 16、25 或 32 字节，如果不符合要求则会异常：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.security.InvalidKeyException: Invalid AES key length</span><br></pre></td></tr></table></figure></p>
+<p>CBC 模式有一个致命的缺点，由于该模式对每个块进行独立加密，会导致同样的明文块被加密成相同的密文块，相对来说并不是非常安全。下图就是一个很好的例子：</p>
+<p><img src="/img/java-aes-ecb.png" alt="ECB 模式"></p>
+<h3 id="CBC"><a href="#CBC" class="headerlink" title="CBC"></a>CBC</h3><p>CBC 全称为密码分组链接（Cipher-block chaining），它的出现解决 ECB 同样的明文块会被加密成相同的密文块的问题。</p>
+<p>CBC 引入了初始向量的概念（IV，Initialization Vector），第一个明文块先与 IV 进行异或后再加密，后续每个明文块先与前一个密文块进行异或后再加密。</p>
+<p><img src="/img/java-aes-cbc-encryption.svg" alt="CBC 加密"><br><img src="/img/java-aes-cbc-decryption.svg" alt="CBC 解密"></p>
+<p>代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] encryptCBC(<span class="keyword">byte</span>[] data, <span class="keyword">byte</span>[] key, <span class="keyword">byte</span>[] iv) <span class="keyword">throws</span> NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException &#123;</span><br><span class="line">    Cipher cipher = Cipher.getInstance(<span class="string">"AES/CBC/PKCS5Padding"</span>);</span><br><span class="line">    cipher.init(Cipher.ENCRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key, <span class="string">"AES"</span>), <span class="keyword">new</span> IvParameterSpec(iv));</span><br><span class="line">    <span class="keyword">byte</span>[] result = cipher.doFinal(data);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] decryptCBC(<span class="keyword">byte</span>[] data, <span class="keyword">byte</span>[] key, <span class="keyword">byte</span>[] iv) <span class="keyword">throws</span> NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException &#123;</span><br><span class="line">    Cipher cipher = Cipher.getInstance(<span class="string">"AES/CBC/PKCS5Padding"</span>);</span><br><span class="line">    cipher.init(Cipher.DECRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key, <span class="string">"AES"</span>), <span class="keyword">new</span> IvParameterSpec(iv));</span><br><span class="line">    <span class="keyword">byte</span>[] result = cipher.doFinal(data);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException </span>&#123;</span><br><span class="line">    String data = <span class="string">"Hello World"</span>; <span class="comment">// 待加密的原文</span></span><br><span class="line">    String key = <span class="string">"12345678abcdefgh"</span>; <span class="comment">// key 长度只能是 16、25 或 32 字节</span></span><br><span class="line">    String iv = <span class="string">"iviviviviviviviv"</span>; <span class="comment">// CBC 模式需要用到初始向量参数</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span>[] ciphertext = encryptCBC(data.getBytes(), key.getBytes(), iv.getBytes());</span><br><span class="line">    System.out.println(<span class="string">"CBC 模式加密结果（Base64）："</span> + Base64.getEncoder().encodeToString(ciphertext));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span>[] plaintext = decryptCBC(ciphertext, key.getBytes(), iv.getBytes());</span><br><span class="line">    System.out.println(<span class="string">"解密结果："</span> + <span class="keyword">new</span> String(plaintext));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CBC 模式加密结果（Base64）：K7bSB51+KxfqaMjJOsPAQg==</span><br><span class="line">解密结果：Hello World</span><br></pre></td></tr></table></figure></p>
+<p>由于 CBC 每个明文块加密都依赖前一个块的加密结果，所以其主要缺点在于加密过程是串行的，无法被并行化。</p>
+<h3 id="GCM"><a href="#GCM" class="headerlink" title="GCM"></a>GCM</h3><p>GCM 的全称是 Galois/Counter Mode，它是一种认证加密（authenticated encryption）算法。它不但提供了加密解密，还提供了数据完整性校验，防止篡改。</p>
+<p>AES-GCM 模式是目前使用最广泛的模式，可以尝试抓包看一下目前主流的 https 网站，其中大部分都是基于 GCM 模式。下图是使用抓包工具 Charles 查看浏览器访问 https 网站所使用的加密算法：</p>
+<p><img src="/img/java-aes-https.png" alt="抓包"></p>
+<p>可以看到浏览器一般支持 AES-GCM 和 AES-CBC 模式，最终服务器选择使用 AES-GCM。</p>
+<p>AES-GCM 认证加密需要用到以下参数：</p>
+<ul>
+<li>待加密的明文</li>
+<li>密钥</li>
+<li>初始向量 IV</li>
+<li>additional authenticated data (AAD)</li>
+</ul>
+<p>代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] encryptGCM(<span class="keyword">byte</span>[] data, <span class="keyword">byte</span>[] key, <span class="keyword">byte</span>[] iv, <span class="keyword">byte</span>[] aad) <span class="keyword">throws</span> NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException &#123;</span><br><span class="line">    Cipher cipher = Cipher.getInstance(<span class="string">"AES/GCM/NoPadding"</span>);</span><br><span class="line">    cipher.init(Cipher.ENCRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key, <span class="string">"AES"</span>), <span class="keyword">new</span> GCMParameterSpec(<span class="number">128</span>, iv));</span><br><span class="line">    <span class="keyword">byte</span>[] result = cipher.doFinal(data);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] decryptGCM(<span class="keyword">byte</span>[] data, <span class="keyword">byte</span>[] key, <span class="keyword">byte</span>[] iv, <span class="keyword">byte</span>[] aad) <span class="keyword">throws</span> NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException &#123;</span><br><span class="line">    Cipher cipher = Cipher.getInstance(<span class="string">"AES/GCM/NoPadding"</span>);</span><br><span class="line">    cipher.init(Cipher.DECRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key, <span class="string">"AES"</span>), <span class="keyword">new</span> GCMParameterSpec(<span class="number">128</span>, iv));</span><br><span class="line">    <span class="keyword">byte</span>[] result = cipher.doFinal(data);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException </span>&#123;</span><br><span class="line">    String data = <span class="string">"Hello World"</span>; <span class="comment">// 待加密的原文</span></span><br><span class="line">    String key = <span class="string">"12345678abcdefgh"</span>; <span class="comment">// key 长度只能是 16、25 或 32 字节</span></span><br><span class="line">    String iv = <span class="string">"iviviviviviviviv"</span>;</span><br><span class="line">    String aad = <span class="string">"aad"</span>; <span class="comment">// AAD 长度无限制，可为空</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span>[] ciphertext = encryptGCM(data.getBytes(), key.getBytes(), iv.getBytes(), aad.getBytes());</span><br><span class="line">    System.out.println(<span class="string">"GCM 模式加密结果（Base64）："</span> + Base64.getEncoder().encodeToString(ciphertext));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span>[] plaintext = decryptGCM(ciphertext, key.getBytes(), iv.getBytes(), aad.getBytes());</span><br><span class="line">    System.out.println(<span class="string">"解密结果："</span> + <span class="keyword">new</span> String(plaintext));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GCM 模式加密结果（Base64）：1UxXmFpdUwMnpI4sW78FF3Zbr+1/j8Oyks5i</span><br><span class="line">解密结果：Hello World</span><br></pre></td></tr></table></figure></p>
+<p>AES-GCM 是流加密（Stream cipher）算法，所以对应的填充模式为 NoPadding，即无需填充。</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li><a href="https://zh.wikipedia.org/wiki/%E9%AB%98%E7%BA%A7%E5%8A%A0%E5%AF%86%E6%A0%87%E5%87%86" target="_blank" rel="noopener">维基百科-AES</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F" target="_blank" rel="noopener">维基百科-工作模式</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/javax/crypto/Cipher.html" target="_blank" rel="noopener">javax.crypto.Cipher</a></li>
+<li><a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf" target="_blank" rel="noopener">GCM</a></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java/">Java</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/AES/">AES</a><a href="/tags/加密/">加密</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2021/08/03/java-aes/" data-title="Java 中的加密算法： AES | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2021/04/25/redisson-distributed-lock/" title="Redis 分布式锁原理及 Redisson 实现">
+ <strong>下一篇：</strong><br> 
+ <span>Redis 分布式锁原理及 Redisson 实现
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+<div id="gitalk-container" style="padding: 0 4%;"></div>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#加密算法"><span class="toc-number">1.</span> <span class="toc-text">加密算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AES"><span class="toc-number">2.</span> <span class="toc-text">AES</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AES-工作模式"><span class="toc-number">2.1.</span> <span class="toc-text">AES 工作模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AES-填充方式"><span class="toc-number">2.2.</span> <span class="toc-text">AES 填充方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-中的-AES"><span class="toc-number">3.</span> <span class="toc-text">Java 中的 AES</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ECB"><span class="toc-number">3.1.</span> <span class="toc-text">ECB</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CBC"><span class="toc-number">3.2.</span> <span class="toc-text">CBC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GCM"><span class="toc-number">3.3.</span> <span class="toc-text">GCM</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">4.</span> <span class="toc-text">参考文档</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">微信公众号</p>
+<div>
+<img src="/img/WechatPublic.jpg" style="width: 100%;">
+</div>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jaeger/" title="Jaeger">Jaeger<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>19</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>13</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>48</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blackcoffee2016.github.io/" target="_blank" title="杨灿的博客">杨灿的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://blog.csdn.net/eson_15" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://youngforzy.top/" target="_blank" title="曾勇的博客">曾勇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2021 
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname.split('/')[4]
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
