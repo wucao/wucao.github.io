@@ -1,0 +1,668 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Java 8 CompletableFuture 对比 ES6 Promise | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="JavaScript 语言的执行环境是单线程的，异步编程对于 JavaScript 来说必不可少。JavaScript 传统异步解决方案主要是通过回调函数，而回调函数最大的问题就是 Callback Hell。所以 ES6 标准提供的 Promise 对象，专门用于解决异步编程的问题。 而 Java 语言是一个支持多线程的语言，语法以同步为主，在实际开发中很少需要用到大量的异步编程。但是要想追求更">
+<meta name="keywords" content="Java,Promise,CompletableFuture,ES6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 8 CompletableFuture 对比 ES6 Promise">
+<meta property="og:url" content="https://xxgblog.com/2021/08/28/promise-vs-completablefuture/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="JavaScript 语言的执行环境是单线程的，异步编程对于 JavaScript 来说必不可少。JavaScript 传统异步解决方案主要是通过回调函数，而回调函数最大的问题就是 Callback Hell。所以 ES6 标准提供的 Promise 对象，专门用于解决异步编程的问题。 而 Java 语言是一个支持多线程的语言，语法以同步为主，在实际开发中很少需要用到大量的异步编程。但是要想追求更">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-08-28T11:02:45.918Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 8 CompletableFuture 对比 ES6 Promise">
+<meta name="twitter:description" content="JavaScript 语言的执行环境是单线程的，异步编程对于 JavaScript 来说必不可少。JavaScript 传统异步解决方案主要是通过回调函数，而回调函数最大的问题就是 Callback Hell。所以 ES6 标准提供的 Promise 对象，专门用于解决异步编程的问题。 而 Java 语言是一个支持多线程的语言，语法以同步为主，在实际开发中很少需要用到大量的异步编程。但是要想追求更">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/08/28/promise-vs-completablefuture/" title="Java 8 CompletableFuture 对比 ES6 Promise" itemprop="url">Java 8 CompletableFuture 对比 ES6 Promise</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2021-08-28T03:14:16.000Z" itemprop="datePublished"> 发表于 2021-08-28</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#创建对象"><span class="toc-number">1.</span> <span class="toc-text">创建对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建-Promise"><span class="toc-number">1.1.</span> <span class="toc-text">创建 Promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建-CompletableFuture"><span class="toc-number">1.2.</span> <span class="toc-text">创建 CompletableFuture</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本使用"><span class="toc-number">2.</span> <span class="toc-text">基本使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#then-的链式调用"><span class="toc-number">3.</span> <span class="toc-text">then 的链式调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工具方法"><span class="toc-number">4.</span> <span class="toc-text">工具方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">5.</span> <span class="toc-text">参考文档</span></a></li></ol>
+		
+		</div>
+		
+		<p>JavaScript 语言的执行环境是单线程的，异步编程对于 JavaScript 来说必不可少。JavaScript 传统异步解决方案主要是通过回调函数，而回调函数最大的问题就是 Callback Hell。所以 ES6 标准提供的 Promise 对象，专门用于解决异步编程的问题。</p>
+<p>而 Java 语言是一个支持多线程的语言，语法以同步为主，在实际开发中很少需要用到大量的异步编程。但是要想追求更高的性能，异步通常是更好的选择。例如 Servlet 3 的异步支持、Spring 5 提供的 Spring WebFlux 等，都是为了追求更高的性能。和 JavaScript 一样，传统的 Callback 方式处理 Java 异步也会有 Callback Hell 问题，所以在 Java 8 中新增了和 ES6 的 Promise 类似的对象： <code>java.util.concurrent.CompletableFuture</code> 。</p>
+<h2 id="创建对象"><a href="#创建对象" class="headerlink" title="创建对象"></a>创建对象</h2><h3 id="创建-Promise"><a href="#创建-Promise" class="headerlink" title="创建 Promise"></a>创建 Promise</h3><p>在 JavaScript 中创建 Promise 对象：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (success)&#123;</span><br><span class="line">        <span class="comment">// 成功</span></span><br><span class="line">        resolve(value);  </span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 失败</span></span><br><span class="line">        reject(error);   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>例如，jQuery 传统的使用回调函数的 ajax 写法是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$.ajax(&#123;</span><br><span class="line">    url: <span class="string">"/url"</span>,</span><br><span class="line">    success: <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 成功</span></span><br><span class="line">    &#125;,</span><br><span class="line">    error: <span class="function"><span class="keyword">function</span>(<span class="params">jqXHR, textStatus, error</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 失败</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>如果要把它封装一下，返回一个 Promise 对象，可以这样来写：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">promisifyAjax</span>(<span class="params">url</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url: url,</span><br><span class="line">            success: <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">                <span class="comment">// 将 Promise 更新为成功状态</span></span><br><span class="line">                resolve(data);   </span><br><span class="line">            &#125;,</span><br><span class="line">            error: <span class="function"><span class="keyword">function</span>(<span class="params">jqXHR, textStatus, error</span>) </span>&#123;</span><br><span class="line">                <span class="comment">// 将 Promise 更新为失败状态</span></span><br><span class="line">                reject(error);   </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> promise;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>调用这个封装好的 <code>promisifyAjax</code> 方法：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">promisifyAjax(<span class="string">"/url"</span>).then(<span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 成功</span></span><br><span class="line">&#125;).catch(<span class="function"><span class="keyword">function</span>(<span class="params">error</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 失败</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="创建-CompletableFuture"><a href="#创建-CompletableFuture" class="headerlink" title="创建 CompletableFuture"></a>创建 CompletableFuture</h3><p>在 Java 中创建 CompletableFuture 对象：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; completableFuture = <span class="keyword">new</span> CompletableFuture&lt;&gt;();</span><br><span class="line"><span class="keyword">if</span> (success) &#123;</span><br><span class="line">    completableFuture.complete(<span class="string">"任务成功"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    completableFuture.completeExceptionally(<span class="keyword">new</span> RuntimeException(<span class="string">"任务失败"</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>CompletableFuture 可以使用泛型，用于指定这个任务成功后返回的结果的数据类型。</p>
+<p>这里可以用 OkHttp 的异步请求来实战使用一下 CompletableFuture。<a href="https://square.github.io/okhttp/recipes/#asynchronous-get-kt-java" target="_blank" rel="noopener">OkHttp 异步请求的官方示例</a>中使用的异步实现方式是基于 Callback 回调的方式：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> OkHttpClient client = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">        .url(<span class="string">"http://publicobject.com/helloworld.txt"</span>)</span><br><span class="line">        .build();</span><br><span class="line">    </span><br><span class="line">    client.newCall(request).enqueue(<span class="keyword">new</span> Callback() &#123;</span><br><span class="line">        <span class="meta">@Override</span> </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Call call, IOException e)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// HTTP 请求异常</span></span><br><span class="line">            e.printStackTrace();  </span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="meta">@Override</span> </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(Call call, Response response)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> (ResponseBody responseBody = response.body()) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!response.isSuccessful()) &#123; </span><br><span class="line">                    <span class="comment">// 响应状态码异常</span></span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Unexpected code "</span> + response);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// 成功</span></span><br><span class="line">                    System.out.println(responseBody.string());  </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面将这个异步请求封装为一个返回 CompletableFuture 的方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> CompletableFuture&lt;String&gt; <span class="title">asyncRequest</span><span class="params">(String url)</span> </span>&#123;</span><br><span class="line">    CompletableFuture&lt;String&gt; completableFuture = <span class="keyword">new</span> CompletableFuture&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">        .url(url)</span><br><span class="line">        .build();</span><br><span class="line">    </span><br><span class="line">    client.newCall(request).enqueue(<span class="keyword">new</span> Callback() &#123;</span><br><span class="line">        <span class="meta">@Override</span> </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Call call, IOException e)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// HTTP 请求异常</span></span><br><span class="line">            completableFuture.completeExceptionally(e);  </span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="meta">@Override</span> </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(Call call, Response response)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> (ResponseBody responseBody = response.body()) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!response.isSuccessful()) &#123; </span><br><span class="line">                    <span class="comment">// 响应状态码异常</span></span><br><span class="line">                    completableFuture.completeExceptionally(<span class="keyword">new</span> IOException(<span class="string">"Unexpected code "</span> + response));</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;   </span><br><span class="line">                    <span class="comment">// 成功</span></span><br><span class="line">                    completableFuture.complete(responseBody.string());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用封装好的 <code>asyncRequest()</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">asyncRequest(<span class="string">"/url"</span>).thenAccept(responseText -&gt; &#123;</span><br><span class="line">    <span class="comment">// 成功</span></span><br><span class="line">&#125;).exceptionally(e -&gt; &#123;</span><br><span class="line">    <span class="comment">// 失败</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>可以看到这个写法几乎和 ES6 Promise 写法一样。</p>
+<h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><p>上面基于 <code>jQuery.ajax()</code> 函数封装并返回 Promise 对象，是为了学习 Promise 对象是如何创建的。实际上，已经有非常优秀的开源项目 <a href="https://github.com/axios/axios" target="_blank" rel="noopener">Axios</a>，它是一个基于 Promise 的 HTTP 客户端，既支持浏览器 Ajax，又支持 Node.js：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">axios.get(<span class="string">'/user?ID=12345'</span>)</span><br><span class="line">    .then(<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// handle success</span></span><br><span class="line">        <span class="built_in">console</span>.log(response);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(<span class="function"><span class="keyword">function</span> (<span class="params">error</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// handle error</span></span><br><span class="line">        <span class="built_in">console</span>.log(error);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></p>
+<p>同样，在 Java 11 版本中新增了 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html" target="_blank" rel="noopener"><code>java.net.http.HttpClient</code></a>，纯天然支持 <code>CompletableFuture</code>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    HttpClient client = HttpClient.newBuilder().build();</span><br><span class="line">    HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">            .uri(URI.create(<span class="string">"http://xxx.com/"</span>))</span><br><span class="line">            .build();</span><br><span class="line">    CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; responseFuture = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());</span><br><span class="line">    </span><br><span class="line">    responseFuture.thenAccept(response -&gt; &#123;</span><br><span class="line">        System.out.println(response.body());</span><br><span class="line">    &#125;).exceptionally(e -&gt; &#123;</span><br><span class="line">        System.out.println(e);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 防止主线程结束后程序停止</span></span><br><span class="line">    Thread.sleep(Integer.MAX_VALUE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="then-的链式调用"><a href="#then-的链式调用" class="headerlink" title="then 的链式调用"></a>then 的链式调用</h2><p>ES6 Promise 的 then 方法的返回值同样是一个 Promise，所以可以链式调用：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">axios.get(<span class="string">'/request1'</span>)</span><br><span class="line">    .then(<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 把第一个请求的结果作为第二个请求的参数，并且返回一个新的 Promise 作为下一个 then 的结果</span></span><br><span class="line">        <span class="keyword">const</span> newPromise = axios.get(<span class="string">'/request2?param='</span> + response);</span><br><span class="line">        <span class="keyword">return</span> newPromise;</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(<span class="function"><span class="keyword">function</span> (<span class="params">response</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 输出第二个请求的结果</span></span><br><span class="line">        <span class="built_in">console</span>.log(response);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(<span class="function"><span class="keyword">function</span> (<span class="params">error</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(error);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></p>
+<p>Java CompletableFuture 可通过 thenCompose 方法来实现多个 CompletableFuture 链式调用：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    HttpClient client = HttpClient.newBuilder().build();</span><br><span class="line">    HttpRequest request = HttpRequest.newBuilder()</span><br><span class="line">            .uri(URI.create(<span class="string">"http://foo.com/"</span>))</span><br><span class="line">            .build();</span><br><span class="line">    CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; responseFuture = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());</span><br><span class="line"></span><br><span class="line">    responseFuture.thenCompose(response -&gt; &#123;</span><br><span class="line">        <span class="comment">// 把第一个请求的结果作为第二个请求的参数</span></span><br><span class="line">        HttpRequest request2 = HttpRequest.newBuilder()</span><br><span class="line">                .uri(URI.create(<span class="string">"http://foo.com/?param="</span> + response.body()))</span><br><span class="line">                .build();</span><br><span class="line">        <span class="comment">// 这里必须返回一个新的 CompletableFuture 作为下一个 then 的结果</span></span><br><span class="line">        CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; responseFuture2 = client.sendAsync(request2, HttpResponse.BodyHandlers.ofString());</span><br><span class="line">        <span class="keyword">return</span> responseFuture2;</span><br><span class="line">    &#125;).thenAccept(response -&gt; &#123;</span><br><span class="line">        <span class="comment">// 输出第二个请求的结果</span></span><br><span class="line">        System.out.println(response);</span><br><span class="line">    &#125;).exceptionally(e -&gt; &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 防止主线程结束后程序停止</span></span><br><span class="line">    Thread.sleep(Integer.MAX_VALUE); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="工具方法"><a href="#工具方法" class="headerlink" title="工具方法"></a>工具方法</h2><p>Promise 中的工具方法：</p>
+<ul>
+<li><p><code>Promise.all()</code> 用于将多个 Promise 包装成一个新的 Promise，相当于让所有任务同时进行，当所有任务都成功后，新的 Promise 才会变为成功状态，只要有一个任务失败，新的 Promise 就会变为失败状态</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 同时执行 3 个异步任务</span></span><br><span class="line"><span class="keyword">const</span> allPromise = <span class="built_in">Promise</span>.all([promise1, promise2, promise3]);</span><br><span class="line">allPromise.then(<span class="function">(<span class="params">[result1, result2, result3]</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 3 个异步任务全部成功后，这里可以拿到所有任务的结果</span></span><br><span class="line">&#125;).catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 只要有一个任务失败，最终结果就是失败</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Promise.race()</code> 用于让多个任务同时进行，只要有一个任务执行完成后（无论成功还是失败），返回的新的 Promise 就会跟随着变更状态</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 发起 HTTP 请求，5 秒内没有响应则超时失败</span></span><br><span class="line"><span class="built_in">Promise</span>.race([</span><br><span class="line">    httpGet(<span class="string">'http://example.com/file.txt'</span>),</span><br><span class="line">    delay(<span class="number">5000</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'timeout'</span>);</span><br><span class="line">    &#125;)</span><br><span class="line">])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>CompletableFuture 中也提供了上述类似的静态方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> CompletableFuture&lt;Void&gt; <span class="title">allOf</span><span class="params">(CompletableFuture&lt;?&gt;... cfs)</span></span></span><br><span class="line"><span class="function"><span class="keyword">static</span> CompletableFuture&lt;Object&gt; <span class="title">anyOf</span><span class="params">(CompletableFuture&lt;?&gt;... cfs)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>其中，CompletableFuture 的 <code>allOf()</code> 方法类似于 <code>Promise.all()</code>， <code>anyOf()</code> 方法类似于 <code>Promise.race()</code>。</p>
+<p>其中有一个区别是 CompletableFuture 的 <code>allOf()</code> 方法返回的是一个 <code>CompletableFuture&lt;Void&gt;</code>，也就是拿不到异步任务的执行结果。如果想要像 <code>Promise.all()</code> 一样拿到每一个任务的执行结果，可以对这个方法再进行一下封装：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; CompletableFuture&lt;List&lt;T&gt;&gt; all(CompletableFuture&lt;T&gt; ... cfs) &#123;</span><br><span class="line">    <span class="keyword">return</span> CompletableFuture.allOf(cfs)</span><br><span class="line">            .thenApply(v -&gt; Stream.of(cfs)</span><br><span class="line">                    .map(future -&gt; future.join())</span><br><span class="line">                    .collect(Collectors.toList()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html" target="_blank" rel="noopener">java.util.concurrent.CompletableFuture</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html" target="_blank" rel="noopener">java.net.http.HttpClient</a></li>
+<li><a href="https://es6.ruanyifeng.com/#docs/promise" target="_blank" rel="noopener">Promise</a></li>
+<li><a href="https://github.com/axios/axios" target="_blank" rel="noopener">Axios</a></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java/">Java</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Promise/">Promise</a><a href="/tags/CompletableFuture/">CompletableFuture</a><a href="/tags/ES6/">ES6</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2021/08/28/promise-vs-completablefuture/" data-title="Java 8 CompletableFuture 对比 ES6 Promise | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2021/08/03/java-aes/" title="Java 中的加密算法： AES">
+ <strong>下一篇：</strong><br> 
+ <span>Java 中的加密算法： AES
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+<div id="gitalk-container" style="padding: 0 4%;"></div>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#创建对象"><span class="toc-number">1.</span> <span class="toc-text">创建对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建-Promise"><span class="toc-number">1.1.</span> <span class="toc-text">创建 Promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建-CompletableFuture"><span class="toc-number">1.2.</span> <span class="toc-text">创建 CompletableFuture</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本使用"><span class="toc-number">2.</span> <span class="toc-text">基本使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#then-的链式调用"><span class="toc-number">3.</span> <span class="toc-text">then 的链式调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工具方法"><span class="toc-number">4.</span> <span class="toc-text">工具方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">5.</span> <span class="toc-text">参考文档</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">微信公众号</p>
+<div>
+<img src="/img/WechatPublic.jpg" style="width: 100%;">
+</div>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jaeger/" title="Jaeger">Jaeger<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>20</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>13</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>49</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blackcoffee2016.github.io/" target="_blank" title="杨灿的博客">杨灿的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://blog.csdn.net/eson_15" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://youngforzy.top/" target="_blank" title="曾勇的博客">曾勇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2021 
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname.split('/')[4]
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
