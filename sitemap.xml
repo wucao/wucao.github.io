@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2021/10/19/decorator-pattern/</loc>
+    
+    <lastmod>2021-10-20T03:47:31.293Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2021/04/14/netty-websocket/</loc>
+    
+    <lastmod>2021-10-18T10:25:33.938Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2021/08/28/promise-vs-completablefuture/</loc>
     
     <lastmod>2021-08-28T11:02:45.918Z</lastmod>
@@ -26,13 +40,6 @@
     <loc>https://xxgblog.com/2021/04/19/zipkin-brave/</loc>
     
     <lastmod>2021-04-22T09:07:56.312Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xxgblog.com/2021/04/14/netty-websocket/</loc>
-    
-    <lastmod>2021-04-22T02:58:10.327Z</lastmod>
     
   </url>
   
