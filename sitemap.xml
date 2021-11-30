@@ -2,9 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/2021/11/30/cryptography/</loc>
+    
+    <lastmod>2021-11-30T06:40:33.041Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2021/04/19/zipkin-brave/</loc>
+    
+    <lastmod>2021-11-30T06:13:22.934Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2021/10/19/decorator-pattern/</loc>
     
-    <lastmod>2021-10-20T03:47:31.293Z</lastmod>
+    <lastmod>2021-10-21T03:10:06.183Z</lastmod>
     
   </url>
   
@@ -33,13 +47,6 @@
     <loc>https://xxgblog.com/2021/04/25/redisson-distributed-lock/</loc>
     
     <lastmod>2021-04-25T15:07:38.907Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xxgblog.com/2021/04/19/zipkin-brave/</loc>
-    
-    <lastmod>2021-04-22T09:07:56.312Z</lastmod>
     
   </url>
   

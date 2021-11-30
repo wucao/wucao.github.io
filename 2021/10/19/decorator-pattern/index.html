@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://xxgblog.com/img/decorator-pattern-matryoshka.gif">
 <meta property="og:image" content="https://xxgblog.com/img/decorator-pattern-request.png">
 <meta property="og:image" content="https://xxgblog.com/img/decorator-pattern-structure.png">
-<meta property="og:updated_time" content="2021-10-20T03:47:31.293Z">
+<meta property="og:updated_time" content="2021-10-21T03:10:06.183Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="设计模式中的俄罗斯套娃：装饰者（Decorator）模式">
 <meta name="twitter:description" content="俄罗斯套娃想必大家都不陌生，就是同一种玩具娃娃大的套小的，然后一层一层嵌套下去。  在设计模式中，有一种常用的套娃模式，叫做装饰者（Decorator）模式，又称为包装（Wrapper）模式。 HttpServletRequest 套娃在 Spring 框架开发的 Web 应用中，如果使用了 Spring Security 或 Spring Session，用 Debug 模式观察一下某个请求对应">
@@ -144,7 +144,8 @@
 <p>除了 <code>DataInputStream</code> 之外，<code>FilterInputStream</code> 常见的子类装饰者还有：</p>
 <ul>
 <li><code>BufferedInputStream</code> 为被装饰的 <code>InputStream</code> 提供缓冲功能以及支持 <code>mark</code> 和 <code>reset</code> 方法</li>
-<li><code>CipherInputStream</code> 使用加密算法（例如 AES）对 <code>InputStream</code> 中的数据加密或解密</li>
+<li><code>CipherInputStream</code> 使用加密算法（例如 AES、DES）对 <code>InputStream</code> 中的数据加密或解密</li>
+<li><code>DigestInputStream</code> 使用消息摘要算法（例如 MD5、SHA-256）对 <code>InputStream</code> 中的数据进行消息摘要</li>
 <li><code>DeflaterInputStream</code>、<code>InflaterInputStream</code> 使用 deflate 压缩算法对 <code>InputStream</code> 中的数据压缩或解压</li>
 </ul>
 <h2 id="装饰者模式结构"><a href="#装饰者模式结构" class="headerlink" title="装饰者模式结构"></a>装饰者模式结构</h2><p><img src="/img/decorator-pattern-structure.png" alt="装饰者模式结构"></p>
@@ -190,6 +191,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev">
+ <a href="/2021/11/30/cryptography/" title="密码学基础：编码方式、消息摘要算法、加密算法总结">
+  <strong>上一篇：</strong><br>
+  <span>
+  密码学基础：编码方式、消息摘要算法、加密算法总结</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2021/08/28/promise-vs-completablefuture/" title="Java 8 CompletableFuture 对比 ES6 Promise">
@@ -244,7 +253,7 @@
 		  
 		
 		  
-			<li><a href="/categories/Java/" title="Java">Java<sup>21</sup></a></li>
+			<li><a href="/categories/Java/" title="Java">Java<sup>22</sup></a></li>
 		  
 		
 		  
@@ -301,7 +310,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/Java/" title="Java">Java<sup>50</sup></a></li>
+				<li><a href="/tags/Java/" title="Java">Java<sup>51</sup></a></li>
 			
 		
 			
@@ -325,11 +334,11 @@
 			
 		
 			
-				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
 			
 		
 			
@@ -361,6 +370,10 @@
 			
 		
 			
+				<li><a href="/tags/AES/" title="AES">AES<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
 			
 		
@@ -374,10 +387,6 @@
 		
 			
 				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Tomcat/" title="Tomcat">Tomcat<sup>2</sup></a></li>
 			
 		
 		</ul>
