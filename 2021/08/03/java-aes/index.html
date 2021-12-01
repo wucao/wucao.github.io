@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://xxgblog.com/img/java-aes-cbc-encryption.svg">
 <meta property="og:image" content="https://xxgblog.com/img/java-aes-cbc-decryption.svg">
 <meta property="og:image" content="https://xxgblog.com/img/java-aes-https.png">
-<meta property="og:updated_time" content="2021-08-20T15:01:14.073Z">
+<meta property="og:updated_time" content="2021-12-01T03:19:31.937Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 中的加密算法： AES">
 <meta name="twitter:description" content="加密算法加密算法通常分为对称加密算法和非对称加密算法：  对称加密算法（symmetric-key cryptography）：加密和解密时使用相同的密钥。常用的对称加密算法有 DES、AES。 非对称加密算法（asymmetric-key cryptography）：加密和解密使用不同的密钥，例如公钥加密的内容只能用私钥解密，所以又称为公钥加密算法（public-key cryptography">
@@ -134,7 +134,7 @@
 <p>要想知道上面代码的加密结果是否正确，需要找个“裁判”来判断一下，这里可以用 openssl 命令来作为这个“裁判”：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> -n <span class="string">'Hello World'</span> | openssl enc -base64 -aes-128-ecb -K $(<span class="built_in">echo</span> -n <span class="string">'12345678abcdefgh'</span> | od -A n -t x1 | sed <span class="string">'s/ *//g'</span>)</span><br><span class="line">bB0gie8pCE2RBQoIAAIxeA==</span><br></pre></td></tr></table></figure></p>
 <p>加密结果和 Java 代码加密结果一致。</p>
 <p>需要注意，AES 密钥长度只能是 16、25 或 32 字节，如果不符合要求则会异常：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.security.InvalidKeyException: Invalid AES key length</span><br></pre></td></tr></table></figure></p>
-<p>CBC 模式有一个致命的缺点，由于该模式对每个块进行独立加密，会导致同样的明文块被加密成相同的密文块，相对来说并不是非常安全。下图就是一个很好的例子：</p>
+<p>ECB 模式有一个致命的缺点，由于该模式对每个块进行独立加密，会导致同样的明文块被加密成相同的密文块，相对来说并不是非常安全。下图就是一个很好的例子：</p>
 <p><img src="/img/java-aes-ecb.png" alt="ECB 模式"></p>
 <h3 id="CBC"><a href="#CBC" class="headerlink" title="CBC"></a>CBC</h3><p>CBC 全称为密码分组链接（Cipher-block chaining），它的出现解决 ECB 同样的明文块会被加密成相同的密文块的问题。</p>
 <p>CBC 引入了初始向量的概念（IV，Initialization Vector），第一个明文块先与 IV 进行异或后再加密，后续每个明文块先与前一个密文块进行异或后再加密。</p>
@@ -357,11 +357,11 @@
 			
 		
 			
-				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
 			
 		
 			
