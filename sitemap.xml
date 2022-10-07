@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xxgblog.com/about/index.html</loc>
+    
+    <lastmod>2022-10-07T13:31:44.764Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xxgblog.com/2021/11/30/cryptography/</loc>
     
-    <lastmod>2021-12-01T14:41:09.327Z</lastmod>
+    <lastmod>2021-12-02T02:31:30.212Z</lastmod>
     
   </url>
   
@@ -124,13 +131,6 @@
     <loc>https://xxgblog.com/2018/08/30/dbutils-spring/</loc>
     
     <lastmod>2019-04-09T12:08:02.576Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://xxgblog.com/about/index.html</loc>
-    
-    <lastmod>2019-03-05T08:53:18.923Z</lastmod>
     
   </url>
   
