@@ -1,0 +1,667 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Android开发：显式和隐式Intent | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="Intent是Android初学者比较难理解的一个东西。我这里以通俗易懂的语言和通俗易懂的代码，让初学者简单感受一下Intent。 intent就是意图的意思。Intent分两种：显式(Explicit intent)和隐式(Implicit intent)。 显式（设置Component）显式，即直接指定需要打开的Activity对应的类。 以下多种方式都是一样的，实际上都是设置Componen">
+<meta name="keywords" content="Java,Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android开发：显式和隐式Intent">
+<meta property="og:url" content="https://xxgblog.com/2013/09/08/android-intent/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="Intent是Android初学者比较难理解的一个东西。我这里以通俗易懂的语言和通俗易懂的代码，让初学者简单感受一下Intent。 intent就是意图的意思。Intent分两种：显式(Explicit intent)和隐式(Implicit intent)。 显式（设置Component）显式，即直接指定需要打开的Activity对应的类。 以下多种方式都是一样的，实际上都是设置Componen">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20130908183716156.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20130908184144625.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20130908184316390.jpg">
+<meta property="og:updated_time" content="2015-04-03T10:52:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android开发：显式和隐式Intent">
+<meta name="twitter:description" content="Intent是Android初学者比较难理解的一个东西。我这里以通俗易懂的语言和通俗易懂的代码，让初学者简单感受一下Intent。 intent就是意图的意思。Intent分两种：显式(Explicit intent)和隐式(Implicit intent)。 显式（设置Component）显式，即直接指定需要打开的Activity对应的类。 以下多种方式都是一样的，实际上都是设置Componen">
+<meta name="twitter:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20130908183716156.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/09/08/android-intent/" title="Android开发：显式和隐式Intent" itemprop="url">Android开发：显式和隐式Intent</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2013-09-08T11:33:20.000Z" itemprop="datePublished"> 发表于 2013-09-08</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#显式（设置Component）"><span class="toc-number">1.</span> <span class="toc-text">显式（设置Component）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#构造方法传入Component"><span class="toc-number">1.1.</span> <span class="toc-text">构造方法传入Component</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setComponent方法"><span class="toc-number">1.2.</span> <span class="toc-text">setComponent方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setClass-setClassName方法"><span class="toc-number">1.3.</span> <span class="toc-text">setClass/setClassName方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#隐式"><span class="toc-number">2.</span> <span class="toc-text">隐式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#setAction方法"><span class="toc-number">2.1.</span> <span class="toc-text">setAction方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构造方法直接设置Action"><span class="toc-number">2.2.</span> <span class="toc-text">构造方法直接设置Action</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#调用其他应用的Activity"><span class="toc-number">2.3.</span> <span class="toc-text">调用其他应用的Activity</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一个Activity可以处理多种Action"><span class="toc-number">2.4.</span> <span class="toc-text">一个Activity可以处理多种Action</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#匹配到的Activity数量问题"><span class="toc-number">2.5.</span> <span class="toc-text">匹配到的Activity数量问题</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>Intent是Android初学者比较难理解的一个东西。我这里以通俗易懂的语言和通俗易懂的代码，让初学者简单感受一下Intent。</p>
+<p>intent就是意图的意思。Intent分两种：<strong>显式(Explicit intent)</strong>和<strong>隐式(Implicit intent)</strong>。</p>
+<h2 id="显式（设置Component）"><a href="#显式（设置Component）" class="headerlink" title="显式（设置Component）"></a>显式（设置Component）</h2><p>显式，即直接指定需要打开的Activity对应的类。</p>
+<p>以下多种方式都是一样的，实际上都是设置Component直接指定Activity类的显式Intent，由MainActivity跳转到SecondActivity：</p>
+<h3 id="构造方法传入Component"><a href="#构造方法传入Component" class="headerlink" title="构造方法传入Component"></a>构造方法传入Component</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, SecondActivity.class);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+<h3 id="setComponent方法"><a href="#setComponent方法" class="headerlink" title="setComponent方法"></a>setComponent方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ComponentName componentName = <span class="keyword">new</span> ComponentName(<span class="keyword">this</span>, SecondActivity.class);</span><br><span class="line"><span class="comment">// 或者ComponentName componentName = new ComponentName(this, "com.example.app016.SecondActivity");</span></span><br><span class="line"><span class="comment">// 或者ComponentName componentName = new ComponentName(this.getPackageName(), "com.example.app016.SecondActivity");</span></span><br><span class="line"></span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setComponent(componentName);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+<h3 id="setClass-setClassName方法"><a href="#setClass-setClassName方法" class="headerlink" title="setClass/setClassName方法"></a>setClass/setClassName方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line"></span><br><span class="line">intent.setClass(<span class="keyword">this</span>, SecondActivity.class);</span><br><span class="line"><span class="comment">// 或者intent.setClassName(this, "com.example.app016.SecondActivity");</span></span><br><span class="line"><span class="comment">// 或者intent.setClassName(this.getPackageName(), "com.example.app016.SecondActivity");</span></span><br><span class="line">		</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+<p>显式Intent通过Component可以直接设置需要调用的Activity类，可以唯一确定一个Activity，意图特别明确，所以是显式的。设置这个类的方式可以是Class对象（如SecondActivity.class），也可以是包名加类名的字符串（如”com.example.app016.SecondActivity”）。这个很好理解，在应用程序内部跳转界面常用这种方式。</p>
+<h2 id="隐式"><a href="#隐式" class="headerlink" title="隐式"></a>隐式</h2><p>隐式，即不是像显式的那样直接指定需要调用的Activity，隐式不明确指定启动哪个Activity，而是设置Action、Data、Category，让系统来筛选出合适的Activity。筛选是根据所有的&lt;intent-filter&gt;来筛选。</p>
+<p>AndroidManifest.xml文件中，首先被调用的Activity要配置&lt;intent-filter&gt;并且包含&lt;action&gt;，设定它能处理的Intent，并且category设为”android.intent.category.DEFAULT”。action的name是一个字符串，可以自定义，例如我在这里设成”abcdefg”：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">"com.example.app016.SecondActivity"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"abcdefg"</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>然后，在MainActivity，才可以通过这个action name找到上面的Activity。下面两种方式分别通过setAction和构造方法方法设置Action，两种方式效果相同。</p>
+<h3 id="setAction方法"><a href="#setAction方法" class="headerlink" title="setAction方法"></a>setAction方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setAction(<span class="string">"abcdefg"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+<h3 id="构造方法直接设置Action"><a href="#构造方法直接设置Action" class="headerlink" title="构造方法直接设置Action"></a>构造方法直接设置Action</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"abcdefg"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+<h3 id="调用其他应用的Activity"><a href="#调用其他应用的Activity" class="headerlink" title="调用其他应用的Activity"></a>调用其他应用的Activity</h3><p>一个应用的Activity可以被其他应用调用，只要使用相应的Action字符串。这样应用程序之间交互就很容易了，例如手机QQ可以调用QQ空间，可以调用腾讯微博等。</p>
+<p>因为如此，为了防止应用程序之间互相影响，一般命名方式是包名+Action名，例如这里命名”abcdefg”就很不合理了，就应该改成”com.example.app016.MyTest”。</p>
+<p>当然，你可以在自己的程序中调用其他程序的Action。例如可以在自己的应用程序中调用拨号面板：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(Intent.ACTION_DIAL);</span><br><span class="line"><span class="comment">// 或者Intent intent = new Intent("android.intent.action.DIAL");</span></span><br><span class="line"><span class="comment">// Intent.ACTION_DIAL是内置常量，值为"android.intent.action.DIAL"</span></span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20130908183716156.jpg" alt="调用拨号面板运行结果"></p>
+<h3 id="一个Activity可以处理多种Action"><a href="#一个Activity可以处理多种Action" class="headerlink" title="一个Activity可以处理多种Action"></a>一个Activity可以处理多种Action</h3><p>一个Activity可以处理多种Action，只需配置多个action：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">"com.example.app016.SecondActivity"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!-- 可以处理下面三种Intent --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"com.example.app016.SEND_EMAIL"</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"com.example.app016.SEND_MESSAGE"</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"com.example.app016.DAIL"</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Intent的Action只要是其中之一，就可以打开这个Activity。</p>
+<h3 id="匹配到的Activity数量问题"><a href="#匹配到的Activity数量问题" class="headerlink" title="匹配到的Activity数量问题"></a>匹配到的Activity数量问题</h3><p>对于一个Action字符串，系统有可能会找到一个Activity能处理这个Action，也有可能找到多个Activity，也可能一个都找不到。</p>
+<p>1、找到一个Activity</p>
+<p>很简单，直接打开这个Activity。这个不需要解释。</p>
+<p>2、找到多个Activity</p>
+<p>系统会提示用户从多个Activity中选择一个打开。例如我们自己开发一个拨号面板应用程序，可以设置activity的&lt;intent-filter&gt;中Action name为”android.intent.action.DIAL”，这样别的程序调用拨号器时，用户可以从Android自带的拨号器和我们自己开发的拨号器中选择，用户也可以选择其中一个作为默认。<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20130908184144625.jpg" alt="匹配到多个Activity"><br>这也就是当Android手机装上UC浏览器后，打开网页时会弹出选择Android自带浏览器还是UC浏览器。</p>
+<p>3、一个Activity都没找到</p>
+<p>一个都没找到的话，程序就会出错，会抛出ActivityNotFoundException。比如随便写一个action字符串：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"asasasas"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20130908184316390.jpg" alt="ActivityNotFoundException"><br>所以应该注意try catch异常：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"asasasas"</span>);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	startActivity(intent);</span><br><span class="line">&#125; <span class="keyword">catch</span>(ActivityNotFoundException e) &#123;</span><br><span class="line">	Toast.makeText(<span class="keyword">this</span>, <span class="string">"找不到对应的Activity"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>或者也可以使用Intent的resolveActivity方法判断这个Intent是否能找到合适的Activity，如果没有，则不再startActivity，或者可以直接禁用用户操作的控件。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(Intent.ACTION_DIAL);</span><br><span class="line"><span class="keyword">if</span>(intent.resolveActivity(getPackageManager()) == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 设置控件不可用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意resolveActivity方法返回值就是显式Intent上面讲到的ComponentName对象，一般情况下也就是系统找到的那个Activity。但是如果有多个Activity可供选择的话，则返回的Component是com.android.internal.app.ResolverActivity，也就是用户选择Activity的那个界面对应的Activity，这里不再深究。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android/">Android</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Android/">Android</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2013/09/08/android-intent/" data-title="Android开发：显式和隐式Intent | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2013/09/11/android-intentservice/" title="Android开发：IntentService">
+  <strong>上一篇：</strong><br>
+  <span>
+  Android开发：IntentService</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2013/07/04/java-urlclassloader-plugin/" title="Java通过URLClassLoader让程序支持插件扩展">
+ <strong>下一篇：</strong><br> 
+ <span>Java通过URLClassLoader让程序支持插件扩展
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+<div id="gitalk-container" style="padding: 0 4%;"></div>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#显式（设置Component）"><span class="toc-number">1.</span> <span class="toc-text">显式（设置Component）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#构造方法传入Component"><span class="toc-number">1.1.</span> <span class="toc-text">构造方法传入Component</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setComponent方法"><span class="toc-number">1.2.</span> <span class="toc-text">setComponent方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setClass-setClassName方法"><span class="toc-number">1.3.</span> <span class="toc-text">setClass/setClassName方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#隐式"><span class="toc-number">2.</span> <span class="toc-text">隐式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#setAction方法"><span class="toc-number">2.1.</span> <span class="toc-text">setAction方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构造方法直接设置Action"><span class="toc-number">2.2.</span> <span class="toc-text">构造方法直接设置Action</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#调用其他应用的Activity"><span class="toc-number">2.3.</span> <span class="toc-text">调用其他应用的Activity</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一个Activity可以处理多种Action"><span class="toc-number">2.4.</span> <span class="toc-text">一个Activity可以处理多种Action</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#匹配到的Activity数量问题"><span class="toc-number">2.5.</span> <span class="toc-text">匹配到的Activity数量问题</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">微信公众号</p>
+<div>
+<img src="/img/WechatPublic.jpg" style="width: 100%;">
+</div>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>22</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/架构/" title="架构">架构<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>51</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AES/" title="AES">AES<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://blog.csdn.net/eson_15" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p style="text-align: center; font-size: 0.7em;">、
+			<a href="https://beian.miit.gov.cn" target="_blank" style="color: white;">皖ICP备15002890号-2</a>
+		</p>
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname.split('/')[4]
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,661 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Nginx失败重试中的HTTP协议幂等问题: non_idempotent | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="Nginx通过反向代理做负载均衡时，如果被代理的其中一个服务发生错误或者超时的时候，通常希望Nginx自动重试其他的服务，从而实现服务的高可用性。实际上Nginx本身默认会有错误重试机制，并且可以通过proxy_next_upstream来自定义配置。 如果不了解HTTP协议以及Nginx的机制，就可能在使用过程中遇到各种各样的坑。例如服务出现了错误或超时却未重试，或者一些例如创建订单或发送短信这">
+<meta name="keywords" content="Nginx,HTTP,反向代理,负载均衡">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx失败重试中的HTTP协议幂等问题: non_idempotent">
+<meta property="og:url" content="https://xxgblog.com/2019/04/19/nginx-non-idempotent/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="Nginx通过反向代理做负载均衡时，如果被代理的其中一个服务发生错误或者超时的时候，通常希望Nginx自动重试其他的服务，从而实现服务的高可用性。实际上Nginx本身默认会有错误重试机制，并且可以通过proxy_next_upstream来自定义配置。 如果不了解HTTP协议以及Nginx的机制，就可能在使用过程中遇到各种各样的坑。例如服务出现了错误或超时却未重试，或者一些例如创建订单或发送短信这">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-04-20T16:47:38.938Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nginx失败重试中的HTTP协议幂等问题: non_idempotent">
+<meta name="twitter:description" content="Nginx通过反向代理做负载均衡时，如果被代理的其中一个服务发生错误或者超时的时候，通常希望Nginx自动重试其他的服务，从而实现服务的高可用性。实际上Nginx本身默认会有错误重试机制，并且可以通过proxy_next_upstream来自定义配置。 如果不了解HTTP协议以及Nginx的机制，就可能在使用过程中遇到各种各样的坑。例如服务出现了错误或超时却未重试，或者一些例如创建订单或发送短信这">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/04/19/nginx-non-idempotent/" title="Nginx失败重试中的HTTP协议幂等问题: non_idempotent" itemprop="url">Nginx失败重试中的HTTP协议幂等问题: non_idempotent</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2019-04-19T14:18:36.000Z" itemprop="datePublished"> 发表于 2019-04-19</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#proxy-next-upstream"><span class="toc-number">1.</span> <span class="toc-text">proxy_next_upstream</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#non-idempotent"><span class="toc-number">2.</span> <span class="toc-text">non_idempotent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是幂等方法"><span class="toc-number">3.</span> <span class="toc-text">什么是幂等方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">4.</span> <span class="toc-text">参考文档</span></a></li></ol>
+		
+		</div>
+		
+		<p>Nginx通过反向代理做负载均衡时，如果被代理的其中一个服务发生错误或者超时的时候，通常希望Nginx自动重试其他的服务，从而实现服务的高可用性。实际上Nginx本身默认会有错误重试机制，并且可以通过<code>proxy_next_upstream</code>来自定义配置。</p>
+<p>如果不了解HTTP协议以及Nginx的机制，就可能在使用过程中遇到各种各样的坑。例如服务出现了错误或超时却未重试，或者一些例如创建订单或发送短信这类的HTTP接口，客户端只发送一次请求，后台却由于Nginx重试导致创建了多个订单，或者收到多条短信，导致一些业务上的问题。</p>
+<h2 id="proxy-next-upstream"><a href="#proxy-next-upstream" class="headerlink" title="proxy_next_upstream"></a>proxy_next_upstream</h2><p>在Nginx配置文件中，<code>proxy_next_upstream</code>用于指定在什么情况下Nginx会将请求转移到其他服务器上。其默认值是<code>proxy_next_upstream error timeout</code>，即发生网络错误以及超时，才会重试其他服务器。默认情况下服务返回500状态码是不会重试的，如果想在响应500状态码时也进行重试，可以配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxy_next_upstream error timeout http_500;</span><br></pre></td></tr></table></figure></p>
+<p>当然还有<code>http_502</code>、<code>http_503</code>、<code>http_404</code>等可以指定在出现哪些状态码的情况下需要重试。具体配置项可以参考官方文档: <a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream" target="_blank" rel="noopener">http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream</a> 。</p>
+<p>用一个最简单的例子来测试一下该特性，例如下面是Spring Boot写了一个简单的HTTP接口，返回500状态码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NginxRetryApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		SpringApplication.run(NginxRetryApplication.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@RequestMapping</span>(<span class="string">"/"</span>)</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"收到一个请求"</span>); <span class="comment">// 打印日志</span></span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(); <span class="comment">// 抛出异常, 返回500状态码</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>分别使用9030和9031两个端口号启动该Spring Boot服务，然后Nginx配置好负载均衡：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">upstream nginxretry &#123;</span><br><span class="line">    server 127.0.0.1:9030 max_fails=0;</span><br><span class="line">	server 127.0.0.1:9031 max_fails=0;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen 9039;</span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://nginxretry;</span><br><span class="line">        proxy_next_upstream error timeout http_500;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意：以上配置中<code>max_fails=0</code>是为了更方便的测试Nginx错误重试机制。<code>max_fails</code>默认值是1，用于指定一个server在一段时间内（默认10s）发生错误次数达到多少次，Nginx就会自动将该服务器下线。这里设置为0是禁用这个特性，防止在测试过程中服务器被踢下线不好测试。线上环境下一般不会设置<code>max_fails=0</code>。</p>
+<p>配置完成后重启Nginx，使用GET方式请求 <a href="http://localhost:9039/" target="_blank" rel="noopener">http://localhost:9039/</a> ，再分别查看9030和9031两个端口号对应的服务日志，可以发现两个服务都收到请求，也就是Nginx在访问其中一个服务收到500错误状态码后，又尝试去访问另一个服务。</p>
+<p>再次使用POST方式请求 <a href="http://localhost:9039/" target="_blank" rel="noopener">http://localhost:9039/</a> ，再分别查看9030和9031两个端口号对应的服务日志，可以发现只有一个服务收到请求。也就是<strong>当请求类型是POST时，Nginx默认不会失败重试</strong>。如果想让POST请求也会失败重试，可以继续向下阅读。</p>
+<h2 id="non-idempotent"><a href="#non-idempotent" class="headerlink" title="non_idempotent"></a>non_idempotent</h2><p>在<a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream" target="_blank" rel="noopener">Nginx文档</a>中可以看到<code>proxy_next_upstream</code>有一个选项<code>non_idempotent</code>:</p>
+<blockquote>
+<p>normally, requests with a non-idempotent method (POST, LOCK, PATCH) are not passed to the next server if a request has been sent to an upstream server (1.9.13); enabling this option explicitly allows retrying such requests;</p>
+</blockquote>
+<p>通常情况下，如果请求使用非等幂方法（POST、LOCK、PATCH），请求失败后不会再到其他服务器进行重试。加上<code>non_idempotent</code>选项后，即使是非幂等请求类型（例如POST请求），发生错误后也会重试。</p>
+<p>如果想让POST请求也会失败重试，需要配置<code>non_idempotent</code>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">upstream nginxretry &#123;</span><br><span class="line">    server 127.0.0.1:9030 max_fails=0;</span><br><span class="line">	server 127.0.0.1:9031 max_fails=0;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen 9039;</span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://nginxretry;</span><br><span class="line">        proxy_next_upstream error timeout http_500 non_idempotent;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>重启Nginx后再次使用POST请求访问 <a href="http://localhost:9039/" target="_blank" rel="noopener">http://localhost:9039/</a> ，再分别查看9030和9031两个端口号对应的服务日志，可以看到两个服务都收到请求，也就是POST请求也会重试了。不过实际上在生产环境中，不建议加上<code>non_idempotent</code>选项，具体原因可以继续往下阅读。</p>
+<h2 id="什么是幂等方法"><a href="#什么是幂等方法" class="headerlink" title="什么是幂等方法"></a>什么是幂等方法</h2><p>在<a href="https://tools.ietf.org/html/rfc7231#section-4.2.2" target="_blank" rel="noopener">HTTP协议规范</a>中，对幂等方法（Idempotent Method）做了以下定义：</p>
+<blockquote>
+<p> A request method is considered “idempotent” if the intended effect on the server of multiple identical requests with that method is the same as the effect for a single such request.</p>
+</blockquote>
+<p>如果使用该方法的多个相同请求对服务器的预期效果与单个请求的效果相同，则认为请求方法是幂等的。常见的HTTP请求方法中，GET是幂等的，而POST是非幂等的。如果在回答面试题”GET和POST区别”时能答出这一点，才能说明对HTTP协议有一定的理解。</p>
+<p>在做业务开发是如何理解幂等性，举个最简单的例子：GET方法一般用于获取数据，如果获取的是数据库数据，对应的是SELECT语句。同样的SELECT语句执行一次还是多次，都不会影响数据。而POST一般对应INSERT，如果执行多次后，可能会造成数据重复插入的问题。所以不要使用GET方法做一些INSERT操作，在业务开发时要遵循HTTP协议规范。</p>
+<p>生产环境中为什么不建议加上<code>non_idempotent</code>选项？因为无论是发生500错误还是timeout，服务器上的业务可能都已经执行过了，而重试会导致非幂等方法重复执行，从而导致业务问题，例如一个请求会创建了多个订单，或者收到多条短信的问题。</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li><a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream" target="_blank" rel="noopener">http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream</a></li>
+<li><a href="https://tools.ietf.org/html/rfc7231" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7231</a></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Nginx/">Nginx</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Nginx/">Nginx</a><a href="/tags/HTTP/">HTTP</a><a href="/tags/反向代理/">反向代理</a><a href="/tags/负载均衡/">负载均衡</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2019/04/19/nginx-non-idempotent/" data-title="Nginx失败重试中的HTTP协议幂等问题: non_idempotent | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2020/03/12/spring-redistemplate-listoperations/" title="Spring Data Redis 如何将 RedisTemplate 注入为 ListOperations 类型">
+  <strong>上一篇：</strong><br>
+  <span>
+  Spring Data Redis 如何将 RedisTemplate 注入为 ListOperations 类型</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2019/02/17/java-ipv6-system-properties/" title="Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍">
+ <strong>下一篇：</strong><br> 
+ <span>Java IPv6相关属性preferIPv4Stack、preferIPv6Addresses介绍
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+<div id="gitalk-container" style="padding: 0 4%;"></div>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#proxy-next-upstream"><span class="toc-number">1.</span> <span class="toc-text">proxy_next_upstream</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#non-idempotent"><span class="toc-number">2.</span> <span class="toc-text">non_idempotent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是幂等方法"><span class="toc-number">3.</span> <span class="toc-text">什么是幂等方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">4.</span> <span class="toc-text">参考文档</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">微信公众号</p>
+<div>
+<img src="/img/WechatPublic.jpg" style="width: 100%;">
+</div>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>22</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/架构/" title="架构">架构<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>51</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AES/" title="AES">AES<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://blog.csdn.net/eson_15" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p style="text-align: center; font-size: 0.7em;">、
+			<a href="https://beian.miit.gov.cn" target="_blank" style="color: white;">皖ICP备15002890号-2</a>
+		</p>
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname.split('/')[4]
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

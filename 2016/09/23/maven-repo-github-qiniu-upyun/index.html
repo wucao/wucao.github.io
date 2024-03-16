@@ -1,0 +1,661 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Maven仓库搭建（二）：GitHub、又拍云、七牛云存储 | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="在上一篇博文中，主要介绍了Maven仓库搭建原理，除了Nexus外，随意使用一个HTTP服务器，例如Tomcat或Nginx，都可搭建一个自己的Maven仓库。 无论是用Nexus还是HTTP服务器搭建Maven仓库，总归需要一台服务器，一台服务器需要花钱买和花时间维护，成本比较大。Nexus一般是公司用的比较多，个人不推荐使用。本文就是介绍一些适合个人搭建Maven仓库的方式，相对来说比Nexu">
+<meta name="keywords" content="Java,Maven">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Maven仓库搭建（二）：GitHub、又拍云、七牛云存储">
+<meta property="og:url" content="https://xxgblog.com/2016/09/23/maven-repo-github-qiniu-upyun/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="在上一篇博文中，主要介绍了Maven仓库搭建原理，除了Nexus外，随意使用一个HTTP服务器，例如Tomcat或Nginx，都可搭建一个自己的Maven仓库。 无论是用Nexus还是HTTP服务器搭建Maven仓库，总归需要一台服务器，一台服务器需要花钱买和花时间维护，成本比较大。Nexus一般是公司用的比较多，个人不推荐使用。本文就是介绍一些适合个人搭建Maven仓库的方式，相对来说比Nexu">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://xxgblog.com/img/2490ce80-814c-11e6-ae22-56b6b6499611.jpg">
+<meta property="og:image" content="https://xxgblog.com/img/be63b0df-f7a1-4ac4-92dc-9e4c3e864c04.jpg">
+<meta property="og:updated_time" content="2016-09-29T14:09:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Maven仓库搭建（二）：GitHub、又拍云、七牛云存储">
+<meta name="twitter:description" content="在上一篇博文中，主要介绍了Maven仓库搭建原理，除了Nexus外，随意使用一个HTTP服务器，例如Tomcat或Nginx，都可搭建一个自己的Maven仓库。 无论是用Nexus还是HTTP服务器搭建Maven仓库，总归需要一台服务器，一台服务器需要花钱买和花时间维护，成本比较大。Nexus一般是公司用的比较多，个人不推荐使用。本文就是介绍一些适合个人搭建Maven仓库的方式，相对来说比Nexu">
+<meta name="twitter:image" content="https://xxgblog.com/img/2490ce80-814c-11e6-ae22-56b6b6499611.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/09/23/maven-repo-github-qiniu-upyun/" title="Maven仓库搭建（二）：GitHub、又拍云、七牛云存储" itemprop="url">Maven仓库搭建（二）：GitHub、又拍云、七牛云存储</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2016-09-23T12:14:16.000Z" itemprop="datePublished"> 发表于 2016-09-23</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#GitHub"><span class="toc-number">1.</span> <span class="toc-text">GitHub</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七牛云存储"><span class="toc-number">2.</span> <span class="toc-text">七牛云存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#又拍云"><span class="toc-number">3.</span> <span class="toc-text">又拍云</span></a></li></ol>
+		
+		</div>
+		
+		<p>在<a href="/2016/09/22/http-server-maven-repository/">上一篇博文</a>中，主要介绍了Maven仓库搭建原理，除了Nexus外，随意使用一个HTTP服务器，例如Tomcat或Nginx，都可搭建一个自己的Maven仓库。</p>
+<p>无论是用Nexus还是HTTP服务器搭建Maven仓库，总归需要一台服务器，一台服务器需要花钱买和花时间维护，成本比较大。Nexus一般是公司用的比较多，个人不推荐使用。本文就是介绍一些适合个人搭建Maven仓库的方式，相对来说比Nexus更方便、费用更低（基本是免费的）。</p>
+<h2 id="GitHub"><a href="#GitHub" class="headerlink" title="GitHub"></a>GitHub</h2><p>首先在GitHub上新建一个repository，例如命名为maven-repo，用来当做Maven仓库。</p>
+<p>再将需要上传到仓库的项目用<code>mvn deploy</code>命令生成需要上传的文件（例如jar、pom、md5、sha1等各种文件）。在该项目的pom.xml中加入：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">id</span>&gt;</span>file-repository<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">url</span>&gt;</span>file://D:\abc<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>配置中url是文件生成的目录。运行<code>mvn deploy</code>命令，会在<code>D:\abc</code>目录下生成一个所需要上传到仓库的文件：<br><img src="/img/2490ce80-814c-11e6-ae22-56b6b6499611.jpg" alt="mvn deploy生成的文件"></p>
+<p>接下来需要把这些文件上传到GitHub上，这一步如果会使用git命令的话应该会非常熟悉。进入<code>D:\abc</code>目录，运行以下命令将文件提交到GitHub：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br><span class="line">git add -A</span><br><span class="line">git commit -m <span class="string">"first commit"</span></span><br><span class="line">git remote add origin https://github.com/wucao/maven-repo.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure></p>
+<p>此时就可以在GitHub上看到这些文件：<br><img src="/img/be63b0df-f7a1-4ac4-92dc-9e4c3e864c04.jpg" alt="GitHub提交成功"></p>
+<p>参考我的GitHub个人仓库：<a href="https://github.com/wucao/maven-repo" target="_blank" rel="noopener">https://github.com/wucao/maven-repo</a></p>
+<p>GitHub项目对应的文件HTTP下载URL根目录是：<br><a href="https://raw.githubusercontent.com/wucao/maven-repo/master/" target="_blank" rel="noopener">https://raw.githubusercontent.com/wucao/maven-repo/master/</a><br>路径是用户名+GitHub仓库名+分支。</p>
+<p>现在Maven仓库已经可以立即使用了：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>my-repository<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">url</span>&gt;</span>https://raw.githubusercontent.com/wucao/maven-repo/master<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>例如在pom.xml中加上：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.xxg.cloudstorage<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>cloudstorage<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>实际上Maven会根据<code>&lt;repository&gt;</code>中的URL加上<code>&lt;dependency&gt;</code>中的groupId、artifactId、version生成一个完整的文件下载的HTTP地址，例如生成的jar包下载地址：<br><a href="https://raw.githubusercontent.com/wucao/maven-repo/master/com/xxg/cloudstorage/cloudstorage/1.0.0/cloudstorage-1.0.0.jar" target="_blank" rel="noopener">https://raw.githubusercontent.com/wucao/maven-repo/master/com/xxg/cloudstorage/cloudstorage/1.0.0/cloudstorage-1.0.0.jar</a></p>
+<h2 id="七牛云存储"><a href="#七牛云存储" class="headerlink" title="七牛云存储"></a>七牛云存储</h2><p>除了GitHub之外，七牛云存储也是一种几乎免费的Maven仓库的方案。七牛提供每月10G流量和10G存储空间，一般来说很够用了。</p>
+<p>首先还是需要通过<code>mvn deploy</code>生成所需要上传的文件，步骤和上面GitHub搭建仓库一致，不同的是生成的文件不是上传到GitHub仓库，而是上传到七牛云存储。可以下载使用七牛提供的文件同步工具将目录同步到七牛上，具体使用文档：<br><a href="http://developer.qiniu.com/code/v6/tool/qrsync.html" target="_blank" rel="noopener">http://developer.qiniu.com/code/v6/tool/qrsync.html</a></p>
+<p>下载完成后将conf.json配置中的文件同步目录、七牛的bucket、accessKey、secketKey修改为自己的配置：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"src"</span>: <span class="string">"D:\\abc"</span>,</span><br><span class="line">    <span class="string">"dest"</span>: <span class="string">"qiniu:access_key=&lt;AccessKey&gt;&amp;secret_key=&lt;SecretKey&gt;&amp;bucket=&lt;Bucket&gt;"</span>,</span><br><span class="line">    <span class="string">"debug_level"</span>: <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行qrsync即可上传目录下所有文件到七牛云。</p>
+<p>在其他项目中配置七牛云的对外域名，上传到七牛云的jar包就可以在其他项目中直接使用了：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>my-repository<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">url</span>&gt;</span>http://o8sw7lrki.bkt.clouddn.com/<span class="tag">&lt;/<span class="name">url</span>&gt;</span> <span class="comment">&lt;!-- 这里配置七牛云的对外HTTP地址 --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>除了七牛之外，阿里云对象存储OSS、腾讯云对象存储服务COS等也都是不错的选择，原理和七牛类似。</p>
+<h2 id="又拍云"><a href="#又拍云" class="headerlink" title="又拍云"></a>又拍云</h2><p>又拍云和七牛云原理差不多，这里单独拉出来介绍，是因为又拍云提供了FTP文件上传。Maven Deploy插件可以直接在运行<code>mvn deploy</code>命令时将文件上传到FTP服务器上。</p>
+<p>首先根据又拍云文档，拿到FTP服务器的地址、用户名和密码：<br><a href="http://docs.upyun.com/guide/#ftpftps" target="_blank" rel="noopener">http://docs.upyun.com/guide/#ftpftps</a><br>地址：v0.ftp.upyun.com<br>用户名：操作员名/服务名<br>密码：操作员的密码</p>
+<p>然后根据Maven Deploy插件的文档：<br><a href="https://maven.apache.org/plugins/maven-deploy-plugin/examples/deploy-ftp.html" target="_blank" rel="noopener">https://maven.apache.org/plugins/maven-deploy-plugin/examples/deploy-ftp.html</a></p>
+<p>将以下配置加到pom.xml中：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">project</span>&gt;</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>ftp-repository<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span>ftp://v0.ftp.upyun.com<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">extensions</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- Enabling the use of FTP --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">extension</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.wagon<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>wagon-ftp<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">extension</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">extensions</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line">  ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>在settings.xml中加入FTP的用户名和密码：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>ftp-repository<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>操作员名/服务名<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>操作员的密码<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br><span class="line">  ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>这样直接运行<code>mvn deploy</code>命令，文件就直接上传到又拍云上了，相对七牛云来说方便很多。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Maven/">Maven</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Maven/">Maven</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2016/09/23/maven-repo-github-qiniu-upyun/" data-title="Maven仓库搭建（二）：GitHub、又拍云、七牛云存储 | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2016/09/29/spring-session-redis/" title="Spring Session + Redis实现分布式Session共享">
+  <strong>上一篇：</strong><br>
+  <span>
+  Spring Session + Redis实现分布式Session共享</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/09/22/http-server-maven-repository/" title="Maven仓库搭建（一）：一台HTTP服务器即可（Tomcat、Apache或Nginx）">
+ <strong>下一篇：</strong><br> 
+ <span>Maven仓库搭建（一）：一台HTTP服务器即可（Tomcat、Apache或Nginx）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+<div id="gitalk-container" style="padding: 0 4%;"></div>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#GitHub"><span class="toc-number">1.</span> <span class="toc-text">GitHub</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七牛云存储"><span class="toc-number">2.</span> <span class="toc-text">七牛云存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#又拍云"><span class="toc-number">3.</span> <span class="toc-text">又拍云</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">微信公众号</p>
+<div>
+<img src="/img/WechatPublic.jpg" style="width: 100%;">
+</div>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>22</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/架构/" title="架构">架构<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>51</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AES/" title="AES">AES<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://blog.csdn.net/eson_15" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p style="text-align: center; font-size: 0.7em;">、
+			<a href="https://beian.miit.gov.cn" target="_blank" style="color: white;">皖ICP备15002890号-2</a>
+		</p>
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname.split('/')[4]
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

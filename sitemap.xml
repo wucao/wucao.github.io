@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://xxgblog.com/2021/08/28/promise-vs-completablefuture/</loc>
+    
+    <lastmod>2024-03-16T14:30:34.474Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2021/10/19/decorator-pattern/</loc>
+    
+    <lastmod>2024-03-16T12:26:29.212Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2023/02/21/elastic-resilient/</loc>
+    
+    <lastmod>2024-03-16T12:19:19.428Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/about/index.html</loc>
+    
+    <lastmod>2023-02-21T13:01:32.895Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2021/11/30/cryptography/</loc>
+    
+    <lastmod>2021-12-02T02:31:30.212Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2021/08/03/java-aes/</loc>
+    
+    <lastmod>2021-12-01T03:19:31.937Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2021/04/19/zipkin-brave/</loc>
+    
+    <lastmod>2021-11-30T06:13:22.934Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2021/04/14/netty-websocket/</loc>
+    
+    <lastmod>2021-10-18T10:25:33.938Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2021/04/25/redisson-distributed-lock/</loc>
+    
+    <lastmod>2021-04-25T15:07:38.907Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2020/03/24/spring-cloud-eureka-zero-downtime/</loc>
+    
+    <lastmod>2021-04-08T06:46:41.321Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2020/07/22/try-with-resources/</loc>
+    
+    <lastmod>2020-07-23T03:37:27.043Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2020/04/22/java-8-lambda/</loc>
+    
+    <lastmod>2020-04-21T17:32:23.719Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2020/04/17/java-8-stream/</loc>
+    
+    <lastmod>2020-04-21T17:32:17.557Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2020/03/12/spring-redistemplate-listoperations/</loc>
+    
+    <lastmod>2020-03-12T10:08:22.721Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2016/04/02/traverse-list-thread-safe/</loc>
+    
+    <lastmod>2019-11-03T13:55:47.538Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2018/10/12/x-forwarded-for-header-trick/</loc>
+    
+    <lastmod>2019-05-14T16:43:04.063Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2019/04/19/nginx-non-idempotent/</loc>
+    
+    <lastmod>2019-04-20T16:47:38.938Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/05/17/nginx-start/</loc>
+    
+    <lastmod>2019-04-10T15:39:19.942Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2018/08/30/dbutils-spring/</loc>
+    
+    <lastmod>2019-04-09T12:08:02.576Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2016/06/01/maven-spring-profile/</loc>
+    
+    <lastmod>2019-03-05T08:46:09.034Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2019/02/17/java-ipv6-system-properties/</loc>
+    
+    <lastmod>2019-02-17T17:18:46.787Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/08/25/mina-netty-twisted-4/</loc>
+    
+    <lastmod>2019-01-12T13:53:31.657Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/08/27/mina-netty-twisted-5/</loc>
+    
+    <lastmod>2019-01-02T11:45:15.184Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/08/21/mina-netty-twisted-2/</loc>
+    
+    <lastmod>2019-01-02T11:43:35.359Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/08/22/mina-netty-twisted-3/</loc>
+    
+    <lastmod>2019-01-02T11:41:10.253Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2017/06/23/jetty-tomcat-nginx-proxy-config/</loc>
+    
+    <lastmod>2018-10-12T08:02:50.975Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2018/05/22/spring-security-pre-authentication/</loc>
+    
+    <lastmod>2018-08-30T07:26:50.673Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/01/30/jetty-session-storage/</loc>
+    
+    <lastmod>2018-05-12T16:24:26.589Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2018/05/12/spring-jms-activemq/</loc>
+    
+    <lastmod>2018-05-12T14:38:13.906Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/03/07/jetty-embed/</loc>
+    
+    <lastmod>2017-06-23T01:53:29.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/08/15/mina-netty-twisted-1/</loc>
+    
+    <lastmod>2017-02-28T04:06:32.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/09/10/mina-netty-twisted-6/</loc>
+    
+    <lastmod>2017-02-28T04:05:18.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/09/19/mina-netty-twisted-7/</loc>
+    
+    <lastmod>2017-02-28T04:05:10.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/09/23/mina-netty-twisted-8/</loc>
+    
+    <lastmod>2017-02-28T04:05:03.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/10/12/mina-netty-twisted-9/</loc>
+    
+    <lastmod>2017-02-28T04:04:54.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/10/16/mina-netty-twisted-10/</loc>
+    
+    <lastmod>2017-02-28T04:04:46.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2017/02/27/mina-netty-twisted-11/</loc>
+    
+    <lastmod>2017-02-28T04:04:32.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2017/02/28/mina-netty-twisted-12/</loc>
+    
+    <lastmod>2017-02-28T04:03:06.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2016/09/29/spring-session-redis/</loc>
+    
+    <lastmod>2016-10-08T09:45:32.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2016/09/23/maven-repo-github-qiniu-upyun/</loc>
+    
+    <lastmod>2016-09-29T14:09:41.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2016/09/22/http-server-maven-repository/</loc>
+    
+    <lastmod>2016-09-23T04:41:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2016/05/05/maven-profile-antrun/</loc>
+    
+    <lastmod>2016-06-01T03:06:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2016/05/06/mybatis-generator-mysql-pagination/</loc>
+    
+    <lastmod>2016-05-06T10:10:07.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/08/11/tomcat-comet-web-chat/</loc>
+    
+    <lastmod>2016-04-05T11:40:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2013/09/15/java-bitmask/</loc>
+    
+    <lastmod>2016-04-05T11:37:34.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/09/06/spring-security-start/</loc>
+    
+    <lastmod>2016-02-21T11:27:14.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/10/23/wagon-maven-plugin/</loc>
+    
+    <lastmod>2016-02-21T10:49:36.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/12/22/nodejs-async-mysql/</loc>
+    
+    <lastmod>2016-01-06T05:16:14.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2013/05/16/java-thread-safe/</loc>
+    
+    <lastmod>2015-12-18T08:50:34.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/11/25/java-websocket-tail/</loc>
+    
+    <lastmod>2015-11-26T04:23:56.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/10/16/web-service-client/</loc>
+    
+    <lastmod>2015-10-16T12:32:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/08/07/maven-create-executable-jar/</loc>
+    
+    <lastmod>2015-08-10T03:31:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2013/07/04/java-urlclassloader-plugin/</loc>
+    
+    <lastmod>2015-08-10T02:52:00.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/07/09/spring-zero-xml/</loc>
+    
+    <lastmod>2015-08-10T02:50:12.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/06/29/nginx-detect-mobile/</loc>
+    
+    <lastmod>2015-06-29T08:32:12.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2013/07/01/java-thread-wait/</loc>
+    
+    <lastmod>2015-04-09T09:16:30.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2012/11/15/java-synchronized/</loc>
+    
+    <lastmod>2015-04-09T06:46:58.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2013/09/08/android-intent/</loc>
+    
+    <lastmod>2015-04-03T10:52:50.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2013/09/11/android-intentservice/</loc>
+    
+    <lastmod>2015-04-03T06:17:14.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2013/09/27/postgresql-java-copy/</loc>
+    
+    <lastmod>2015-04-03T01:51:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/02/24/apache-ftpserver-embed/</loc>
+    
+    <lastmod>2015-04-02T08:11:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/03/12/struts2-thinkphp/</loc>
+    
+    <lastmod>2015-04-02T07:55:52.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/03/24/struts2-ajax/</loc>
+    
+    <lastmod>2015-04-02T07:54:04.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/404.html</loc>
+    
+    <lastmod>2015-04-02T07:12:34.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/07/16/java-protobuf-extend/</loc>
+    
+    <lastmod>2015-04-02T06:57:32.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/11/07/linux-tigase/</loc>
+    
+    <lastmod>2015-04-02T05:26:00.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2014/07/03/java-protobuf/</loc>
+    
+    <lastmod>2015-04-02T05:23:02.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xxgblog.com/2015/01/13/strophe-xmpp/</loc>
+    
+    <lastmod>2015-04-02T02:31:36.000Z</lastmod>
+    
+  </url>
+  
+</urlset>

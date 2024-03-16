@@ -1,0 +1,665 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Java位运算在程序设计中的使用：位掩码（BitMask） | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="在Java中，位运算符有很多，例如与(&amp;amp;)、非(~)、或(|)、异或(^)、移位(&amp;lt;&amp;lt;和&amp;gt;&amp;gt;)等。这些运算符在日常编码中很少会用到。 在下面的一个例子中，会用到位掩码（BitMask），其中包含大量的位运算。不只是在Java中，其他编写语言中也是可以使用的。 例如，在一个系统中，用户一般有查询(Select)、新增(Insert)、修改(Update)、删除(Del">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java位运算在程序设计中的使用：位掩码（BitMask）">
+<meta property="og:url" content="https://xxgblog.com/2013/09/15/java-bitmask/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="在Java中，位运算符有很多，例如与(&amp;amp;)、非(~)、或(|)、异或(^)、移位(&amp;lt;&amp;lt;和&amp;gt;&amp;gt;)等。这些运算符在日常编码中很少会用到。 在下面的一个例子中，会用到位掩码（BitMask），其中包含大量的位运算。不只是在Java中，其他编写语言中也是可以使用的。 例如，在一个系统中，用户一般有查询(Select)、新增(Insert)、修改(Update)、删除(Del">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2016-04-05T11:37:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java位运算在程序设计中的使用：位掩码（BitMask）">
+<meta name="twitter:description" content="在Java中，位运算符有很多，例如与(&amp;amp;)、非(~)、或(|)、异或(^)、移位(&amp;lt;&amp;lt;和&amp;gt;&amp;gt;)等。这些运算符在日常编码中很少会用到。 在下面的一个例子中，会用到位掩码（BitMask），其中包含大量的位运算。不只是在Java中，其他编写语言中也是可以使用的。 例如，在一个系统中，用户一般有查询(Select)、新增(Insert)、修改(Update)、删除(Del">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/09/15/java-bitmask/" title="Java位运算在程序设计中的使用：位掩码（BitMask）" itemprop="url">Java位运算在程序设计中的使用：位掩码（BitMask）</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2013-09-15T03:40:08.000Z" itemprop="datePublished"> 发表于 2013-09-15</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Permission"><span class="toc-number">1.</span> <span class="toc-text">Permission</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NewPermission"><span class="toc-number">2.</span> <span class="toc-text">NewPermission</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二者对比"><span class="toc-number">3.</span> <span class="toc-text">二者对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#设置仅允许Select和Insert权限"><span class="toc-number">3.1.</span> <span class="toc-text">设置仅允许Select和Insert权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断是否允许Select和Insert、Update权限"><span class="toc-number">3.2.</span> <span class="toc-text">判断是否允许Select和Insert、Update权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断是只否允许Select和Insert权限"><span class="toc-number">3.3.</span> <span class="toc-text">判断是只否允许Select和Insert权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一些用到位掩码的源代码"><span class="toc-number">4.</span> <span class="toc-text">一些用到位掩码的源代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#java-lang-reflect-Modifier"><span class="toc-number">4.1.</span> <span class="toc-text">java.lang.reflect.Modifier</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#android-text-util-Linkify"><span class="toc-number">4.2.</span> <span class="toc-text">android.text.util.Linkify</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>在Java中，位运算符有很多，例如与(&amp;)、非(~)、或(|)、异或(^)、移位(&lt;&lt;和&gt;&gt;)等。这些运算符在日常编码中很少会用到。</p>
+<p>在下面的一个例子中，会用到位掩码（BitMask），其中包含大量的位运算。不只是在Java中，其他编写语言中也是可以使用的。</p>
+<p>例如，在一个系统中，用户一般有查询(Select)、新增(Insert)、修改(Update)、删除(Delete)四种权限，四种权限有多种组合方式，也就是有16中不同的权限状态（2的4次方）。</p>
+<h2 id="Permission"><a href="#Permission" class="headerlink" title="Permission"></a>Permission</h2><p>一般情况下会想到用四个boolean类型变量来保存：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Permission</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 是否允许查询</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> allowSelect;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 是否允许新增</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> allowInsert;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 是否允许删除</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> allowDelete;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 是否允许更新</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> allowUpdate;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 省略Getter和Setter</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面用四个boolean类型变量来保存每种权限状态。</p>
+<h2 id="NewPermission"><a href="#NewPermission" class="headerlink" title="NewPermission"></a>NewPermission</h2><p>下面是另外一种方式，使用位掩码的话，用一个二进制数即可，每一位来表示一种权限，0表示无权限，1表示有权限。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NewPermission</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 是否允许查询，二进制第1位，0表示否，1表示是</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ALLOW_SELECT = <span class="number">1</span> &lt;&lt; <span class="number">0</span>; <span class="comment">// 0001</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 是否允许新增，二进制第2位，0表示否，1表示是</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ALLOW_INSERT = <span class="number">1</span> &lt;&lt; <span class="number">1</span>; <span class="comment">// 0010</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 是否允许修改，二进制第3位，0表示否，1表示是</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ALLOW_UPDATE = <span class="number">1</span> &lt;&lt; <span class="number">2</span>; <span class="comment">// 0100</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 是否允许删除，二进制第4位，0表示否，1表示是</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ALLOW_DELETE = <span class="number">1</span> &lt;&lt; <span class="number">3</span>; <span class="comment">// 1000</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 存储目前的权限状态</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> flag;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 *  重新设置权限</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPermission</span><span class="params">(<span class="keyword">int</span> permission)</span> </span>&#123;</span><br><span class="line">		flag = permission;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 *  添加一项或多项权限</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">enable</span><span class="params">(<span class="keyword">int</span> permission)</span> </span>&#123;</span><br><span class="line">		flag |= permission;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 *  删除一项或多项权限</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">disable</span><span class="params">(<span class="keyword">int</span> permission)</span> </span>&#123;</span><br><span class="line">		flag &amp;= ~permission;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 *  是否拥某些权限</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isAllow</span><span class="params">(<span class="keyword">int</span> permission)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> (flag &amp; permission) == permission;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 *  是否禁用了某些权限</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isNotAllow</span><span class="params">(<span class="keyword">int</span> permission)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> (flag &amp; permission) == <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 *  是否仅仅拥有某些权限</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isOnlyAllow</span><span class="params">(<span class="keyword">int</span> permission)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> flag == permission;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以上代码中，用四个常量表示了每个二进制位代码的权限项。</p>
+<p>例如：</p>
+<p>ALLOW_SELECT = 1 &lt;&lt; 0 转成二进制就是0001，二进制第一位表示Select权限。<br>ALLOW_INSERT = 1 &lt;&lt; 1 转成二进制就是0010，二进制第二位表示Insert权限。</p>
+<p>private int flag存储了各种权限的启用和停用状态，相当于代替了Permission中的四个boolean类型的变量。</p>
+<p>用flag的四个二进制位来表示四种权限的状态，每一位的0和1代表一项权限的启用和停用，下面列举了部分状态表示的权限：</p>
+<table><thead><tr><td>flag</td><td>删除</td><td>修改</td><td>新增</td><td>查询</td><td>&nbsp;</td></tr></thead><tbody><tr><td>1(0001)</td><td>0</td><td>0</td><td>0</td><td>1</td><td>只允许查询（即等于ALLOW_SELECT）</td></tr><tr><td>2(0010)</td><td>0</td><td>0</td><td>1</td><td>0</td><td>只允许新增（即等于ALLOW_INSERT）</td></tr><tr><td>4(0100)</td><td>0</td><td>1</td><td>0</td><td>0</td><td>只允许修改（即等于ALLOW_UPDATE）</td></tr><tr><td>8(1000)</td><td>1</td><td>0</td><td>0</td><td>0</td><td>只允许删除（即等于ALLOW_DELETE）</td></tr><tr><td>3(0011) </td><td>0</td><td>0</td><td>1</td><td>1</td><td>只允许查询和新增</td></tr><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>四项权限都不允许</td></tr><tr><td>15(1111)</td><td>1</td><td>1</td><td>1</td><td>1</td><td>四项权限都允许</td></tr></tbody></table>
+
+<p>使用位掩码的方式，只需要用一个大于或等于0且小于16的整数即可表示所有的16种权限的状态。</p>
+<p>此外，还有很多设置权限和判断权限的方法，需要用到位运算，例如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">enable</span><span class="params">(<span class="keyword">int</span> permission)</span> </span>&#123;</span><br><span class="line">	flag |= permission; <span class="comment">// 相当于flag = flag | permission;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>调用这个方法可以在现有的权限基础上添加一项或多项权限。</p>
+<p>添加一项Update权限：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">permission.enable(NewPermission.ALLOW_UPDATE);</span><br></pre></td></tr></table></figure></p>
+<p>假设现有权限只有Select，也就是flag是0001。执行以上代码，flag = 0001 | 0100，也就是0101，便拥有了Select和Update两项权限。</p>
+<p>添加Insert、Update、Delete三项权限：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">permission.enable(NewPermission.ALLOW_INSERT </span><br><span class="line">    | NewPermission.ALLOW_UPDATE | NewPermission.ALLOW_DELETE);</span><br></pre></td></tr></table></figure></p>
+<p>NewPermission.ALLOW_INSERT | NewPermission.ALLOW_UPDATE | NewPermission.ALLOW_DELETE运算结果是1110。假设现有权限只有Select，也就是flag是0001。flag = 0001 | 1110，也就是1111，便拥有了这四项权限，相当于添加了三项权限。</p>
+<p>上面的设置如果使用最初的Permission类的话，就需要下面三行代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">permission.setAllowInsert(<span class="keyword">true</span>);</span><br><span class="line">permission.setAllowUpdate(<span class="keyword">true</span>);</span><br><span class="line">permission.setAllowDelete(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure></p>
+<h2 id="二者对比"><a href="#二者对比" class="headerlink" title="二者对比"></a>二者对比</h2><h3 id="设置仅允许Select和Insert权限"><a href="#设置仅允许Select和Insert权限" class="headerlink" title="设置仅允许Select和Insert权限"></a>设置仅允许Select和Insert权限</h3><p>Permission<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">permission.setAllowSelect(<span class="keyword">true</span>);</span><br><span class="line">permission.setAllowInsert(<span class="keyword">true</span>);</span><br><span class="line">permission.setAllowUpdate(<span class="keyword">false</span>);</span><br><span class="line">permission.setAllowDelete(<span class="keyword">false</span>);</span><br></pre></td></tr></table></figure></p>
+<p>NewPermission<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">permission.setPermission(NewPermission.ALLOW_SELECT | NewPermission.ALLOW_INSERT);</span><br></pre></td></tr></table></figure></p>
+<h3 id="判断是否允许Select和Insert、Update权限"><a href="#判断是否允许Select和Insert、Update权限" class="headerlink" title="判断是否允许Select和Insert、Update权限"></a>判断是否允许Select和Insert、Update权限</h3><p>Permission<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (permission.isAllowSelect() &amp;&amp; permission.isAllowInsert() &amp;&amp; permission.isAllowUpdate())</span><br></pre></td></tr></table></figure></p>
+<p>NewPermission<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (permission. isAllow (NewPermission.ALLOW_SELECT </span><br><span class="line">    | NewPermission.ALLOW_INSERT | NewPermission.ALLOW_UPDATE))</span><br></pre></td></tr></table></figure></p>
+<h3 id="判断是只否允许Select和Insert权限"><a href="#判断是只否允许Select和Insert权限" class="headerlink" title="判断是只否允许Select和Insert权限"></a>判断是只否允许Select和Insert权限</h3><p>Permission<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (permission.isAllowSelect() &amp;&amp; permission.isAllowInsert() </span><br><span class="line">    &amp;&amp; !permission.isAllowUpdate() &amp;&amp; !permission.isAllowDelete())</span><br></pre></td></tr></table></figure></p>
+<p>NewPermission<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (permission. isOnlyAllow (NewPermission.ALLOW_SELECT | NewPermission.ALLOW_INSERT))</span><br></pre></td></tr></table></figure></p>
+<p>二者对比可以感受到MyPermission位掩码方式相对于Permission的优势，可以节省很多代码量，位运算是底层运算，效率也非常高，而且理解起来也很简单。</p>
+<h2 id="一些用到位掩码的源代码"><a href="#一些用到位掩码的源代码" class="headerlink" title="一些用到位掩码的源代码"></a>一些用到位掩码的源代码</h2><h3 id="java-lang-reflect-Modifier"><a href="#java-lang-reflect-Modifier" class="headerlink" title="java.lang.reflect.Modifier"></a>java.lang.reflect.Modifier</h3><p>在Java反射中，java.lang.reflect.Modifier是用来判断类、成员变量、方法等包含的修饰符。在Modifier的源代码中可以看到：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PUBLIC           = <span class="number">0x00000001</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PRIVATE          = <span class="number">0x00000002</span>;  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PROTECTED        = <span class="number">0x00000004</span>;  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STATIC           = <span class="number">0x00000008</span>;  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> FINAL            = <span class="number">0x00000010</span>;  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SYNCHRONIZED     = <span class="number">0x00000020</span>;</span><br><span class="line"><span class="comment">// ......</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isProtected</span><span class="params">(<span class="keyword">int</span> mod)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (mod &amp; PROTECTED) != <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isStatic</span><span class="params">(<span class="keyword">int</span> mod)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (mod &amp; STATIC) != <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="android-text-util-Linkify"><a href="#android-text-util-Linkify" class="headerlink" title="android.text.util.Linkify"></a>android.text.util.Linkify</h3><p>在Android开发中，Linkify可以设置文本中的地址、电话、邮箱等是否支持点击链接：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Linkify.addLinks(textView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);</span><br></pre></td></tr></table></figure></p>
+<p>android.text.util.Linkify部分源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> WEB_URLS = <span class="number">0x01</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> EMAIL_ADDRESSES = <span class="number">0x02</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PHONE_NUMBERS = <span class="number">0x04</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAP_ADDRESSES = <span class="number">0x08</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ALL = WEB_URLS | EMAIL_ADDRESSES | PHONE_NUMBERS | MAP_ADDRESSES;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">addLinks</span><span class="params">(Spannable text, <span class="keyword">int</span> mask)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mask == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    URLSpan[] old = text.getSpans(<span class="number">0</span>, text.length(), URLSpan.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = old.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        text.removeSpan(old[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ArrayList&lt;LinkSpec&gt; links = <span class="keyword">new</span> ArrayList&lt;LinkSpec&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((mask &amp; WEB_URLS) != <span class="number">0</span>) &#123;</span><br><span class="line">        gatherLinks(links, text, Patterns.WEB_URL,</span><br><span class="line">            <span class="keyword">new</span> String[] &#123; <span class="string">"http://"</span>, <span class="string">"https://"</span>, <span class="string">"rtsp://"</span> &#125;,</span><br><span class="line">            sUrlMatchFilter, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((mask &amp; EMAIL_ADDRESSES) != <span class="number">0</span>) &#123;</span><br><span class="line">        gatherLinks(links, text, Patterns.EMAIL_ADDRESS,</span><br><span class="line">            <span class="keyword">new</span> String[] &#123; <span class="string">"mailto:"</span> &#125;,</span><br><span class="line">            <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((mask &amp; PHONE_NUMBERS) != <span class="number">0</span>) &#123;</span><br><span class="line">        gatherLinks(links, text, Patterns.PHONE,</span><br><span class="line">            <span class="keyword">new</span> String[] &#123; <span class="string">"tel:"</span> &#125;,</span><br><span class="line">            sPhoneNumberMatchFilter, sPhoneNumberTransformFilter);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((mask &amp; MAP_ADDRESSES) != <span class="number">0</span>) &#123;</span><br><span class="line">        gatherMapLinks(links, text);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pruneOverlaps(links);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (links.size() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (LinkSpec link: links) &#123;</span><br><span class="line">        applyLink(link.url, link.start, link.end, text);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java/">Java</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2013/09/15/java-bitmask/" data-title="Java位运算在程序设计中的使用：位掩码（BitMask） | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2013/09/27/postgresql-java-copy/" title="PostgreSQL：Java使用CopyManager实现客户端文件COPY导入">
+  <strong>上一篇：</strong><br>
+  <span>
+  PostgreSQL：Java使用CopyManager实现客户端文件COPY导入</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2013/09/11/android-intentservice/" title="Android开发：IntentService">
+ <strong>下一篇：</strong><br> 
+ <span>Android开发：IntentService
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+<div id="gitalk-container" style="padding: 0 4%;"></div>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Permission"><span class="toc-number">1.</span> <span class="toc-text">Permission</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NewPermission"><span class="toc-number">2.</span> <span class="toc-text">NewPermission</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二者对比"><span class="toc-number">3.</span> <span class="toc-text">二者对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#设置仅允许Select和Insert权限"><span class="toc-number">3.1.</span> <span class="toc-text">设置仅允许Select和Insert权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断是否允许Select和Insert、Update权限"><span class="toc-number">3.2.</span> <span class="toc-text">判断是否允许Select和Insert、Update权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断是只否允许Select和Insert权限"><span class="toc-number">3.3.</span> <span class="toc-text">判断是只否允许Select和Insert权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一些用到位掩码的源代码"><span class="toc-number">4.</span> <span class="toc-text">一些用到位掩码的源代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#java-lang-reflect-Modifier"><span class="toc-number">4.1.</span> <span class="toc-text">java.lang.reflect.Modifier</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#android-text-util-Linkify"><span class="toc-number">4.2.</span> <span class="toc-text">android.text.util.Linkify</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">微信公众号</p>
+<div>
+<img src="/img/WechatPublic.jpg" style="width: 100%;">
+</div>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>22</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/架构/" title="架构">架构<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>51</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AES/" title="AES">AES<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://blog.csdn.net/eson_15" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p style="text-align: center; font-size: 0.7em;">、
+			<a href="https://beian.miit.gov.cn" target="_blank" style="color: white;">皖ICP备15002890号-2</a>
+		</p>
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname.split('/')[4]
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

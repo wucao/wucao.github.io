@@ -1,0 +1,673 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Strophe.js连接XMPP服务器Openfire、Tigase实现Web私聊、群聊(MUC) | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="XMPP（Extensible Messaging and Presence Protocol）是一种网络即时通讯协议，它基于XML，具有很强的扩展性，被广泛使用在即时通讯软件、网络游戏聊天、Web聊天及Web消息推送、移动设备的消息推送等场景，例如Google的GTalk、《英雄联盟LOL》游戏聊天模块。 由于在Web浏览器上的JavaScript不能直接处理TCP协议，所以XMPP服务器通常会">
+<meta name="keywords" content="XMPP,Tigase,Strophe.js,Openfire">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Strophe.js连接XMPP服务器Openfire、Tigase实现Web私聊、群聊(MUC)">
+<meta property="og:url" content="https://xxgblog.com/2015/01/13/strophe-xmpp/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="XMPP（Extensible Messaging and Presence Protocol）是一种网络即时通讯协议，它基于XML，具有很强的扩展性，被广泛使用在即时通讯软件、网络游戏聊天、Web聊天及Web消息推送、移动设备的消息推送等场景，例如Google的GTalk、《英雄联盟LOL》游戏聊天模块。 由于在Web浏览器上的JavaScript不能直接处理TCP协议，所以XMPP服务器通常会">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150113102909578.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112175155093.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112210428663.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112210418015.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150113093242968.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112210744989.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112211143919.jpg">
+<meta property="og:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112214429804.jpg">
+<meta property="og:updated_time" content="2015-04-02T02:31:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Strophe.js连接XMPP服务器Openfire、Tigase实现Web私聊、群聊(MUC)">
+<meta name="twitter:description" content="XMPP（Extensible Messaging and Presence Protocol）是一种网络即时通讯协议，它基于XML，具有很强的扩展性，被广泛使用在即时通讯软件、网络游戏聊天、Web聊天及Web消息推送、移动设备的消息推送等场景，例如Google的GTalk、《英雄联盟LOL》游戏聊天模块。 由于在Web浏览器上的JavaScript不能直接处理TCP协议，所以XMPP服务器通常会">
+<meta name="twitter:image" content="http://7xidft.com1.z0.glb.clouddn.com/blog/20150113102909578.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/01/13/strophe-xmpp/" title="Strophe.js连接XMPP服务器Openfire、Tigase实现Web私聊、群聊(MUC)" itemprop="url">Strophe.js连接XMPP服务器Openfire、Tigase实现Web私聊、群聊(MUC)</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2015-01-13T02:51:00.000Z" itemprop="datePublished"> 发表于 2015-01-13</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#XMPP协议简介"><span class="toc-number">1.</span> <span class="toc-text">XMPP协议简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#message"><span class="toc-number">1.1.</span> <span class="toc-text">message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#presence"><span class="toc-number">1.2.</span> <span class="toc-text">presence</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iq"><span class="toc-number">1.3.</span> <span class="toc-text">iq</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#搭建XMPP服务器"><span class="toc-number">2.</span> <span class="toc-text">搭建XMPP服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Strophe-js"><span class="toc-number">3.</span> <span class="toc-text">Strophe.js</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现Web私聊"><span class="toc-number">4.</span> <span class="toc-text">实现Web私聊</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现Web群聊"><span class="toc-number">5.</span> <span class="toc-text">实现Web群聊</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建房间"><span class="toc-number">5.1.</span> <span class="toc-text">创建房间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#加入房间"><span class="toc-number">5.2.</span> <span class="toc-text">加入房间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#聊天"><span class="toc-number">5.3.</span> <span class="toc-text">聊天</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现"><span class="toc-number">5.4.</span> <span class="toc-text">实现</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>XMPP（Extensible Messaging and Presence Protocol）是一种网络即时通讯协议，它基于XML，具有很强的扩展性，被广泛使用在即时通讯软件、网络游戏聊天、Web聊天及Web消息推送、移动设备的消息推送等场景，例如Google的GTalk、《英雄联盟LOL》游戏聊天模块。</p>
+<p>由于在Web浏览器上的JavaScript不能直接处理TCP协议，所以XMPP服务器通常会提供BOSH（Bidirectional-streams Over Synchronous HTTP）接口，通过HTTP长轮训（long-polling）可以实现Web浏览器即时聊天。Strophe.js是一个通过BOSH连接Web浏览器和XMPP服务器的工具库。</p>
+<h2 id="XMPP协议简介"><a href="#XMPP协议简介" class="headerlink" title="XMPP协议简介"></a>XMPP协议简介</h2><p>XMPP服务器和客户端之间，是通过XML节（XML Stanza）来进行通讯。其中有三种非常重要的XML Stanza类型：&lt;message&gt;、&lt;presence&gt;、&lt;iq&gt;。</p>
+<h3 id="message"><a href="#message" class="headerlink" title="message"></a>message</h3><p>聊天消息的发送和接收就是通过message节来实现。例如xxg1@host发送一条信息”你好”给xxg2@host，xxg1@host客户端会将下面的这段XML发送到XMPP服务器，服务器再推送给xxg2@host客户端。其中&lt;message&gt;的from属性是发送者，to属性是接收者，&lt;body&gt;子元素的内容就是聊天信息。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">message</span> <span class="attr">from</span>=<span class="string">"xxg1@host"</span> <span class="attr">to</span>=<span class="string">"xxg2@host"</span> <span class="attr">type</span>=<span class="string">"chat"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span>你好<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="presence"><a href="#presence" class="headerlink" title="presence"></a>presence</h3><p>可用于表明用户的状态，例如用户状态改变成“Do not disturb”（“请勿打扰”），会向服务器发送：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">presence</span> <span class="attr">from</span>=<span class="string">"xxg@host"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">status</span>&gt;</span>Do not disturb<span class="tag">&lt;/<span class="name">status</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">priority</span>&gt;</span>0<span class="tag">&lt;/<span class="name">priority</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">show</span>&gt;</span>dnd<span class="tag">&lt;/<span class="name">show</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">presence</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="iq"><a href="#iq" class="headerlink" title="iq"></a>iq</h3><p>iq即Info/Query，采用“请求-响应”机制，类似于HTTP的机制。下面的例子是客户端通过&lt;iq&gt;请求获取联系人，XMPP服务器将结果返回。</p>
+<p>客户端请求获取联系人：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iq</span> <span class="attr">from</span>=<span class="string">'xxg@host'</span> <span class="attr">id</span>=<span class="string">'bv1bs71f'</span> <span class="attr">type</span>=<span class="string">'get'</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">query</span> <span class="attr">xmlns</span>=<span class="string">'jabber:iq:roster'</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">iq</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>服务器结果返回：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iq</span> <span class="attr">to</span>=<span class="string">'xxg@host'</span> <span class="attr">id</span>=<span class="string">'bv1bs71f'</span> <span class="attr">type</span>=<span class="string">'result'</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">query</span> <span class="attr">xmlns</span>=<span class="string">'jabber:iq:roster'</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">item</span> <span class="attr">jid</span>=<span class="string">'xxg2@host'</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">item</span> <span class="attr">jid</span>=<span class="string">'xxg3@host'</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">query</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">iq</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="搭建XMPP服务器"><a href="#搭建XMPP服务器" class="headerlink" title="搭建XMPP服务器"></a>搭建XMPP服务器</h2><p>在实现Web浏览器聊天之前，首先要搭建一个XMPP服务器。例如Openfire、Tigase、Ejabberd是常用的XMPP服务器。其中Openfire、Tigase是基于Java实现，Ejabberd是Erlang实现。虽然实现的语言不同，但是都遵循XMPP协议，所以使用其中任意一个XMPP服务器即可。</p>
+<p>下面以Openfire和Tigase为例。Tigase的搭建可以参考我的另一篇博文：<a href="/2014/11/07/linux-tigase/">Linux搭建XMPP服务器Tigase（Spark客户端测试）</a>。</p>
+<p>XMPP服务器通常会实现<a href="http://xmpp.org/extensions/xep-0124.html" target="_blank" rel="noopener">BOSH扩展</a>，下面是Openfire和Tigase的BOSH默认URL：</p>
+<p>Openfire：<a href="http://host:7070/http-bind" target="_blank" rel="noopener">http://host:7070/http-bind</a><br>Tigase：<a href="http://host:5280" target="_blank" rel="noopener">http://host:5280</a></p>
+<p>在使用Strophe.js的时候，需要使用对应的HTTP地址才能连接上XMPP服务器。</p>
+<p>如果使用Opnefire，还需要在管理后台配置一下：<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150113102909578.jpg" alt="Openfire启用HTTP绑定配置"></p>
+<h2 id="Strophe-js"><a href="#Strophe-js" class="headerlink" title="Strophe.js"></a>Strophe.js</h2><p>下载：<a href="http://strophe.im/strophejs/" target="_blank" rel="noopener">http://strophe.im/strophejs/</a></p>
+<h2 id="实现Web私聊"><a href="#实现Web私聊" class="headerlink" title="实现Web私聊"></a>实现Web私聊</h2><p>私聊比较简单，聊天信息是通过上面介绍的&lt;message&gt;来进行传递交换。例如接收到一条别人发来的聊天信息，即接收一个&lt;message&gt;元素，发送给别人一条聊天信息，即发送一个&lt;message&gt;元素。</p>
+<p>HTML：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'http://cdn.bootcss.com/jquery/1.9.1/jquery.min.js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'http://cdn.bootcss.com/strophe.js/1.1.3/strophe.min.js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'test.js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">	JID：<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"input-jid"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	密码：<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"password"</span> <span class="attr">id</span>=<span class="string">"input-pwd"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn-login"</span>&gt;</span>登录<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"msg"</span> <span class="attr">style</span>=<span class="string">"height: 400px; width: 400px; overflow: scroll;"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">	联系人JID：</span><br><span class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"input-contacts"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	消息：</span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">textarea</span> <span class="attr">id</span>=<span class="string">"input-msg"</span> <span class="attr">cols</span>=<span class="string">"30"</span> <span class="attr">rows</span>=<span class="string">"4"</span>&gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn-send"</span>&gt;</span>发送<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>JavaScript(test.js)：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// XMPP服务器BOSH地址</span></span><br><span class="line"><span class="keyword">var</span> BOSH_SERVICE = <span class="string">'http://host:5280'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// XMPP连接</span></span><br><span class="line"><span class="keyword">var</span> connection = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当前状态是否连接</span></span><br><span class="line"><span class="keyword">var</span> connected = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当前登录的JID</span></span><br><span class="line"><span class="keyword">var</span> jid = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 连接状态改变的事件</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onConnect</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(status)</span><br><span class="line">    <span class="keyword">if</span> (status == Strophe.Status.CONNFAIL) &#123;</span><br><span class="line">		alert(<span class="string">"连接失败！"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (status == Strophe.Status.AUTHFAIL) &#123;</span><br><span class="line">		alert(<span class="string">"登录失败！"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (status == Strophe.Status.DISCONNECTED) &#123;</span><br><span class="line">		alert(<span class="string">"连接断开！"</span>);</span><br><span class="line">		connected = <span class="literal">false</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (status == Strophe.Status.CONNECTED) &#123;</span><br><span class="line">		alert(<span class="string">"连接成功，可以开始聊天了！"</span>);</span><br><span class="line">		connected = <span class="literal">true</span>;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 当接收到&lt;message&gt;节，调用onMessage回调函数</span></span><br><span class="line">		connection.addHandler(onMessage, <span class="literal">null</span>, <span class="string">'message'</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 首先要发送一个&lt;presence&gt;给服务器（initial presence）</span></span><br><span class="line">		connection.send($pres().tree());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接收到&lt;message&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onMessage</span>(<span class="params">msg</span>) </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 解析出&lt;message&gt;的from、type属性，以及body子元素</span></span><br><span class="line">    <span class="keyword">var</span> <span class="keyword">from</span> = msg.getAttribute(<span class="string">'from'</span>);</span><br><span class="line">    <span class="keyword">var</span> type = msg.getAttribute(<span class="string">'type'</span>);</span><br><span class="line">    <span class="keyword">var</span> elems = msg.getElementsByTagName(<span class="string">'body'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (type == <span class="string">"chat"</span> &amp;&amp; elems.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">var</span> body = elems[<span class="number">0</span>];</span><br><span class="line">		$(<span class="string">"#msg"</span>).append(<span class="keyword">from</span> + <span class="string">":&lt;br&gt;"</span> + Strophe.getText(body) + <span class="string">"&lt;br&gt;"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$(<span class="built_in">document</span>).ready(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 通过BOSH连接XMPP服务器</span></span><br><span class="line">	$(<span class="string">'#btn-login'</span>).click(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(!connected) &#123;</span><br><span class="line">			connection = <span class="keyword">new</span> Strophe.Connection(BOSH_SERVICE);</span><br><span class="line">			connection.connect($(<span class="string">"#input-jid"</span>).val(), $(<span class="string">"#input-pwd"</span>).val(), onConnect);</span><br><span class="line">			jid = $(<span class="string">"#input-jid"</span>).val();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 发送消息</span></span><br><span class="line">	$(<span class="string">"#btn-send"</span>).click(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(connected) &#123;</span><br><span class="line">			<span class="keyword">if</span>($(<span class="string">"#input-contacts"</span>).val() == <span class="string">''</span>) &#123;</span><br><span class="line">				alert(<span class="string">"请输入联系人！"</span>);</span><br><span class="line">				<span class="keyword">return</span>;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// 创建一个&lt;message&gt;元素并发送</span></span><br><span class="line">			<span class="keyword">var</span> msg = $msg(&#123;</span><br><span class="line">				to: $(<span class="string">"#input-contacts"</span>).val(), </span><br><span class="line">				<span class="keyword">from</span>: jid, </span><br><span class="line">				type: <span class="string">'chat'</span></span><br><span class="line">			&#125;).c(<span class="string">"body"</span>, <span class="literal">null</span>, $(<span class="string">"#input-msg"</span>).val());</span><br><span class="line">			connection.send(msg.tree());</span><br><span class="line"></span><br><span class="line">			$(<span class="string">"#msg"</span>).append(jid + <span class="string">":&lt;br&gt;"</span> + $(<span class="string">"#input-msg"</span>).val() + <span class="string">"&lt;br&gt;"</span>);</span><br><span class="line">			$(<span class="string">"#input-msg"</span>).val(<span class="string">''</span>);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			alert(<span class="string">"请先登录！"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>修改JavaScript代码中的BOSH_SERVICE，用浏览器打开HTML文件，登录后即可聊天：<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112175155093.jpg" alt="Web私聊效果图"></p>
+<h2 id="实现Web群聊"><a href="#实现Web群聊" class="headerlink" title="实现Web群聊"></a>实现Web群聊</h2><p>XMPP群聊通过XMPP协议的<a href="http://xmpp.org/extensions/xep-0045.html" target="_blank" rel="noopener">MUC（Multi-User Chat）扩展</a>实现。</p>
+<p>Openfire默认支持MUC，但是Tigase服务器默认不支持MUC，需要在init.properties文件中加入以下粗体部分的配置项：</p>
+<p>config-type=–gen-config-def<br>--admins=admin@host<br>–virt-hosts = host<br>–debug=server<br>–user-db=mysql<br>–user-db-uri = jdbc:mysql://localhost:3306/tigasedb?user=root&amp;password=xxx<br><strong>–comp-name-1 = muc</strong><br><strong>–comp-class-1 = tigase.muc.MUCComponent</strong><br><strong>–external = muc.devel.tigase.org:muc-pass:connect:5270:devel.tigase.org:accept</strong></p>
+<h3 id="创建房间"><a href="#创建房间" class="headerlink" title="创建房间"></a>创建房间</h3><p>创建房间实际上可以写在代码中，但是本文为了方便，就使用XMPP客户端Spark或者其他工具来创建。</p>
+<p>首先使用Spark任意登录一个用户，下图是Spark创建房间的步骤：<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112210428663.jpg" alt="创建房间步骤1"><br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112210418015.jpg" alt="创建房间步骤2"><br>如果使用的是Tigase，默认创建的房间是加锁的，别的用户无法进入，需要对房间解锁。Spark进入房间后，点击下面的设置按钮，然后不用更改任何设置，直接更新即可解锁房间（虽然没有修改任何配置，但是更新时会发送一个&lt;iq&gt;给服务器，这个&lt;iq&gt;解锁了房间，参考<a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant" target="_blank" rel="noopener">http://xmpp.org/extensions/xep-0045.html#createroom-instant</a>）：<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150113093242968.jpg" alt="解锁房间"><br>另外，如果使用Openfire可以直接使用管理后台来创建：<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112210744989.jpg" alt="Openfire创建房间"></p>
+<h3 id="加入房间"><a href="#加入房间" class="headerlink" title="加入房间"></a>加入房间</h3><p>房间创建好了之后，就有有对应的房间JID：<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112211143919.jpg" alt="房间JID"><br>加入房间可以通过发送一个&lt;presence&gt;来实现（实际上如果房间不存在下面的这条&lt;presence&gt;也会创建房间，但是创建的房间默认加锁，还需要发送一条&lt;iq&gt;解锁，所以本文就直接用Spark创建房间）：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">presence</span> <span class="attr">from</span>=<span class="string">'xxg@host'</span> <span class="attr">to</span>=<span class="string">'xxgroom@muc.host/xxg'</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">x</span> <span class="attr">xmlns</span>=<span class="string">'http://jabber.org/protocol/muc'</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">presence</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>属性<a href="mailto:to=&#39;xxgroom@muc.host" target="_blank" rel="noopener">to=&#39;xxgroom@muc.host</a>/xxg’中，<a href="mailto:xxgroom@muc.host" target="_blank" rel="noopener">xxgroom@muc.host</a>表示房间JID，xxg表示在房间的昵称。</p>
+<h3 id="聊天"><a href="#聊天" class="headerlink" title="聊天"></a>聊天</h3><p>和私聊一样，群聊也是通过&lt;message&gt;来实现，不同的是&lt;message&gt;的type属性，私聊是”chat”，而群聊是”groupchat”，另外，to属性即为房间JID，这样一条聊天消息就会发送给房间中的所有人。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">message</span> <span class="attr">from</span>=<span class="string">'xxg@host'</span> <span class="attr">to</span>=<span class="string">'myroom@muc.host'</span> <span class="attr">type</span>=<span class="string">'groupchat'</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span>大家好！<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>HTML：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'http://cdn.bootcss.com/jquery/1.9.1/jquery.min.js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'http://cdn.bootcss.com/strophe.js/1.1.3/strophe.min.js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'test2.js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">	JID：<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"input-jid"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	密码：<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"password"</span> <span class="attr">id</span>=<span class="string">"input-pwd"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn-login"</span>&gt;</span>登录<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"msg"</span> <span class="attr">style</span>=<span class="string">"height: 400px; width: 400px; overflow: scroll;"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	消息：</span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">textarea</span> <span class="attr">id</span>=<span class="string">"input-msg"</span> <span class="attr">cols</span>=<span class="string">"30"</span> <span class="attr">rows</span>=<span class="string">"4"</span>&gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn-send"</span>&gt;</span>发送<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>JavaScript(test2.js)：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// XMPP服务器BOSH地址</span></span><br><span class="line"><span class="keyword">var</span> BOSH_SERVICE = <span class="string">'http://host:5280'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 房间JID</span></span><br><span class="line"><span class="keyword">var</span> ROOM_JID = <span class="string">'xxgroom@muc.host'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// XMPP连接</span></span><br><span class="line"><span class="keyword">var</span> connection = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当前状态是否连接</span></span><br><span class="line"><span class="keyword">var</span> connected = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当前登录的JID</span></span><br><span class="line"><span class="keyword">var</span> jid = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 连接状态改变的事件</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onConnect</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (status == Strophe.Status.CONNFAIL) &#123;</span><br><span class="line">		alert(<span class="string">"连接失败！"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (status == Strophe.Status.AUTHFAIL) &#123;</span><br><span class="line">		alert(<span class="string">"登录失败！"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (status == Strophe.Status.DISCONNECTED) &#123;</span><br><span class="line">		alert(<span class="string">"连接断开！"</span>);</span><br><span class="line">		connected = <span class="literal">false</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (status == Strophe.Status.CONNECTED) &#123;</span><br><span class="line">		alert(<span class="string">"连接成功，可以开始聊天了！"</span>);</span><br><span class="line">		connected = <span class="literal">true</span>;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 当接收到&lt;message&gt;节，调用onMessage回调函数</span></span><br><span class="line">		connection.addHandler(onMessage, <span class="literal">null</span>, <span class="string">'message'</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 首先要发送一个&lt;presence&gt;给服务器（initial presence）</span></span><br><span class="line">		connection.send($pres().tree());</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 发送&lt;presence&gt;元素，加入房间</span></span><br><span class="line">		connection.send($pres(&#123;</span><br><span class="line">			<span class="keyword">from</span>: jid,</span><br><span class="line">			to: ROOM_JID + <span class="string">"/"</span> + jid.substring(<span class="number">0</span>,jid.indexOf(<span class="string">"@"</span>))</span><br><span class="line">		&#125;).c(<span class="string">'x'</span>,&#123;<span class="attr">xmlns</span>: <span class="string">'http://jabber.org/protocol/muc'</span>&#125;).tree());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接收到&lt;message&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onMessage</span>(<span class="params">msg</span>) </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="built_in">console</span>.log(msg);</span><br><span class="line">	<span class="comment">// 解析出&lt;message&gt;的from、type属性，以及body子元素</span></span><br><span class="line">    <span class="keyword">var</span> <span class="keyword">from</span> = msg.getAttribute(<span class="string">'from'</span>);</span><br><span class="line">    <span class="keyword">var</span> type = msg.getAttribute(<span class="string">'type'</span>);</span><br><span class="line">    <span class="keyword">var</span> elems = msg.getElementsByTagName(<span class="string">'body'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (type == <span class="string">"groupchat"</span> &amp;&amp; elems.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">var</span> body = elems[<span class="number">0</span>];</span><br><span class="line">		$(<span class="string">"#msg"</span>).append(<span class="keyword">from</span>.substring(<span class="keyword">from</span>.indexOf(<span class="string">'/'</span>) + <span class="number">1</span>) + <span class="string">":&lt;br&gt;"</span> + Strophe.getText(body) + <span class="string">"&lt;br&gt;"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$(<span class="built_in">document</span>).ready(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 通过BOSH连接XMPP服务器</span></span><br><span class="line">    $(<span class="string">'#btn-login'</span>).click(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(!connected) &#123;</span><br><span class="line">			connection = <span class="keyword">new</span> Strophe.Connection(BOSH_SERVICE);</span><br><span class="line">			connection.connect($(<span class="string">"#input-jid"</span>).val(), $(<span class="string">"#input-pwd"</span>).val(), onConnect);</span><br><span class="line">			jid = $(<span class="string">"#input-jid"</span>).val();</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 发送消息</span></span><br><span class="line">	$(<span class="string">"#btn-send"</span>).click(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(connected) &#123;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// 创建一个&lt;message&gt;元素并发送</span></span><br><span class="line">			<span class="keyword">var</span> msg = $msg(&#123;</span><br><span class="line">				to: ROOM_JID, </span><br><span class="line">				<span class="keyword">from</span>: jid, </span><br><span class="line">				type: <span class="string">'groupchat'</span></span><br><span class="line">			&#125;).c(<span class="string">"body"</span>, <span class="literal">null</span>, $(<span class="string">"#input-msg"</span>).val());</span><br><span class="line">			connection.send(msg.tree());</span><br><span class="line"></span><br><span class="line">			$(<span class="string">"#input-msg"</span>).val(<span class="string">''</span>);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			alert(<span class="string">"请先登录！"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>创建好房间，修改JavaScript代码中的BOSH_SERVICE和ROOM_JID，用浏览器打开HTML文件，登录后即可群聊：<br><img src="http://7xidft.com1.z0.glb.clouddn.com/blog/20150112214429804.jpg" alt="Web群聊效果图"><br>另外，Strophe.js还有一个专门的MUC插件，有兴趣的同学可以自己研究下：<a href="https://github.com/strophe/strophejs-plugins/tree/master/muc" target="_blank" rel="noopener">https://github.com/strophe/strophejs-plugins/tree/master/muc</a>。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/XMPP/">XMPP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/XMPP/">XMPP</a><a href="/tags/Tigase/">Tigase</a><a href="/tags/Strophe-js/">Strophe.js</a><a href="/tags/Openfire/">Openfire</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2015/01/13/strophe-xmpp/" data-title="Strophe.js连接XMPP服务器Openfire、Tigase实现Web私聊、群聊(MUC) | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2015/01/30/jetty-session-storage/" title="Jetty集群配置Session存储到MySQL、MongoDB">
+  <strong>上一篇：</strong><br>
+  <span>
+  Jetty集群配置Session存储到MySQL、MongoDB</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/11/07/linux-tigase/" title="Linux搭建XMPP服务器Tigase（Spark客户端测试）">
+ <strong>下一篇：</strong><br> 
+ <span>Linux搭建XMPP服务器Tigase（Spark客户端测试）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+<div id="gitalk-container" style="padding: 0 4%;"></div>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#XMPP协议简介"><span class="toc-number">1.</span> <span class="toc-text">XMPP协议简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#message"><span class="toc-number">1.1.</span> <span class="toc-text">message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#presence"><span class="toc-number">1.2.</span> <span class="toc-text">presence</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iq"><span class="toc-number">1.3.</span> <span class="toc-text">iq</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#搭建XMPP服务器"><span class="toc-number">2.</span> <span class="toc-text">搭建XMPP服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Strophe-js"><span class="toc-number">3.</span> <span class="toc-text">Strophe.js</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现Web私聊"><span class="toc-number">4.</span> <span class="toc-text">实现Web私聊</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现Web群聊"><span class="toc-number">5.</span> <span class="toc-text">实现Web群聊</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建房间"><span class="toc-number">5.1.</span> <span class="toc-text">创建房间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#加入房间"><span class="toc-number">5.2.</span> <span class="toc-text">加入房间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#聊天"><span class="toc-number">5.3.</span> <span class="toc-text">聊天</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现"><span class="toc-number">5.4.</span> <span class="toc-text">实现</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">微信公众号</p>
+<div>
+<img src="/img/WechatPublic.jpg" style="width: 100%;">
+</div>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>22</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/架构/" title="架构">架构<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>51</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AES/" title="AES">AES<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://blog.csdn.net/eson_15" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p style="text-align: center; font-size: 0.7em;">、
+			<a href="https://beian.miit.gov.cn" target="_blank" style="color: white;">皖ICP备15002890号-2</a>
+		</p>
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname.split('/')[4]
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

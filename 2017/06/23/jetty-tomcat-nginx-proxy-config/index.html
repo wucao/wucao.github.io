@@ -1,0 +1,664 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  
+    <title>Jetty/Tomcat + Nginx反向代理获取客户端真实IP、域名、协议、端口 | 叉叉哥的BLOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="wucao">
+    
+
+    
+    <meta name="description" content="问题Nginx反向代理后，Servlet应用通过request.getRemoteAddr()取到的IP是Nginx的IP地址，并非客户端真实IP，通过request.getRequestURL()获取的域名、协议、端口都是Nginx访问Web应用时的域名、协议、端口，而非客户端浏览器地址栏上的真实域名、协议、端口。 例如在某一台IP为10.4.64.22的服务器上，Jetty或者Tomcat端口">
+<meta name="keywords" content="Java,Jetty,Nginx,Tomcat,Servlet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jetty&#x2F;Tomcat + Nginx反向代理获取客户端真实IP、域名、协议、端口">
+<meta property="og:url" content="https://xxgblog.com/2017/06/23/jetty-tomcat-nginx-proxy-config/index.html">
+<meta property="og:site_name" content="叉叉哥的BLOG">
+<meta property="og:description" content="问题Nginx反向代理后，Servlet应用通过request.getRemoteAddr()取到的IP是Nginx的IP地址，并非客户端真实IP，通过request.getRequestURL()获取的域名、协议、端口都是Nginx访问Web应用时的域名、协议、端口，而非客户端浏览器地址栏上的真实域名、协议、端口。 例如在某一台IP为10.4.64.22的服务器上，Jetty或者Tomcat端口">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-10-12T08:02:50.975Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jetty&#x2F;Tomcat + Nginx反向代理获取客户端真实IP、域名、协议、端口">
+<meta name="twitter:description" content="问题Nginx反向代理后，Servlet应用通过request.getRemoteAddr()取到的IP是Nginx的IP地址，并非客户端真实IP，通过request.getRequestURL()获取的域名、协议、端口都是Nginx访问Web应用时的域名、协议、端口，而非客户端浏览器地址栏上的真实域名、协议、端口。 例如在某一台IP为10.4.64.22的服务器上，Jetty或者Tomcat端口">
+
+    
+    <link rel="alternative" href="/atom.xml" title="叉叉哥的BLOG" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/xxg.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/xxg.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="叉叉哥的BLOG">叉叉哥的BLOG</a></h1>
+				<h2 class="blog-motto">Python毁一生，Java穷三代，两者皆不沾，必成高富帅！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="https://github.com/wucao">GitHub</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:xxgblog.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/06/23/jetty-tomcat-nginx-proxy-config/" title="Jetty/Tomcat + Nginx反向代理获取客户端真实IP、域名、协议、端口" itemprop="url">Jetty/Tomcat + Nginx反向代理获取客户端真实IP、域名、协议、端口</a>
+  </h1>
+  <p class="article-time">
+    <time datetime="2017-06-23T01:49:00.000Z" itemprop="datePublished"> 发表于 2017-06-23</time>
+
+  </p>
+</header>
+
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题产生的原因"><span class="toc-number">1.1.</span> <span class="toc-text">问题产生的原因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决方案"><span class="toc-number">1.2.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx"><span class="toc-number">2.</span> <span class="toc-text">Nginx</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jetty-Tomcat"><span class="toc-number">3.</span> <span class="toc-text">Jetty/Tomcat</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Jetty"><span class="toc-number">3.1.</span> <span class="toc-text">Jetty</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tomcat"><span class="toc-number">3.2.</span> <span class="toc-text">Tomcat</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>Nginx反向代理后，Servlet应用通过<code>request.getRemoteAddr()</code>取到的IP是Nginx的IP地址，并非客户端真实IP，通过<code>request.getRequestURL()</code>获取的域名、协议、端口都是Nginx访问Web应用时的域名、协议、端口，而非客户端浏览器地址栏上的真实域名、协议、端口。</p>
+<p>例如在某一台IP为10.4.64.22的服务器上，Jetty或者Tomcat端口号为8080，Nginx端口号80，Nginx反向代理8080端口：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">	<span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">	<span class="attribute">location</span> / &#123;</span><br><span class="line">		<span class="attribute">proxy_pass</span> http://127.0.0.1:8080; <span class="comment"># 反向代理应用服务器HTTP地址</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在另一台机器上用浏览器打开<a href="http://10.4.64.22/test" target="_blank" rel="noopener">http://10.4.64.22/test</a>访问某个Servlet应用，获取客户端IP和URL：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(<span class="string">"RemoteAddr: "</span> + request.getRemoteAddr());</span><br><span class="line">System.out.println(<span class="string">"URL: "</span> + request.getRequestURL().toString());</span><br></pre></td></tr></table></figure></p>
+<p>结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RemoteAddr: 127.0.0.1</span><br><span class="line">URL: http://127.0.0.1:8080/test</span><br></pre></td></tr></table></figure></p>
+<p>可以发现，Servlet程序获取到的客户端IP是本地Nginx的IP而非浏览器所在机器的IP，获取到的URL是Nginx proxy_pass配置的URL组成的地址，而非浏览器地址栏上的真实地址。如果将Nginx用作https服务器反向代理后端的http服务，那么<code>request.getRequestURL()</code>获取的URL是http前缀的而非https前缀，无法获取到浏览器地址栏的真实协议。如果此时将<code>request.getRequestURL()</code>获取得到的URL用作拼接Redirect地址，就会出现跳转到错误的地址，这也是Nginx反向代理时经常出现的一个问题。</p>
+<h3 id="问题产生的原因"><a href="#问题产生的原因" class="headerlink" title="问题产生的原因"></a>问题产生的原因</h3><p>Nginx的反向代理实际上是客户端和真实的应用服务器之间的一个桥梁，客户端（一般是浏览器）访问Nginx服务器，Nginx再去访问Web应用服务器。对于Web应用来说，这次HTTP请求的客户端是Nginx而非真实的客户端浏览器，如果不做特殊处理的话，Web应用会把Nginx当作请求的客户端，获取到的客户端信息就是Nginx的一些信息。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>解决这个问题要从两个方面来解决：</p>
+<ol>
+<li>由于Nginx是代理服务器，所有客户端请求都从Nginx转发到Jetty/Tomcat，如果Nginx不把客户端真实IP、域名、协议、端口告诉Jetty/Tomcat，那么Jetty/Tomcat应用是永远不会知道这些信息的，所以需要Nginx配置一些HTTP Header来将这些信息告诉被代理的Jetty/Tomcat；</li>
+<li>Jetty/Tomcat这一端，不能再傻乎乎的获取直接和它连接的客户端（也就是Nginx）的信息，而是要从Nginx传递过来的HTTP Header中获取客户端信息。</li>
+</ol>
+<h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><p>添加以下配置：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">proxy_set_header</span> Host <span class="variable">$http_host</span>;</span><br><span class="line"><span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</span><br><span class="line"><span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line"><span class="attribute">proxy_set_header</span> X-Forwarded-Proto <span class="variable">$scheme</span>;</span><br></pre></td></tr></table></figure></p>
+<p>解释以下上面的配置，以上配置是在Nginx反向代理的时候，添加一些请求Header。</p>
+<ol>
+<li><code>Host</code>包含客户端真实的域名和端口号；</li>
+<li><code>X-Forwarded-Proto</code>表示客户端真实的协议（http还是https）；</li>
+<li><code>X-Real-IP</code>表示客户端真实的IP；</li>
+<li><code>X-Forwarded-For</code>和<code>X-Real-IP</code>类似，但它在多层代理时会包含真实客户端及中间每个代理服务器的IP，每个IP用逗号隔开，一般来说最左边的第一个IP地址就是客户端IP。</li>
+</ol>
+<p>再试一下<code>request.getRemoteAddr()</code>和<code>request.getRequestURL()</code>的输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RemoteAddr: 127.0.0.1</span><br><span class="line">URL: http://10.4.64.22/test</span><br></pre></td></tr></table></figure></p>
+<p>可以发现URL好像已经没问题了，但是IP还是本地的IP而非真实客户端IP。但是如果是用Nginx作为https服务器反向代理到http服务器，会发现浏览器地址栏是https前缀但是<code>request.getRequestURL()</code>获取到的URL还是http前缀，也就是仅仅配置Nginx还不能彻底解决问题。</p>
+<h2 id="Jetty-Tomcat"><a href="#Jetty-Tomcat" class="headerlink" title="Jetty/Tomcat"></a>Jetty/Tomcat</h2><p>如果你在网上搜索“Java如何获取客户端真实IP”，搜索到的解决方案大多是通过获取HTTP请求头<code>request.getHeader(&quot;X-Forwarded-For&quot;)</code>或<code>request.getHeader(&quot;X-Real-IP&quot;)</code>来实现，也就是上面在Nginx上配置的Header，这种方案获取的结果的确是正确的，但是我个人觉得并不优雅。因为既然Servlet API提供了<code>request.getRemoteAddr()</code>方法获取客户端IP，那么无论有没有用反向代理对于代码编写者来说应该是透明的。下面介绍一种更加优雅的方式。</p>
+<h3 id="Jetty"><a href="#Jetty" class="headerlink" title="Jetty"></a>Jetty</h3><p>在Jetty服务器的jetty.xml文件中，找到<code>httpConfig</code>，加入配置：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">New</span> <span class="attr">id</span>=<span class="string">"httpConfig"</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.HttpConfiguration"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">Call</span> <span class="attr">name</span>=<span class="string">"addCustomizer"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Arg</span>&gt;</span><span class="tag">&lt;<span class="name">New</span> <span class="attr">class</span>=<span class="string">"org.eclipse.jetty.server.ForwardedRequestCustomizer"</span>/&gt;</span><span class="tag">&lt;/<span class="name">Arg</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Call</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">New</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>重新启动Jetty，再用浏览器打开<a href="http://10.4.64.22/test" target="_blank" rel="noopener">http://10.4.64.22/test</a>测试，结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RemoteAddr: 10.1.3.7</span><br><span class="line">URL: http://10.4.64.22/test</span><br></pre></td></tr></table></figure></p>
+<p>此时可发现通过<code>request.getRemoteAddr()</code>获取到的IP不再是<code>127.0.0.1</code>而是客户端真实IP，<code>request.getRequestURL()</code>获取的URL也是浏览器上的真实URL，如果Nginx作为https代理，<code>request.getRequestURL()</code>的前缀也会是https。</p>
+<p>另外，Jetty将这个功能封装成一个模块：http-forwarded。如果不想改jetty.xml配置文件的话，也可以启用http-forwarded模块来实现。</p>
+<p>例如可以通过命令行启动Jetty：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar start.jar --module=http-forwarded</span><br></pre></td></tr></table></figure></p>
+<p>如果有兴趣可以查看<code>org.eclipse.jetty.server.ForwardedRequestCustomizer</code>的<a href="https://github.com/eclipse/jetty.project/blob/jetty-9.3.8.v20160314/jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java" target="_blank" rel="noopener">源码</a>，原理也就是从<code>X-Forwarded-For</code>头中取到第一个IP地址。</p>
+<h3 id="Tomcat"><a href="#Tomcat" class="headerlink" title="Tomcat"></a>Tomcat</h3><p>和Jetty类似，如果使用Tomcat作为应用服务器，可以通过配置Tomcat的server.xml文件，在Host元素内最后加入：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Valve</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.valves.RemoteIpValve"</span> /&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>更多用法也可以参考文档：<a href="https://tomcat.apache.org/tomcat-8.5-doc/api/org/apache/catalina/valves/RemoteIpValve.html" target="_blank" rel="noopener">https://tomcat.apache.org/tomcat-8.5-doc/api/org/apache/catalina/valves/RemoteIpValve.html</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Nginx/">Nginx</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/Jetty/">Jetty</a><a href="/tags/Nginx/">Nginx</a><a href="/tags/Tomcat/">Tomcat</a><a href="/tags/Servlet/">Servlet</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://xxgblog.com/2017/06/23/jetty-tomcat-nginx-proxy-config/" data-title="Jetty/Tomcat + Nginx反向代理获取客户端真实IP、域名、协议、端口 | 叉叉哥的BLOG" data-tsina class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2018/05/12/spring-jms-activemq/" title="ActiveMQ整合Spring JMS">
+  <strong>上一篇：</strong><br>
+  <span>
+  ActiveMQ整合Spring JMS</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/02/28/mina-netty-twisted-12/" title="MINA、Netty、Twisted一起学（十二）：HTTPS">
+ <strong>下一篇：</strong><br> 
+ <span>MINA、Netty、Twisted一起学（十二）：HTTPS
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+
+<div id="gitalk-container" style="padding: 0 4%;"></div>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题产生的原因"><span class="toc-number">1.1.</span> <span class="toc-text">问题产生的原因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决方案"><span class="toc-number">1.2.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx"><span class="toc-number">2.</span> <span class="toc-text">Nginx</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jetty-Tomcat"><span class="toc-number">3.</span> <span class="toc-text">Jetty/Tomcat</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Jetty"><span class="toc-number">3.1.</span> <span class="toc-text">Jetty</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tomcat"><span class="toc-number">3.2.</span> <span class="toc-text">Tomcat</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  <div class="github-card">
+<p class="asidetitle">微信公众号</p>
+<div>
+<img src="/img/WechatPublic.jpg" style="width: 100%;">
+</div>
+</div>
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>22</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Jetty/" title="Jetty">Jetty<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Maven/" title="Maven">Maven<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/MyBatis/" title="MyBatis">MyBatis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Node-js/" title="Node.js">Node.js<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Cloud/" title="Spring Cloud">Spring Cloud<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Spring-Framework/" title="Spring Framework">Spring Framework<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Struts-2/" title="Struts 2">Struts 2<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/异步网络编程/" title="异步网络编程">异步网络编程<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/架构/" title="架构">架构<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>51</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>13</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MINA/" title="MINA">MINA<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Twisted/" title="Twisted">Twisted<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Spring-Framework/" title="Spring Framework">Spring Framework<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/线程/" title="线程">线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Nginx/" title="Nginx">Nginx<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/protobuf/" title="protobuf">protobuf<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Jetty/" title="Jetty">Jetty<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/AES/" title="AES">AES<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/WebSocket/" title="WebSocket">WebSocket<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MySQL/" title="MySQL">MySQL<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/XMPP/" title="XMPP">XMPP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Tigase/" title="Tigase">Tigase<sup>2</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://lovecindywang.cnblogs.com/" target="_blank" title="朱晔的博客">朱晔的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://opstrip.com/" target="_blank" title="石尧的博客">石尧的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://blog.csdn.net/eson_15" target="_blank" title="倪升武的博客">倪升武的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.csdn.net/noaman_wgs" target="_blank" title="王根深的博客">王根深的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.cnblogs.com/jy107600" target="_blank" title="蒋宇的博客">蒋宇的博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+	
+	
+	<div class="social-font">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p style="text-align: center; font-size: 0.7em;">、
+			<a href="https://beian.miit.gov.cn" target="_blank" style="color: white;">皖ICP备15002890号-2</a>
+		</p>
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024
+		
+		<a href="/about" target="_blank" title="wucao">wucao</a>
+		
+
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+const gitalk = new Gitalk({
+  clientID: 'ce21dd1e4d8a2819290e',
+  clientSecret: 'f0786f8810407db32800529b6533331d672c6eff',
+  repo: 'xxg-blog-message-board',
+  owner: 'wucao',
+  admin: ['wucao'],
+  id: location.pathname.split('/')[4]
+});
+$(document).ready(function() {
+  gitalk.render('gitalk-container');
+});
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+});
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<div style="height: 0px; overflow: hidden">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254684152'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1254684152' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
